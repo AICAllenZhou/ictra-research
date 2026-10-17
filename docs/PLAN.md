@@ -137,7 +137,7 @@ These are always reported next to every model.
 - **Before opening sub-097–125**, write `docs/PREREGISTRATION.md` with:
   - the frozen model and threshold;
   - the hypotheses.
-- **Example hypotheses:**
+- **Example hypotheses** (first wording; the definitive H1–H4 are in `docs/PREREGISTRATION_DRAFT.md`, H3 revised after Exp R):
   - **H1:** C has fewer false alarms per 24 h than A at the same sensitivity, on FBTC and focal motor seizures.
   - **H2:** B is better than A on focal non-motor seizures.
   - **H3:** EEG changes before HR in most seizures.
