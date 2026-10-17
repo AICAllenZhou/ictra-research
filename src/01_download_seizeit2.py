@@ -62,7 +62,9 @@ def _acquire(lock):
     import os
     for _ in range(2):
         try:
-            os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)); return True
+            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(fd, str(os.getpid()).encode()); os.close(fd)     # owner PID: the stall watch frees locks of dead PIDs
+            return True
         except FileExistsError:
             if _recent(lock) or not _try(lock.unlink):
                 return False
@@ -271,6 +273,13 @@ def main():
         if r not in ("skip", "busy"):
             try: download_status(f"{x.path.rsplit('/', 1)[-1]}: {r}" if r == "failed" else None)
             except Exception: pass
+        if busy and i % 20 == 0:             # in-run retry: a busy file whose .part and .lock went quiet is free again
+            quiet = [b for b in busy if not _recent((DEST / b.path).with_suffix(".edf.part")) and not _recent((DEST / b.path).with_suffix(".edf.lock"))]
+            for b in quiet:
+                r = fetch(b.path, int(b.bytes), b.sha256 if isinstance(b.sha256, str) else None)
+                if r != "busy":
+                    busy.remove(b); stats["busy"] -= 1; stats[r] += 1
+                    print(f"  retried {b.path.rsplit('/', 1)[-1]}: {r}")
     for rnd in range(3):                     # second passes: only the files another window was busy with
         if not busy:
             break
