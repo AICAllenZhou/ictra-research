@@ -359,7 +359,7 @@ function tabAblation(){
   if (!models.includes(S.model)) S.model = models[0];
   let h = `<div class="card"><div class="controls"><span class="small sec">version</span>${vs.map(v => `<button data-ver="${v}" aria-pressed="${v === S.version}">${esc(v)}</button>`).join("")}
      <span class="spacer"></span><span class="small sec">model family</span>${models.map(m => `<button data-model="${m}" aria-pressed="${m === S.model}">${esc(m)}</button>`).join("")}</div>
-     <h2>Sensitivity vs false alarms per 24 h, A → B → C and the four single-input rules</h2>
+     <h2>Sensitivity vs false alarms per 24 h, A → B → C and the four single-input rules <span class="pill" title="docs/EVALUATION_PROTOCOL.md amendment 2026-10-17: zero-phase filters and whole-recording calibration; a causal pipeline is v11">offline pipeline</span></h2>
      <div class="legend">${Object.entries(SETS).map(([k, [lab, c]]) => `<span><i class="sw" style="background:var(${c});border-radius:50%"></i>${lab}</span>`).join("")}
        ${Object.entries(RULES).map(([k, sh]) => `<span><svg viewBox="-8 -8 16 16" style="width:14px;height:14px">${marker(sh, 0, 0, 5, "none", css("--rule"))}</svg>${k}</span>`).join("")}</div><div class="panels">`;
   const bySG = {}; (J.by_group || []).forEach(r => bySG[r.set + "|" + r.model + "|" + r.group] = r);

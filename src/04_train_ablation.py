@@ -30,6 +30,7 @@ import ictra_lib as L
 warnings.filterwarnings("ignore")
 FEAT = L.ROOT / "data/features"
 BG_RATIO, DROPOUT = 5, 0.25
+MAX_RAM_FRAC = 0.5      # training workers x per-job peak RSS must stay under half of physical RAM
 DEVICE = "cpu"   # set from --device in main() and passed to every worker (xgboost only; other families are CPU-only)
 RULES = {"rule_hr": "ecg_hr_rise_pct", "rule_emg": "emg_logrms_rel", "rule_eeg": "eeg_ll_max_rel", "rule_acc": "acc_logsd_rel"}
 _S = pd.read_csv(L.ROOT / "data/catalog/seizeit2_seizures.csv")
@@ -37,6 +38,15 @@ SEIZ = {k: g[["onset_s", "duration_s", "type"]].reset_index(drop=True) for k, g 
 EMPTY_EV = pd.DataFrame({"onset_s": [], "duration_s": [], "type": []})
 LABEL_COLS = ["t0", "overlap", "y", "edge", "impd", "sz_id", "sz_type", "sz_group", "sub", "run", "montage", "has_ecg", "has_emg", "has_acc",
               "flat_eeg", "flat_ecg", "flat_emg"]
+
+
+def lab(update, log=None, src="", version=None):
+    """Lab status write, skipped for smoke versions (names starting with "_": never logged, never shown)."""
+    if not str(version or SMOKE_GUARD.get("v", "")).startswith("_"):
+        L.lab_status(update, log=log, src=src)
+
+
+SMOKE_GUARD = {}
 
 
 def feature_columns(all_cols, modalities):
@@ -170,9 +180,10 @@ def job(args):
     fs_name, kind, fold, seed, version, device, runs = args
     global DEVICE, RUNS
     DEVICE, RUNS = device, runs
+    SMOKE_GUARD["v"] = version
     t = time.time()
     key = f"{fs_name}|{kind}|{fold}|{seed}"
-    L.lab_status({"training": {version: {"jobs": {key: {"state": "running", "start": pd.Timestamp.now().isoformat(timespec="seconds")}}}}})
+    lab({"training": {version: {"jobs": {key: {"state": "running", "start": pd.Timestamp.now().isoformat(timespec="seconds")}}}}})
     splits = L.load_splits(); rng = np.random.default_rng(seed)
     val_subs = splits["dev_folds"][str(fold)]
     train_subs = [s for k, v in splits["dev_folds"].items() if k != str(fold) for s in v]
@@ -197,9 +208,13 @@ def job(args):
     (out / "preds").mkdir(parents=True, exist_ok=True)
     pd.concat(preds).to_parquet(out / "preds" / f"{fs_name}__{kind}__f{fold}_s{seed}.parquet", index=False)
     res = pd.DataFrame(rows); res["inner_f1"] = f1_in; res["minutes"] = (time.time() - t) / 60
+    import psutil
+    mi = psutil.Process().memory_info()
+    peak_gb = getattr(mi, "peak_wset", mi.rss) / 1e9        # Windows: peak working set of this worker process so far
+    res["peak_rss_gb"] = peak_gb
     res.to_csv(out / f"fold_{fs_name}__{kind}__f{fold}_s{seed}.csv", index=False)
     pooled = L.pool_scores(rows)
-    info = {"state": "done", "sensitivity": pooled["sensitivity"], "fa_per_24h": pooled["fa_per_24h"], "f1": pooled["f1"],
+    info = {"state": "done", "peak_rss_gb": peak_gb, "sensitivity": pooled["sensitivity"], "fa_per_24h": pooled["fa_per_24h"], "f1": pooled["f1"],
             "thr": thr, "minutes": (time.time() - t) / 60}
     line = f"{fs_name:18s} {kind:9s} fold {fold} seed {seed}: sens {pooled['sensitivity']:.2f} FA/24h {pooled['fa_per_24h']:.2f} F1 {pooled['f1']:.2f} thr {thr:.3f} ({(time.time() - t) / 60:.1f} min)"
     return line, key, info
@@ -266,12 +281,19 @@ def summarise(version, note="", log=True):
     T.to_csv(out / "summary.csv", index=False)
     M = montage_scores(F); M.to_csv(out / "summary_by_montage.csv", index=False)
     Dl = delay_table(out); Dl.to_csv(out / "delay_by_group.csv", index=False)
-    write_dev_json(version, note, T, pat, G, M, Dl)
+    if not version.startswith("_"):
+        write_dev_json(version, note, T, pat, G, M, Dl)
     if not log:
         print(T.round(3).to_string()); return T
     with open(L.ROOT / "results/ITERATION_LOG.md", "a", encoding="utf-8") as f:
         f.write(f"\n## {version} ({pd.Timestamp.now():%Y-%m-%d %H:%M}) {note}\n\nDev folds, pooled over patients, patient-bootstrap 95% CI.\n\n")
         f.write(T[["set", "model", "seizures", "hours", "sensitivity", "sens_ci", "fa_per_24h", "fa_ci", "f1", "f1_ci", "median_delay_s"]].round(3).to_markdown(index=False) + "\n")
+        f.write("\nOffline pipeline (EVALUATION_PROTOCOL.md amendment 2026-10-17).\n")
+        if "peak_rss_gb" in F:
+            pk = F.groupby(["set", "model"]).peak_rss_gb.max().reset_index()
+            f.write("Peak RSS per job (GB; max over folds and seeds of the worker's peak working set): "
+                    + ", ".join(f"{r.set}/{r.model} {r.peak_rss_gb:.2f}" for r in pk.itertuples())
+                    + f". Overall max {F.peak_rss_gb.max():.2f} GB.\n")
     print(T.round(3).to_string())
     return T
 
@@ -397,12 +419,26 @@ def main():
     ap.add_argument("--compare-sets", nargs=2, metavar=("SET_REF", "SET_NEW"), default=["C_eeg_ecg_emg_acc", "C_eeg_ecg_emg_acc"])
     ap.add_argument("--compare-models", nargs=2, metavar=("MODEL_REF", "MODEL_NEW"), default=["xgb", "xgb"])
     a = ap.parse_args()
+    SMOKE_GUARD["v"] = a.version
     if a.compare:
         compare(a.compare[0], a.compare[1], a.compare_sets[0], a.compare_models[0], a.compare_sets[1], a.compare_models[1]); return
     if a.summary_only:
         summarise(a.version, a.note, log=not a.no_log); return
     if a.runs is None:
         ap.error("--runs seizure|all is required for training")
+    # memory cap (Allen, 2026-10-17): the training pool may reserve at most MAX_RAM_FRAC of physical RAM. The per-job
+    # peak comes from earlier fold CSVs (peak_rss_gb, +25 % margin), else a conservative 2 GB.
+    import psutil
+    peaks = []
+    for p in (L.ROOT / "results/dev").glob("*/fold_*.csv"):
+        c = pd.read_csv(p)
+        if "peak_rss_gb" in c:
+            peaks.append(float(c.peak_rss_gb.max()))
+    per_job = max(0.5, 1.25 * max(peaks)) if peaks else 2.0
+    cap = max(1, int(MAX_RAM_FRAC * psutil.virtual_memory().total / 1e9 / per_job))
+    if a.workers > cap:
+        print(f"workers {a.workers} -> {cap}: {per_job:.1f} GB per job x {cap} <= {MAX_RAM_FRAC:.0%} of physical RAM")
+        a.workers = cap
     jobs = [(s, m, f, sd, a.version, a.device, a.runs) for s in a.sets for m in a.models for f in a.folds for sd in a.seeds]
     if a.rules:
         jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs) for r in RULES for f in a.folds]
@@ -415,16 +451,16 @@ def main():
         cells[f"{fs_}|{kd_}|{fo_}|{sd_}"] = {"state": "done"}
     for j in jobs:
         cells[f"{j[0]}|{j[1]}|{j[2]}|{j[3]}"] = {"state": "queued", "set": j[0], "model": j[1], "fold": j[2], "seed": j[3]}
-    L.lab_status({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers,
+    lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers,
                                            "n_jobs": len(cells), "started": pd.Timestamp.now().isoformat(timespec="seconds"), "jobs": cells}}},
                  log=f"{a.version}: {len(jobs)} jobs queued ({a.workers} workers, xgboost on {a.device})", src="04_train")
     with ProcessPoolExecutor(a.workers) as ex:
         for line, key, info in ex.map(job, jobs):
             print(line, flush=True)
-            L.lab_status({"training": {a.version: {"jobs": {key: info}}}})
-    L.lab_status({}, log=f"{a.version}: all jobs done, summarising", src="04_train")
+            lab({"training": {a.version: {"jobs": {key: info}}}})
+    lab({}, log=f"{a.version}: all jobs done, summarising", src="04_train")
     summarise(a.version, a.note, log=not a.no_log)
-    L.lab_status({"training": {a.version: {"finished": pd.Timestamp.now().isoformat(timespec="seconds")}}},
+    lab({"training": {a.version: {"finished": pd.Timestamp.now().isoformat(timespec="seconds")}}},
                  log=f"{a.version}: summary.csv written", src="04_train")
 
 

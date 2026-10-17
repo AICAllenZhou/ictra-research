@@ -112,4 +112,20 @@ Each external test gets its own section in `docs/PREREGISTRATION.md` and is open
 - [ ] Billeci and Siena patient overlap checked before both are counted as independent.
 
 ## Amendments
-(none yet)
+
+### 2026-10-17 — all reported numbers are offline evaluations
+
+Found while documenting the real-data fixes (`docs/DATA_NOTES.md` §3b). The signal path in `src/ictra_lib.py` is not
+causal:
+- `repair_dropouts` looks ahead 1–2 samples and up to 1 s, with a noise threshold taken over each ~1-h chunk;
+- `acc_to_g` divides by the median |a| of the whole recording;
+- `bandpass` / `notch` are zero-phase (`sosfiltfilt` / `filtfilt`).
+
+The relative features, the ECG baseline and the k-of-n post-processing are causal.
+
+Therefore **every number from tiers 1, 2 and 3 is an offline evaluation**: the same code path runs on training and test
+data, so the comparisons are valid, but they do not show what a real-time device would achieve. Every results table,
+the report, the website and the demo say "offline pipeline". A causal pipeline is version candidate **v11**
+(`docs/TASKS.md` Task 8). It must report its delta against the accepted offline version on the same dev folds
+(Δsensitivity, ΔFA/24h, ΔF1, Δdelay, with paired-bootstrap CIs). Until v11 exists, the hardware replay demo labels
+itself "offline pipeline".

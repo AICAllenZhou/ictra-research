@@ -105,6 +105,51 @@ Checks:
 - During sub-019's FBTC the raw EMG swings rail to rail (±3,000–4,000 uV) and about 1.4 % of samples are flagged. That
   segment is saturated anyway and its EMG features stay extreme. This is an accepted, documented trade-off.
 
+### 3b. Exactly what the repair and the calibration do (for the report and for any real-time port)
+
+Both are **label-free**: neither function receives events, seizure times or the window labels. They see one recording's raw
+samples only, and run identically on dev, locked-test, external and hardware data. Unit tests: `tests/test_ictra_lib.py`
+(`test_dropouts_found_and_repaired`, `test_no_flags_when_level_is_near_zero`, `test_r_peaks_are_not_touched`,
+`test_acc_calibrated_to_one_g`).
+
+`ictra_lib.repair_dropouts(x, fs)` (called first inside `harmonise`, on each 1-h chunk + 10 s padding that
+`03_features.py` reads):
+- A run of L = 1 or 2 samples i..i+L−1 is flagged if all of these hold:
+  - every sample in the run is closer to zero than the mean of its neighbours x[i−1] and x[i+L], and at least one is
+    closer by more than 25 %;
+  - the deviation is more than 3 × |x[i−1] − x[i+L]| (a V-shape);
+  - the deviation is more than 6 × the chunk's median absolute first difference;
+  - the run's 1-s block has |median| > 3 × MAD.
+- Flagged samples are replaced by linear interpolation between the nearest unflagged samples. The longest bridge is
+  2 samples: 8 ms at 256 Hz, 80 ms at 25 Hz.
+- It does not know where seizures are, so it neither avoids nor targets onsets. It never interpolates over more than two
+  consecutive samples, so it cannot remove an onset, which lasts seconds.
+- On the real files it changed 0.00–0.03 % of samples in clean runs and ≤ 0.6 % (EEG/ECG/EMG) or ≤ 2.4 % (ACC) in affected
+  runs (§3). During saturated seizure EMG (sub-019 FBTC) it changed ~1.4 % of samples.
+- **Not causal.** It looks ahead 1–2 samples (the right neighbour) and up to 1 s (the 1-s block statistics). Its noise
+  threshold is the median over the whole ~1-h chunk, which includes samples up to an hour ahead.
+
+`ictra_lib.acc_to_g(acc, fs)` (`03_features.py`, before `harmonise`):
+- Divides the 3 ACC axes by the median of |a| over the **whole recording** (after the same dropout repair), so that the
+  median resting magnitude becomes 1 g.
+- A median over many hours is not moved by a seizure lasting seconds to minutes, but it does use the future.
+- **Not causal.**
+
+The rest of `harmonise` is not causal either:
+- `bandpass` uses `sosfiltfilt` and `notch` uses `filtfilt` (zero-phase, forward + backward), so each output sample
+  depends on future input over the filter's impulse response (seconds for the 0.5-Hz ECG high-pass).
+- What *is* causal: the relative features (`*_rel`, rolling 5-min median shifted by one window), the ECG baseline (rolling
+  median shifted by one window) and the k-of-n post-processing.
+
+Consequence: the dev, locked-test and external numbers are **offline** evaluations. Train and test go through the same
+code path, so they are comparable, but they are not a real-time system. A real-time port (the hardware replay / live
+demo) needs:
+- causal filters (`sosfilt`, with the group delay reported);
+- a causal dropout threshold (a running median of |diff| over the past minutes);
+- causal ACC calibration (e.g. the median |a| of the first 10 minutes, or a running median).
+
+These are logged as a candidate version, not changed silently, because they change the features.
+
 ## 4. Onset alignment, FBTC (Task 2)
 
 Source: `python src/10_data_checks.py onsets --group FBTC --n 4` → `results/data_checks/onset_FBTC_*.png`

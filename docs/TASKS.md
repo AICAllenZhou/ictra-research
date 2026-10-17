@@ -88,6 +88,10 @@ Candidates, in suggested order; each is a flag or a small function in `ictra_lib
 - v08 post-processing k-of-n grid (2/3, 3/5, 4/6, 5/8) tuned on inner split
 - v09 per-patient baseline normalisation (first 10 min of each recording)
 - v10 class ratio 1:3 vs 1:10 and class weights
+- v11 causal pipeline (EVALUATION_PROTOCOL.md amendment 2026-10-17): causal filters (`sosfilt`, group delay reported),
+  causal dropout threshold (running median of |diff| over past minutes), causal ACC calibration (first-10-min or running
+  median |a|). Report the offline-vs-causal delta (Δsens, ΔFA/24h, ΔF1, Δdelay, paired bootstrap) whether or not it is
+  accepted; the demo replay uses v11 once it exists and says "offline pipeline" until then.
 Implement the paired patient bootstrap comparison (`compare` mode, like SlopeAI's `09_iterate.py compare`) that prints
 Δsensitivity, ΔFA/24h, ΔF1 with CI and P(improve) and the ACCEPT/REJECT decision by the §1 rule.
 **Done when:** each version has a log entry with the decision; the accepted chain is stated at the top of the log.
@@ -134,7 +138,7 @@ script (`src/09_independent_check.py`), as `../SlopeAI/src/05_review_checks.py` 
 ## Stage 4 — hardware and demo (parallel track, hardware owner)
 - Fix the stuck-at-ADC-limit problem in `biosignal-studio` (58–60% of samples at 0/1023); target < 1%.
 - Multi-channel acquisition at 256 Hz; EMG filter 20–120 Hz + 60 Hz notch; add an accelerometer.
-- `replay` mode: feed a SeizeIT2 EDF through `ictra_lib` features + the frozen model + alert, for the demo video.
+- `replay` mode: feed a SeizeIT2 EDF through `ictra_lib` features + the frozen model + alert, for the demo video. The replay screen shows "offline pipeline" until v11 (causal) exists.
 - Healthy-volunteer nuisance trials (chewing, walking, stairs, typing, sleep posture), consent recorded; report FA per hour
   on the team's own board. Clearly labelled simulation only (fist clench, arm shake) for EMG/ACC response.
 
