@@ -318,7 +318,7 @@ function tabSignals(){
                     : [["lag_eeg_to_hr","EEG → heart rate"],["lag_eeg_to_emg","EEG → EMG"],["lag_eeg_to_acc","EEG → movement"],["lag_emg_to_acc","EMG → movement"]];
   const groupsAll = Object.keys(D.groups).filter(g => g !== "all");
   const Wd = 720, rowH = 22, left = 170, top = 20, lo = -60, hi = 180;
-  const sx = v => left + (Wd - left - 20) * (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo);
+  const sx = v => left + (Wd - left - 120) * (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo);   // right 120 px: median / n labels
   let rows = []; for (const [k, lab] of kinds) for (const g of groupsAll) rows.push([k, lab, g]);
   const Hd = top + rows.length * rowH + 26;
   let svg = `<svg viewBox="0 0 ${Wd} ${Hd}" role="img" aria-label="lag dot plot">`;
@@ -334,12 +334,12 @@ function tabSignals(){
     });
     if (st && st.n) svg += `<line x1="${sx(st.q25)}" x2="${sx(st.q75)}" y1="${y}" y2="${y}" stroke="${css("--text-primary")}" stroke-width="2"/>
        <line x1="${sx(st.median)}" x2="${sx(st.median)}" y1="${y - 8}" y2="${y + 8}" stroke="${css("--text-primary")}" stroke-width="3"><title>median ${st.median} s [${st.q25}, ${st.q75}], n=${st.n}</title></line>
-       <text x="${Wd - 16}" y="${y + 4}" text-anchor="end" class="small">${nf(st.median,0)} s · n=${st.n}</text>`;
+       <text x="${Wd - 8}" y="${y + 4}" text-anchor="end" class="small">${nf(st.median, Number.isInteger(st.median) ? 0 : 1)} s · n=${st.n}</text>`;
   });
   svg += `</svg>`;
   h += `<div class="card" style="margin-top:12px"><div class="controls"><h2 style="margin:0">When does each signal change?</h2><span class="spacer"></span>
       <button data-lag="annotation" aria-pressed="${ann}">relative to annotated onset</button><button data-lag="eeg" aria-pressed="${!ann}">relative to first bte-EEG change</button></div>
-      ${svg}<div class="small muted">dots: one seizure each (x clipped to −60..180 s); black bar: IQR; tick: median (both from expR.json). A signal with no change from −30 s on has no dot.</div></div>`;
+      ${svg}<div class="small muted">dots: one seizure each (x clipped to −60..180 s); bar: IQR; tick: median (both from expR.json). A signal with no change from −30 s on has no dot.</div></div>`;
   // response heat table
   h += `<div class="card" style="margin-top:12px"><h2>Which signal responds (share of seizures where it was recorded)</h2><div class="tablewrap"><table>
     <tr><th>group</th><th class="num">seizures</th><th class="num">EEG</th><th class="num">heart rate</th><th class="num">EMG</th><th class="num">movement</th><th class="num">HR rise ≥ 20 bpm</th><th class="num">≥ 50 bpm</th><th class="num">≥ 50 bpm (5-s median HR)</th></tr>` +

@@ -169,6 +169,34 @@ on full-scalp video-EEG; `docs/PLAN.md` §5). Consequence: with the SzCORE toler
 134–154 s. But detection delays measured from the annotated onset include this spread time. Exp R (Task 4) measures the
 lag directly.
 
+### 4b. First behind-the-ear EEG change minus annotated onset, all dev seizures (Exp R)
+
+Source: `results/expR/onsets.csv`, column `t_eeg` (`python src/02_relationship_study.py`, 2026-10-17). Definition: first
+second ≥ −30 s at which the bte line length or 1–25 Hz power leaves its −300..−60 s baseline by > 3 SD (either direction)
+for ≥ 3 s. The search starts at −30 s, so −30 is a floor. "None" = no such change before +179 s. Labels and SzCORE
+tolerances are unchanged; this only describes them.
+
+| group | seizures | with a change | median [IQR], s | min / max, s | < 0 s | 0–10 s | 11–30 s | 31–60 s | > 60 s | none |
+|---|---|---|---|---|---|---|---|---|---|---|
+| FBTC | 33 | 33 | 7 [0, 30] | −30 / 105 | 8 | 9 | 8 | 5 | 3 | 0 |
+| focal motor | 315 | 260 | 2 [−5, 18] | −30 / 175 | 102 | 70 | 54 | 17 | 17 | 55 |
+| focal non-motor | 244 | 139 | 11 [0, 53] | −30 / 174 | 30 | 38 | 26 | 14 | 31 | 105 |
+| focal unknown motor | 103 | 78 | 4 [0, 20] | −30 / 131 | 16 | 37 | 11 | 11 | 3 | 25 |
+| all | 695 | 510 | 5 [−2, 23] | −30 / 175 | 156 | 154 | 99 | 47 | 54 | 185 |
+
+- **FBTC (33 seizures, 28 patients):** the bte change is within ±10 s of the annotation in 11 of 33, more than 10 s before
+  it in 6 (down to the −30 s floor) and later than +30 s in 8. The 3 seizures past +60 s are sub-064 run-01 (+74 s), sub-080 run-15 (+102 s) and sub-016 run-03 (+105 s).
+  All of these seizures last 199–301 s.
+- **sub-016 run-03 is a definition effect.** By eye its change is at 0 s (§4), but its baseline is active, so it crosses
+  3 SD only at +105 s. Treat this column as an upper bound when the baseline is noisy (`results/expR/FINDINGS.md`,
+  Limits).
+- **Consequence for scoring.** Under the SzCORE rule an alarm counts if it overlaps [onset − 30 s, end + 60 s], so a
+  late bte change still allows a hit while the seizure lasts. But a delay measured from the annotated onset includes this
+  spread time. v01 therefore reports delays from both the annotated onset and the bte change
+  (`results/dev/<version>/delay_by_group.csv`).
+- **Focal non-motor:** 105 of 244 seizures (43%) show no bte EEG change by this definition, and 31 more change only after
+  +60 s. This is the main reason to expect low sensitivity there.
+
 ## 5. Impedance checks (`impd`)
 
 Source: `python src/10_data_checks.py impd sub-001:3 sub-001:5 sub-003:6 sub-007:3 sub-011:2 sub-014:1 sub-015:6 sub-016:3`

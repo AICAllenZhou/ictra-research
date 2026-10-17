@@ -9,3 +9,4 @@ results/lab/data/status.lock
 *.part
 *.lock
 *.tmp
+results/expR/**/curves.parquet
