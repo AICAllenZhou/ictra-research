@@ -149,6 +149,14 @@ def make_model(kind, seed, y):
     raise ValueError(kind)
 
 
+def predict_on_cpu(m, kind):
+    """xgboost trained on CUDA warns "Falling back to prediction using DMatrix due to mismatched devices" when it predicts
+    from pandas (CPU) data. Training stays on the GPU; prediction is switched to CPU (same trees, same outputs)."""
+    if kind == "xgb" and DEVICE == "cuda":
+        m.get_booster().set_param({"device": "cpu"})
+    return m
+
+
 def predict_runs(model, subs, cols):
     """Yield (sub, run, prob per window, events, nw, impd, group per window) for every run of these patients."""
     for f in run_files(subs):
@@ -230,10 +238,10 @@ def job(args):
     tr = np.array(sorted(train_subs)); rng.shuffle(tr)
     n_in = max(2, int(0.2 * len(tr))); inner_val, inner_tr = list(tr[:n_in]), list(tr[n_in:])
     D = load_training(inner_tr, cols, seed)
-    m = make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y)
+    m = predict_on_cpu(make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
     thr, (f1_in, _) = tune_threshold(m, inner_val, cols)
     D = load_training(train_subs, cols, seed)
-    m = make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y)
+    m = predict_on_cpu(make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
     # validation on the held-out fold, full natural class ratio
     rows, preds = [], []
     for sub, run, prob, ev, nw, impd, grp in predict_runs(m, val_subs, cols):
