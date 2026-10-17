@@ -9,7 +9,8 @@ split). Post-processing and scoring are ictra_lib's (k-of-n, merge/split, SzCORE
 and removed from the hours).
 
 Outputs in results/dev/<version>/:
-  operating_curve.csv     one row per (set, model, seed, threshold): sensitivity overall + by seizure group, FA/24h
+  operating_curve.csv     one row per (set, model, seed, threshold): sensitivity overall + by seizure group, FA/24h,
+                          latency_median_s (first overlapping alarm start - annotated onset, hits only)
   operating_points.csv    per (set, model) and seizure group (mean over seeds): sensitivity at FA/24h <= 0.5/1/2/5,
                           FA/24h at sensitivity >= 0.80/0.90/0.95 (NaN = not reachable)
   fig_operating_curves.png  sensitivity vs FA/24h (log x), one panel per seizure group
@@ -61,7 +62,7 @@ def curve_job(args):
     thrs = np.unique(np.quantile(allp, qs))
     rows = []
     for thr in thrs:
-        tp = {g: 0 for g in GROUPS}; n = {g: 0 for g in GROUPS}; fp = 0; hours = 0.0
+        tp = {g: 0 for g in GROUPS}; n = {g: 0 for g in GROUPS}; fp = 0; hours = 0.0; lat = []
         for p, mask, a, b, grp in runs:
             hyp = L.windows_to_events(L.k_of_n((p > thr) & ~mask))
             hours += (len(p) - mask.sum()) * L.CFG["step_s"] / 3600
@@ -69,12 +70,15 @@ def curve_job(args):
                 hs, he = np.array(hyp).T
                 ov = (hs[None, :] < (b + L.CFG["tol_post_s"])[:, None]) & (he[None, :] > (a - L.CFG["tol_pre_s"])[:, None])
                 hit = ov.any(1); fp += int((~ov.any(0)).sum()) if len(a) else len(hyp)
+                if hit.any():   # latency = start of the first overlapping alarm - annotated onset (can be < 0 within the 30-s tolerance)
+                    lat += list(np.where(ov, hs[None, :], np.inf).min(1)[hit] - a[hit])
             else:
                 hit = np.zeros(len(a), bool)
             for g in GROUPS:
                 k = grp == g; n[g] += int(k.sum()); tp[g] += int(hit[k].sum())
         r = dict(set=set_name, model=model, seed=seed, thr=float(thr), fp=fp, hours=hours, fa_per_24h=fp / hours * 24,
-                 n_seizures=sum(n.values()), sensitivity=sum(tp.values()) / max(sum(n.values()), 1))
+                 n_seizures=sum(n.values()), sensitivity=sum(tp.values()) / max(sum(n.values()), 1),
+                 latency_median_s=float(np.median(lat)) if lat else np.nan)
         for g in GROUPS:
             r[f"n_{g}"] = n[g]; r[f"sens_{g}"] = tp[g] / n[g] if n[g] else np.nan
         rows.append(r)
@@ -157,9 +161,9 @@ def fig_ablation(out, model="xgb"):
         for s in SET_COLOR:
             d = T[(T.set == s) & (T.model == model)]
             if len(d) and np.isfinite(d[col].iloc[0]):
+                # no letter labels: A/B/C points nearly coincide, so offset letters landed next to the wrong point;
+                # identity comes from the legend (colour) and the hover-free PNG keeps one marker per series
                 ax.plot(d.fa_per_24h, d[col], "o", ms=9, color=SET_COLOR[s], mec="white", mew=1.5, label=SET_LABEL[s])
-                ax.annotate(s.split("_")[0], (d.fa_per_24h.iloc[0], d[col].iloc[0]), fontsize=8, color=INK,
-                            xytext=LABEL_OFF[s], textcoords="offset points")
         ax.set_xscale("symlog", linthresh=1); ax.set_xlim(0, 300); ax.set_ylim(0, 1.05); _style(ax)
         ax.set_title(g, fontsize=9, color=INK); ax.set_xlabel("false alarms per 24 h", fontsize=8, color=INK2)
     axs[0].set_ylabel("event sensitivity", fontsize=8, color=INK2)

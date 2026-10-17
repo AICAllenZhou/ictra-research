@@ -1,0 +1,85 @@
+model,group,exp_r,seizures,missed,missed_pct
+A_eeg xgb,all,no response,74,71,95.94594594594595
+A_eeg xgb,all,not in Exp R (< 5 s),7,7,100.0
+A_eeg xgb,all,responds on 1+,621,388,62.47987117552335
+A_eeg xgb,FBTC,responds on 1+,33,1,3.0303030303030303
+A_eeg xgb,focal_motor,no response,15,13,86.66666666666667
+A_eeg xgb,focal_motor,not in Exp R (< 5 s),2,2,100.0
+A_eeg xgb,focal_motor,responds on 1+,300,183,61.0
+A_eeg xgb,focal_nonmotor,no response,47,46,97.87234042553192
+A_eeg xgb,focal_nonmotor,not in Exp R (< 5 s),5,5,100.0
+A_eeg xgb,focal_nonmotor,responds on 1+,197,148,75.1269035532995
+A_eeg xgb,focal_unknown_motor,no response,12,12,100.0
+A_eeg xgb,focal_unknown_motor,responds on 1+,91,56,61.53846153846154
+B_eeg_ecg xgb,all,no response,74,70,94.5945945945946
+B_eeg_ecg xgb,all,not in Exp R (< 5 s),7,7,100.0
+B_eeg_ecg xgb,all,responds on 1+,621,365,58.77616747181965
+B_eeg_ecg xgb,FBTC,responds on 1+,33,0,0.0
+B_eeg_ecg xgb,focal_motor,no response,15,13,86.66666666666667
+B_eeg_ecg xgb,focal_motor,not in Exp R (< 5 s),2,2,100.0
+B_eeg_ecg xgb,focal_motor,responds on 1+,300,169,56.333333333333336
+B_eeg_ecg xgb,focal_nonmotor,no response,47,46,97.87234042553192
+B_eeg_ecg xgb,focal_nonmotor,not in Exp R (< 5 s),5,5,100.0
+B_eeg_ecg xgb,focal_nonmotor,responds on 1+,197,145,73.60406091370558
+B_eeg_ecg xgb,focal_unknown_motor,no response,12,11,91.66666666666667
+B_eeg_ecg xgb,focal_unknown_motor,responds on 1+,91,51,56.043956043956044
+C_eeg_ecg_emg_acc xgb,all,no response,74,67,90.54054054054055
+C_eeg_ecg_emg_acc xgb,all,not in Exp R (< 5 s),7,7,100.0
+C_eeg_ecg_emg_acc xgb,all,responds on 1+,621,337,54.26731078904992
+C_eeg_ecg_emg_acc xgb,FBTC,responds on 1+,33,0,0.0
+C_eeg_ecg_emg_acc xgb,focal_motor,no response,15,13,86.66666666666667
+C_eeg_ecg_emg_acc xgb,focal_motor,not in Exp R (< 5 s),2,2,100.0
+C_eeg_ecg_emg_acc xgb,focal_motor,responds on 1+,300,155,51.666666666666664
+C_eeg_ecg_emg_acc xgb,focal_nonmotor,no response,47,43,91.48936170212765
+C_eeg_ecg_emg_acc xgb,focal_nonmotor,not in Exp R (< 5 s),5,5,100.0
+C_eeg_ecg_emg_acc xgb,focal_nonmotor,responds on 1+,197,133,67.51269035532995
+C_eeg_ecg_emg_acc xgb,focal_unknown_motor,no response,12,11,91.66666666666667
+C_eeg_ecg_emg_acc xgb,focal_unknown_motor,responds on 1+,91,49,53.84615384615385
+rule_acc,all,no response,74,71,95.94594594594595
+rule_acc,all,not in Exp R (< 5 s),7,7,100.0
+rule_acc,all,responds on 1+,621,415,66.82769726247987
+rule_acc,FBTC,responds on 1+,33,11,33.333333333333336
+rule_acc,focal_motor,no response,15,13,86.66666666666667
+rule_acc,focal_motor,not in Exp R (< 5 s),2,2,100.0
+rule_acc,focal_motor,responds on 1+,300,199,66.33333333333333
+rule_acc,focal_nonmotor,no response,47,46,97.87234042553192
+rule_acc,focal_nonmotor,not in Exp R (< 5 s),5,5,100.0
+rule_acc,focal_nonmotor,responds on 1+,197,157,79.69543147208122
+rule_acc,focal_unknown_motor,no response,12,12,100.0
+rule_acc,focal_unknown_motor,responds on 1+,91,48,52.747252747252745
+rule_eeg,all,no response,74,73,98.64864864864865
+rule_eeg,all,not in Exp R (< 5 s),7,7,100.0
+rule_eeg,all,responds on 1+,621,361,58.13204508856683
+rule_eeg,FBTC,responds on 1+,33,1,3.0303030303030303
+rule_eeg,focal_motor,no response,15,14,93.33333333333333
+rule_eeg,focal_motor,not in Exp R (< 5 s),2,2,100.0
+rule_eeg,focal_motor,responds on 1+,300,143,47.666666666666664
+rule_eeg,focal_nonmotor,no response,47,47,100.0
+rule_eeg,focal_nonmotor,not in Exp R (< 5 s),5,5,100.0
+rule_eeg,focal_nonmotor,responds on 1+,197,160,81.21827411167513
+rule_eeg,focal_unknown_motor,no response,12,12,100.0
+rule_eeg,focal_unknown_motor,responds on 1+,91,57,62.637362637362635
+rule_emg,all,no response,74,72,97.29729729729729
+rule_emg,all,not in Exp R (< 5 s),7,6,85.71428571428571
+rule_emg,all,responds on 1+,621,416,66.98872785829307
+rule_emg,FBTC,responds on 1+,33,8,24.242424242424242
+rule_emg,focal_motor,no response,15,15,100.0
+rule_emg,focal_motor,not in Exp R (< 5 s),2,1,50.0
+rule_emg,focal_motor,responds on 1+,300,165,55.0
+rule_emg,focal_nonmotor,no response,47,47,100.0
+rule_emg,focal_nonmotor,not in Exp R (< 5 s),5,5,100.0
+rule_emg,focal_nonmotor,responds on 1+,197,178,90.35532994923858
+rule_emg,focal_unknown_motor,no response,12,10,83.33333333333333
+rule_emg,focal_unknown_motor,responds on 1+,91,65,71.42857142857143
+rule_hr,all,no response,74,71,95.94594594594595
+rule_hr,all,not in Exp R (< 5 s),7,7,100.0
+rule_hr,all,responds on 1+,621,348,56.03864734299517
+rule_hr,FBTC,responds on 1+,33,9,27.272727272727273
+rule_hr,focal_motor,no response,15,14,93.33333333333333
+rule_hr,focal_motor,not in Exp R (< 5 s),2,2,100.0
+rule_hr,focal_motor,responds on 1+,300,130,43.333333333333336
+rule_hr,focal_nonmotor,no response,47,46,97.87234042553192
+rule_hr,focal_nonmotor,not in Exp R (< 5 s),5,5,100.0
+rule_hr,focal_nonmotor,responds on 1+,197,164,83.248730964467
+rule_hr,focal_unknown_motor,no response,12,11,91.66666666666667
+rule_hr,focal_unknown_motor,responds on 1+,91,45,49.45054945054945

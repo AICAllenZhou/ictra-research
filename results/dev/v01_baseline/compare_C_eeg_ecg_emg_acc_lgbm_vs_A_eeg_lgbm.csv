@@ -1,0 +1,2 @@
+ref,new,n_patients,sens_ref,sens_new,d_sens,d_sens_ci,fa_ref,fa_new,d_fa,d_fa_ci,f1_ref,f1_new,d_f1,d_f1_ci,p_improve,failed,decision
+v01_baseline A_eeg lgbm,v01_baseline C_eeg_ecg_emg_acc lgbm,96,0.358974358974359,0.4349477682811016,0.07597340930674262,"[+0.011, +0.128]",9.177617490499467,9.677579129029532,0.49996163853006514,"[-1.70, +2.86]",0.27694777452681185,0.31524702573750313,0.038299251210691276,"[+0.002, +0.068]",0.977,none,ACCEPT

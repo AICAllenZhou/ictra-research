@@ -45,6 +45,20 @@ confirm them.**
   Each comparison also needs a paired patient bootstrap P(ΔF1 > 0) ≥ 0.90. "Best" / "max" = the rule with the highest
   locked-set event F1. All rules and models use their frozen dev-tuned thresholds.
 
+## Exploratory studies (not hypotheses; no accept/reject; never used to choose a model version)
+
+- **Exp P: pre-ictal drift** (`src/13_preictal_study.py`, Allen 2026-10-17; dev patients only).
+  - **Question:** in the 2 min before the annotated onset, do HR, HRV (`ecg_rmssd`), EMG log-RMS or movement drift
+    compared with the 3 min before that?
+  - **Design:**
+    - Drift z = (mean[−120..−30 s] − mean[−300..−120 s]) / SD[−300..−120 s].
+    - The control null comes from 10 same-patient pseudo-onsets per seizure, each ≥ 30 min from any seizure.
+    - A signal is called "drifting" only if the seizure share of z > 2 exceeds the control share with a
+      patient-bootstrap CI above 0.
+    - Robustness: −60..−30 vs −300..−60 s.
+  - **Status:** descriptive only. Any pre-ictal claim it suggests would need its own pre-registered hypothesis, tested on
+    tiers 2–3.
+
 ## Still to fill at Task 10
 - frozen model files and hashes, threshold, post-processing;
 - metrics and subgroup list;

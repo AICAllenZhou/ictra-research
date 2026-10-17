@@ -383,7 +383,7 @@ function tabAblation(){
           <line x1="${sx(rr.fa_lo)}" x2="${sx(rr.fa_hi)}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="1.5" opacity=".7"/>`;
       const tip = `${isRule ? rr.model : SETS[rr.set][0] + " " + rr.model} · ${g}: sensitivity ${nf(sens)}${g === "all" ? ` [${nf(rr.sens_lo)}, ${nf(rr.sens_hi)}]` : ""} · FA/24h ${nf(rr.fa_per_24h)} [${nf(rr.fa_lo)}, ${nf(rr.fa_hi)}] · F1 ${nf(rr.f1)}`;
       svg += `<g><title>${esc(tip)}</title>${isRule ? marker(RULES[rr.model] || "circle", x, y, 5, css("--surface-1"), col) : marker("circle", x, y, 6, col, css("--surface-1"))}</g>`;
-      if (!isRule) svg += `<text x="${x + 8}" y="${y + ({A_eeg:-6, B_eeg_ecg:4, C_eeg_ecg_emg_acc:14})[rr.set]}" style="fill:var(--text-primary)">${rr.set[0]}</text>`;
+      // no A/B/C letters: the three points nearly coincide and offset letters landed on the wrong point; colour + legend + hover title identify them
     }
     svg += `</svg>`;
     h += `<div><div class="small sec"><b>${esc(g)}</b></div>${svg}</div>`;

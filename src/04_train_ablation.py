@@ -170,9 +170,10 @@ def predict_runs(model, subs, cols):
         yield sub, run, prob, ev, len(d), mask, d.sz_group.values
 
 
-def tune_threshold(model, subs, cols):
-    """Sweep thresholds on inner-validation patients, maximise pooled event F1 (ties -> fewer false alarms)."""
-    runs = list(predict_runs(model, subs, cols))
+def tune_threshold(model, subs, cols, runs=None):
+    """Sweep thresholds on inner-validation patients, maximise pooled event F1 (ties -> fewer false alarms).
+    runs: precomputed predict_runs output (inner_cv mode pools the out-of-fold runs of several inner models)."""
+    runs = runs if runs is not None else list(predict_runs(model, subs, cols))
     allp = np.concatenate([r[2] for r in runs])
     cands = np.unique(np.quantile(allp[np.isfinite(allp)], np.linspace(0.90, 0.9999, 40)))
     best, best_key = cands[-1], (-1, 0)
@@ -221,8 +222,12 @@ def monitor(m, kind, val_subs, cols, out, stem, event_f1, seed, n_checkpoints=40
     pd.DataFrame({"feature": cols, "gain": [float(g.get(c, 0.0)) for c in cols]}).to_csv(out / f"importance_{stem}.csv", index=False)
 
 
+THR_MODES = ("inner_split", "inner_cv")
+N_INNER = 5
+
+
 def job(args):
-    fs_name, kind, fold, seed, version, device, runs = args
+    fs_name, kind, fold, seed, version, device, runs, thr_mode = args
     global DEVICE, RUNS
     DEVICE, RUNS = device, runs
     SMOKE_GUARD["v"] = version
@@ -234,12 +239,24 @@ def job(args):
     train_subs = [s for k, v in splits["dev_folds"].items() if k != str(fold) for s in v]
     mods = L.FEATURE_SETS[fs_name] if fs_name in L.FEATURE_SETS else [RULES[kind].split("_")[0]]
     cols = feature_columns(all_columns(), mods)
-    # inner split by patient for the threshold
     tr = np.array(sorted(train_subs)); rng.shuffle(tr)
-    n_in = max(2, int(0.2 * len(tr))); inner_val, inner_tr = list(tr[:n_in]), list(tr[n_in:])
-    D = load_training(inner_tr, cols, seed)
-    m = predict_on_cpu(make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
-    thr, (f1_in, _) = tune_threshold(m, inner_val, cols)
+    if thr_mode == "inner_split":
+        # v01: one inner split by patient (80/20) for the threshold
+        n_in = max(2, int(0.2 * len(tr))); inner_val, inner_tr = list(tr[:n_in]), list(tr[n_in:])
+        D = load_training(inner_tr, cols, seed)
+        m = predict_on_cpu(make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
+        thr, (f1_in, _) = tune_threshold(m, inner_val, cols)
+    else:
+        # v03: inner leave-patients-out CV over ALL training patients (N_INNER groups, each inner model trained on the
+        # other 80%); the out-of-fold inner predictions of every training patient are pooled and ONE threshold is swept
+        # over them, so tau no longer depends on which 20% of patients one seed happened to hold out.
+        groups = np.array_split(tr, N_INNER); pooled = []
+        for k in range(N_INNER):
+            inner_val = list(groups[k]); inner_tr = [x for j, g in enumerate(groups) if j != k for x in g]
+            D = load_training(inner_tr, cols, seed)
+            m = predict_on_cpu(make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
+            pooled += list(predict_runs(m, inner_val, cols))
+        thr, (f1_in, _) = tune_threshold(None, None, cols, runs=pooled)
     D = load_training(train_subs, cols, seed)
     m = predict_on_cpu(make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
     # validation on the held-out fold, full natural class ratio
@@ -254,7 +271,7 @@ def job(args):
     pd.concat(preds).to_parquet(out / "preds" / f"{fs_name}__{kind}__f{fold}_s{seed}.parquet", index=False)
     if kind in ("xgb", "lgbm"):
         monitor(m, kind, val_subs, cols, out, f"{fs_name}__{kind}__f{fold}_s{seed}", L.pool_scores(rows)["f1"], seed)
-    res = pd.DataFrame(rows); res["inner_f1"] = f1_in; res["minutes"] = (time.time() - t) / 60
+    res = pd.DataFrame(rows); res["inner_f1"] = f1_in; res["thr_mode"] = thr_mode; res["minutes"] = (time.time() - t) / 60
     import psutil
     mi = psutil.Process().memory_info()
     peak_gb = getattr(mi, "peak_wset", mi.rss) / 1e9        # Windows: peak working set of this worker process so far
@@ -442,8 +459,33 @@ def compare(ref, new, set_ref="C_eeg_ecg_emg_acc", model_ref="xgb", set_new=None
                failed=", ".join(k for k, v in checks.items() if not v) or "none", decision=decision)
     for k, v in res.items():
         print(f"  {k:12s} {v:.4f}" if isinstance(v, float) else f"  {k:12s} {v}")
+    # fold by fold (display; the decision above is the pooled paired bootstrap over all patients)
+    folds = L.load_splits()["dev_folds"]; fr = []
+    for f, fsubs in sorted(folds.items()):
+        ss = [x for x in subs if x in set(fsubs)]
+        if ss:
+            a_, b_ = rates(A.loc[ss]), rates(B.loc[ss])
+            fr.append(dict(fold=int(f), n_patients=len(ss), sens_ref=a_[0], sens_new=b_[0], fa_ref=a_[1], fa_new=b_[1],
+                           f1_ref=a_[2], f1_new=b_[2], d_f1=b_[2] - a_[2]))
+    FR = pd.DataFrame(fr)
+    # spread of the per-seed thresholds per fold (the quantity v03 is meant to shrink): sample SD and IQR over seeds
+    def taus(v, st, md):
+        T = []
+        for q in (L.ROOT / "results/dev" / v).glob(f"fold_{st}__{md}__f*_s*.csv"):
+            f_, sd_ = q.stem.split("__")[2][1:].split("_s")
+            T.append(dict(fold=int(f_), seed=int(sd_), thr=float(pd.read_csv(q, usecols=["thr"]).thr.iloc[0])))
+        T = pd.DataFrame(T)
+        return T.groupby("fold").thr.agg(list=lambda x: " ".join(f"{t:.4f}" for t in x), sd=lambda x: x.std(ddof=1),
+                                         iqr=lambda x: x.quantile(.75) - x.quantile(.25), n_seeds="size")
+    if len(FR):
+        for tag, (v, st, md) in [("ref", (ref, set_ref, model_ref)), ("new", (new, set_new, model_new))]:
+            FR = FR.merge(taus(v, st, md).add_prefix(f"tau_").add_suffix(f"_{tag}").reset_index(), on="fold", how="left")
+    print(FR.round(4).to_string(index=False))
     out = L.ROOT / "results/dev" / new
-    pd.DataFrame([res]).to_csv(out / f"compare_vs_{ref}.csv", index=False)
+    stem = f"compare_vs_{ref}" if (ref, set_ref, model_ref) != (new, set_new, model_new) and ref != new else \
+        f"compare_{set_new}_{model_new}_vs_{set_ref}_{model_ref}"
+    pd.DataFrame([res]).to_csv(out / f"{stem}.csv", index=False)
+    FR.to_csv(out / f"{stem}_by_fold.csv", index=False)
     return res
 
 
@@ -461,6 +503,9 @@ def main():
     ap.add_argument("--runs", choices=["seizure", "all"],
                     help="seizure = only seizure-containing runs (v01, stage 1); all = every feature file (v02 on)")
     ap.add_argument("--device", default="cuda", choices=["cuda", "cpu"], help="xgboost device (same model either way)")
+    ap.add_argument("--thr-mode", default="inner_split", choices=THR_MODES,
+                    help="inner_split: one 80/20 inner patient split (v01); inner_cv: pooled out-of-fold predictions of a "
+                         f"{N_INNER}-fold inner leave-patients-out CV (v03)")
     ap.add_argument("--no-log", action="store_true", help="smoke runs: do not append to results/ITERATION_LOG.md")
     ap.add_argument("--compare", nargs=2, metavar=("REF", "NEW"), help="paired bootstrap NEW vs accepted REF, then exit")
     ap.add_argument("--compare-sets", nargs=2, metavar=("SET_REF", "SET_NEW"), default=["C_eeg_ecg_emg_acc", "C_eeg_ecg_emg_acc"])
@@ -486,9 +531,9 @@ def main():
     if a.workers > cap:
         print(f"workers {a.workers} -> {cap}: {per_job:.1f} GB per job x {cap} <= {MAX_RAM_FRAC:.0%} of physical RAM")
         a.workers = cap
-    jobs = [(s, m, f, sd, a.version, a.device, a.runs) for s in a.sets for m in a.models for f in a.folds for sd in a.seeds]
+    jobs = [(s, m, f, sd, a.version, a.device, a.runs, a.thr_mode) for s in a.sets for m in a.models for f in a.folds for sd in a.seeds]
     if a.rules:
-        jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs) for r in RULES for f in a.folds]
+        jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs, a.thr_mode) for r in RULES for f in a.folds]
     done = {p.stem for p in (L.ROOT / "results/dev" / a.version).glob("fold_*.csv")}
     jobs = [j for j in jobs if f"fold_{j[0]}__{j[1]}__f{j[2]}_s{j[3]}" not in done]
     print(f"{len(jobs)} jobs, {a.workers} workers")
@@ -498,7 +543,7 @@ def main():
         cells[f"{fs_}|{kd_}|{fo_}|{sd_}"] = {"state": "done"}
     for j in jobs:
         cells[f"{j[0]}|{j[1]}|{j[2]}|{j[3]}"] = {"state": "queued", "set": j[0], "model": j[1], "fold": j[2], "seed": j[3]}
-    lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers,
+    lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers, "thr_mode": a.thr_mode,
                                            "n_jobs": len(cells), "started": pd.Timestamp.now().isoformat(timespec="seconds"), "jobs": cells}}},
                  log=f"{a.version}: {len(jobs)} jobs queued ({a.workers} workers, xgboost on {a.device})", src="04_train")
     with ProcessPoolExecutor(a.workers) as ex:
