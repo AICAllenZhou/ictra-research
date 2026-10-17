@@ -1,0 +1,6 @@
+path,sfreq,n_channels,channels,duration_h,catalog_h
+sub-018/ses-01/emg/sub-018_ses-01_task-szMonitoring_run-03_emg.edf,256.0,1,EMG SD,15.6,15.6
+sub-005/ses-01/eeg/sub-005_ses-01_task-szMonitoring_run-23_eeg.edf,256.0,2,BTEleft SD;CROSStop SD,10.049,10.049
+sub-015/ses-01/mov/sub-015_ses-01_task-szMonitoring_run-03_mov.edf,25.0,12,EEG SD ACC X;EEG SD ACC Y;EEG SD ACC Z;EEG SD GYR A;EEG SD GYR B;EEG SD GYR C;ECGEMG SD ACC X;ECGEMG SD ACC Y;ECGEMG SD ACC Z;ECGEMG SD GYR A;ECGEMG SD GYR B;ECGEMG SD GYR C,0.983,0.983
+sub-006/ses-01/eeg/sub-006_ses-01_task-szMonitoring_run-01_eeg.edf,256.0,2,BTEleft SD;CROSStop SD,7.266,7.266
+sub-012/ses-01/eeg/sub-012_ses-01_task-szMonitoring_run-05_eeg.edf,256.0,2,BTEleft SD;CROSStop SD,5.532,5.532

@@ -1,0 +1,924 @@
+111 complete downloaded runs to process with 6 workers
+sub-001 3 skip
+sub-001 5 skip
+sub-001 7 skip
+sub-001 8 skip
+sub-002 1 skip
+sub-002 2 skip
+sub-002 3 skip
+sub-002 5 skip
+sub-002 6 skip
+sub-002 9 skip
+sub-002 10 skip
+sub-003 6 skip
+sub-004 1 skip
+sub-005 22 skip
+sub-005 23 skip
+sub-006 1 skip
+sub-007 3 skip
+sub-008 1 skip
+sub-008 9 skip
+sub-009 9 skip
+sub-010 8 skip
+sub-011 2 skip
+sub-011 3 skip
+sub-011 5 skip
+sub-012 3 skip
+sub-012 5 skip
+sub-013 1 skip
+sub-014 1 skip
+sub-014 3 skip
+sub-015 1 skip
+sub-015 3 skip
+sub-015 4 skip
+sub-015 6 skip
+sub-015 8 skip
+sub-015 9 skip
+sub-016 2 skip
+sub-016 3 skip
+sub-017 1 skip
+sub-018 3 skip
+sub-019 7 skip
+sub-020 5 skip
+sub-021 1 skip
+sub-021 4 skip
+sub-022 3 skip
+sub-022 4 skip
+sub-022 6 skip
+sub-022 10 skip
+sub-023 3 skip
+sub-024 1 skip
+sub-024 7 skip
+sub-025 3 skip
+sub-025 4 skip
+sub-026 1 skip
+sub-026 3 skip
+sub-026 4 skip
+sub-026 6 skip
+sub-027 7 skip
+sub-028 1 skip
+sub-028 4 skip
+sub-028 5 skip
+sub-029 8 skip
+sub-029 10 skip
+sub-030 3 skip
+sub-030 4 skip
+sub-030 5 skip
+sub-031 3 skip
+sub-032 5 skip
+sub-033 12 skip
+sub-034 1 skip
+sub-034 3 skip
+sub-034 4 skip
+sub-034 7 skip
+sub-034 8 skip
+sub-034 9 skip
+sub-034 10 skip
+sub-035 3 skip
+sub-035 4 skip
+sub-035 6 skip
+sub-035 7 skip
+sub-035 9 skip
+sub-035 11 skip
+sub-035 12 skip
+sub-035 14 skip
+sub-036 1 skip
+sub-037 1 skip
+sub-038 7 ok 43595 win, 46 sz-win
+sub-039 1 ok 37035 win, 67 sz-win
+sub-039 2 ok 5090 win, 11 sz-win
+sub-039 3 ok 1526 win, 5 sz-win
+sub-039 4 ok 33942 win, 149 sz-win
+sub-039 6 ok 42105 win, 104 sz-win
+sub-039 8 ok 8021 win, 5 sz-win
+sub-039 9 ok 33796 win, 104 sz-win
+sub-040 4 ok 38074 win, 73 sz-win
+sub-040 5 ok 18952 win, 21 sz-win
+sub-041 1 ok 37767 win, 9 sz-win
+sub-042 1 ok 7865 win, 23 sz-win
+sub-042 4 ok 30703 win, 19 sz-win
+sub-042 6 ok 10416 win, 12 sz-win
+sub-042 7 ok 29885 win, 16 sz-win
+sub-042 8 ok 23397 win, 31 sz-win
+sub-043 5 ok 27199 win, 10 sz-win
+sub-043 6 ok 3300 win, 9 sz-win
+sub-043 7 ok 3491 win, 10 sz-win
+sub-043 8 ok 30181 win, 23 sz-win
+sub-044 1 ok 35179 win, 11 sz-win
+sub-044 5 ok 37395 win, 133 sz-win
+sub-045 3 ok 1392 win, 12 sz-win
+sub-045 9 ok 2551 win, 70 sz-win
+sub-046 1 ok 32920 win, 112 sz-win
+sub-047 1 ok 3470 win, 41 sz-win
+121 complete downloaded runs to process with 6 workers
+sub-001 3 skip
+sub-001 5 skip
+sub-001 7 skip
+sub-001 8 skip
+sub-002 1 skip
+sub-002 2 skip
+sub-002 3 skip
+sub-002 5 skip
+sub-002 6 skip
+sub-002 9 skip
+sub-002 10 skip
+sub-003 6 skip
+sub-004 1 skip
+sub-005 22 skip
+sub-005 23 skip
+sub-006 1 skip
+sub-007 3 skip
+sub-008 1 skip
+sub-008 9 skip
+sub-009 9 skip
+sub-010 8 skip
+sub-011 2 skip
+sub-011 3 skip
+sub-011 5 skip
+sub-012 3 skip
+sub-012 5 skip
+sub-013 1 skip
+sub-014 1 skip
+sub-014 3 skip
+sub-015 1 skip
+sub-015 3 skip
+sub-015 4 skip
+sub-015 6 skip
+sub-015 8 skip
+sub-015 9 skip
+sub-016 2 skip
+sub-016 3 skip
+sub-017 1 skip
+sub-018 3 skip
+sub-019 7 skip
+sub-020 5 skip
+sub-021 1 skip
+sub-021 4 skip
+sub-022 3 skip
+sub-022 4 skip
+sub-022 6 skip
+sub-022 10 skip
+sub-023 3 skip
+sub-024 1 skip
+sub-024 7 skip
+sub-025 3 skip
+sub-025 4 skip
+sub-026 1 skip
+sub-026 3 skip
+sub-026 4 skip
+sub-026 6 skip
+sub-027 7 skip
+sub-028 1 skip
+sub-028 4 skip
+sub-028 5 skip
+sub-029 8 skip
+sub-029 10 skip
+sub-030 3 skip
+sub-030 4 skip
+sub-030 5 skip
+sub-031 3 skip
+sub-032 5 skip
+sub-033 12 skip
+sub-034 1 skip
+sub-034 3 skip
+sub-034 4 skip
+sub-034 7 skip
+sub-034 8 skip
+sub-034 9 skip
+sub-034 10 skip
+sub-035 3 skip
+sub-035 4 skip
+sub-035 6 skip
+sub-035 7 skip
+sub-035 9 skip
+sub-035 11 skip
+sub-035 12 skip
+sub-035 14 skip
+sub-036 1 skip
+sub-037 1 skip
+sub-038 7 skip
+sub-039 1 skip
+sub-039 2 skip
+sub-039 3 skip
+sub-039 4 skip
+sub-039 6 skip
+sub-039 8 skip
+sub-039 9 skip
+sub-040 4 skip
+sub-040 5 skip
+sub-041 1 skip
+sub-042 1 skip
+sub-042 4 skip
+sub-042 6 skip
+sub-042 7 skip
+sub-042 8 skip
+sub-043 5 skip
+sub-043 6 skip
+sub-043 7 skip
+sub-043 8 skip
+sub-044 1 skip
+sub-044 5 skip
+sub-045 3 skip
+sub-045 9 skip
+sub-046 1 skip
+sub-047 1 skip
+sub-047 2 ok 31029 win, 81 sz-win
+sub-047 3 ok 6923 win, 17 sz-win
+sub-047 4 ok 36225 win, 158 sz-win
+sub-047 6 ok 7496 win, 44 sz-win
+sub-047 7 ok 31583 win, 115 sz-win
+sub-048 6 ok 22524 win, 16 sz-win
+sub-049 2 ok 17936 win, 243 sz-win
+sub-050 5 ok 25049 win, 73 sz-win
+sub-051 1 ok 23841 win, 32 sz-win
+sub-051 2 ok 17589 win, 18 sz-win
+129 complete downloaded runs to process with 6 workers
+sub-001 3 skip
+sub-001 5 skip
+sub-001 7 skip
+sub-001 8 skip
+sub-002 1 skip
+sub-002 2 skip
+sub-002 3 skip
+sub-002 5 skip
+sub-002 6 skip
+sub-002 9 skip
+sub-002 10 skip
+sub-003 6 skip
+sub-004 1 skip
+sub-005 22 skip
+sub-005 23 skip
+sub-006 1 skip
+sub-007 3 skip
+sub-008 1 skip
+sub-008 9 skip
+sub-009 9 skip
+sub-010 8 skip
+sub-011 2 skip
+sub-011 3 skip
+sub-011 5 skip
+sub-012 3 skip
+sub-012 5 skip
+sub-013 1 skip
+sub-014 1 skip
+sub-014 3 skip
+sub-015 1 skip
+sub-015 3 skip
+sub-015 4 skip
+sub-015 6 skip
+sub-015 8 skip
+sub-015 9 skip
+sub-016 2 skip
+sub-016 3 skip
+sub-017 1 skip
+sub-018 3 skip
+sub-019 7 skip
+sub-020 5 skip
+sub-021 1 skip
+sub-021 4 skip
+sub-022 3 skip
+sub-022 4 skip
+sub-022 6 skip
+sub-022 10 skip
+sub-023 3 skip
+sub-024 1 skip
+sub-024 7 skip
+sub-025 3 skip
+sub-025 4 skip
+sub-026 1 skip
+sub-026 3 skip
+sub-026 4 skip
+sub-026 6 skip
+sub-027 7 skip
+sub-028 1 skip
+sub-028 4 skip
+sub-028 5 skip
+sub-029 8 skip
+sub-029 10 skip
+sub-030 3 skip
+sub-030 4 skip
+sub-030 5 skip
+sub-031 3 skip
+sub-032 5 skip
+sub-033 12 skip
+sub-034 1 skip
+sub-034 3 skip
+sub-034 4 skip
+sub-034 7 skip
+sub-034 8 skip
+sub-034 9 skip
+sub-034 10 skip
+sub-035 3 skip
+sub-035 4 skip
+sub-035 6 skip
+sub-035 7 skip
+sub-035 9 skip
+sub-035 11 skip
+sub-035 12 skip
+sub-035 14 skip
+sub-036 1 skip
+sub-037 1 skip
+sub-038 7 skip
+sub-039 1 skip
+sub-039 2 skip
+sub-039 3 skip
+sub-039 4 skip
+sub-039 6 skip
+sub-039 8 skip
+sub-039 9 skip
+sub-040 4 skip
+sub-040 5 skip
+sub-041 1 skip
+sub-042 1 skip
+sub-042 4 skip
+sub-042 6 skip
+sub-042 7 skip
+sub-042 8 skip
+sub-043 5 skip
+sub-043 6 skip
+sub-043 7 skip
+sub-043 8 skip
+sub-044 1 skip
+sub-044 5 skip
+sub-045 3 skip
+sub-045 9 skip
+sub-046 1 skip
+sub-047 1 skip
+sub-047 2 skip
+sub-047 3 skip
+sub-047 4 skip
+sub-047 6 skip
+sub-047 7 skip
+sub-048 6 skip
+sub-049 2 skip
+sub-050 5 skip
+sub-051 1 skip
+sub-051 2 skip
+sub-052 1 ok 16215 win, 7 sz-win
+sub-052 3 ok 28487 win, 36 sz-win
+sub-052 5 ok 28355 win, 231 sz-win
+sub-052 7 ok 18989 win, 213 sz-win
+sub-052 8 ok 16552 win, 31 sz-win
+sub-053 2 ok 16778 win, 127 sz-win
+sub-053 3 ok 16368 win, 4 sz-win
+sub-054 4 ok 28375 win, 22 sz-win
+131 complete downloaded runs to process with 6 workers
+sub-001 3 ok 32488 win, 36 sz-win
+sub-001 5 ok 31254 win, 41 sz-win
+sub-001 7 ok 14758 win, 72 sz-win
+sub-001 8 ok 25738 win, 13 sz-win
+sub-002 1 ok 5689 win, 102 sz-win
+sub-002 2 ok 11996 win, 147 sz-win
+sub-002 3 ok 19541 win, 26 sz-win
+sub-002 5 ok 38978 win, 109 sz-win
+sub-002 6 ok 40423 win, 235 sz-win
+sub-002 9 ok 14365 win, 222 sz-win
+sub-002 10 ok 3107 win, 79 sz-win
+sub-003 6 ok 38531 win, 28 sz-win
+sub-004 1 ok 33299 win, 159 sz-win
+sub-005 22 ok 3431 win, 77 sz-win
+sub-005 23 ok 18087 win, 76 sz-win
+sub-006 1 ok 13078 win, 7 sz-win
+sub-007 3 ok 35530 win, 48 sz-win
+sub-008 1 ok 5279 win, 5 sz-win
+sub-008 9 ok 2138 win, 10 sz-win
+sub-009 9 ok 6317 win, 51 sz-win
+sub-010 8 ok 6817 win, 48 sz-win
+sub-011 2 ok 10462 win, 26 sz-win
+sub-011 3 ok 20539 win, 138 sz-win
+sub-011 5 ok 1577 win, 41 sz-win
+sub-012 3 ok 38696 win, 88 sz-win
+sub-012 5 ok 9957 win, 40 sz-win
+sub-013 1 ok 34693 win, 22 sz-win
+sub-014 1 ok 40637 win, 24 sz-win
+sub-014 3 ok 11890 win, 16 sz-win
+sub-015 1 ok 37603 win, 18 sz-win
+sub-015 3 ok 1768 win, 12 sz-win
+sub-015 4 ok 36309 win, 47 sz-win
+sub-015 6 ok 40364 win, 17 sz-win
+sub-015 8 ok 3542 win, 16 sz-win
+sub-015 9 ok 32244 win, 38 sz-win
+sub-016 2 ok 7305 win, 115 sz-win
+sub-016 3 ok 41775 win, 151 sz-win
+sub-017 1 ok 11012 win, 68 sz-win
+sub-018 3 ok 28079 win, 72 sz-win
+sub-019 7 ok 39600 win, 77 sz-win
+sub-020 5 ok 37284 win, 35 sz-win
+sub-021 1 ok 6843 win, 80 sz-win
+sub-021 4 ok 37322 win, 111 sz-win
+sub-022 3 ok 2321 win, 49 sz-win
+sub-022 4 ok 33267 win, 130 sz-win
+sub-022 6 ok 38649 win, 55 sz-win
+sub-022 10 ok 8019 win, 21 sz-win
+sub-023 3 ok 36875 win, 42 sz-win
+sub-024 1 ok 38885 win, 85 sz-win
+sub-024 7 ok 34459 win, 53 sz-win
+sub-025 3 ok 2523 win, 15 sz-win
+sub-025 4 ok 31686 win, 69 sz-win
+sub-026 1 ok 1377 win, 30 sz-win
+sub-026 3 ok 6546 win, 27 sz-win
+sub-026 4 ok 36402 win, 40 sz-win
+sub-026 6 ok 2524 win, 43 sz-win
+sub-027 7 ok 35270 win, 28 sz-win
+sub-028 1 ok 2976 win, 15 sz-win
+sub-028 4 ok 36280 win, 55 sz-win
+sub-028 5 ok 4845 win, 25 sz-win
+sub-029 8 ok 33198 win, 106 sz-win
+sub-029 10 ok 33752 win, 30 sz-win
+sub-030 3 ok 37797 win, 117 sz-win
+sub-030 4 ok 7953 win, 78 sz-win
+sub-030 5 ok 37549 win, 60 sz-win
+sub-031 3 ok 33309 win, 98 sz-win
+sub-032 5 ok 1470 win, 73 sz-win
+sub-033 12 ok 5370 win, 55 sz-win
+sub-034 1 ok 2981 win, 13 sz-win
+sub-034 3 ok 20874 win, 57 sz-win
+sub-034 4 ok 1172 win, 13 sz-win
+sub-034 7 ok 33689 win, 61 sz-win
+sub-034 8 ok 9645 win, 23 sz-win
+sub-034 9 ok 32604 win, 104 sz-win
+sub-034 10 ok 3212 win, 34 sz-win
+sub-035 3 ok 17942 win, 78 sz-win
+sub-035 4 ok 2461 win, 17 sz-win
+sub-035 6 ok 14917 win, 24 sz-win
+sub-035 7 ok 20210 win, 87 sz-win
+sub-035 9 ok 10480 win, 24 sz-win
+sub-035 11 ok 18646 win, 69 sz-win
+sub-035 12 ok 954 win, 8 sz-win
+sub-035 14 ok 9236 win, 22 sz-win
+sub-036 1 ok 36177 win, 67 sz-win
+sub-037 1 ok 38033 win, 153 sz-win
+sub-038 7 ok 43595 win, 46 sz-win
+sub-039 1 ok 37035 win, 67 sz-win
+sub-039 2 ok 5090 win, 11 sz-win
+sub-039 3 ok 1526 win, 5 sz-win
+sub-039 4 ok 33942 win, 149 sz-win
+sub-039 6 ok 42105 win, 104 sz-win
+sub-039 8 ok 8021 win, 5 sz-win
+sub-039 9 ok 33796 win, 104 sz-win
+sub-040 4 ok 38074 win, 73 sz-win
+sub-040 5 ok 18952 win, 21 sz-win
+sub-041 1 ok 37767 win, 9 sz-win
+sub-042 1 ok 7865 win, 23 sz-win
+sub-042 4 ok 30703 win, 19 sz-win
+sub-042 6 ok 10416 win, 12 sz-win
+sub-042 7 ok 29885 win, 16 sz-win
+sub-042 8 ok 23397 win, 31 sz-win
+sub-043 5 ok 27199 win, 10 sz-win
+sub-043 6 ok 3300 win, 9 sz-win
+sub-043 7 ok 3491 win, 10 sz-win
+sub-043 8 ok 30181 win, 23 sz-win
+sub-044 1 ok 35179 win, 11 sz-win
+sub-044 5 ok 37395 win, 133 sz-win
+sub-045 3 ok 1392 win, 12 sz-win
+sub-045 9 ok 2551 win, 70 sz-win
+sub-046 1 ok 32920 win, 112 sz-win
+sub-047 1 ok 3470 win, 41 sz-win
+sub-047 2 ok 31029 win, 81 sz-win
+sub-047 3 ok 6923 win, 17 sz-win
+sub-047 4 ok 36225 win, 158 sz-win
+sub-047 6 ok 7496 win, 44 sz-win
+sub-047 7 ok 31583 win, 115 sz-win
+sub-048 6 ok 22524 win, 16 sz-win
+sub-049 2 ok 17936 win, 243 sz-win
+sub-050 5 ok 25049 win, 73 sz-win
+sub-051 1 ok 23841 win, 32 sz-win
+sub-051 2 ok 17589 win, 18 sz-win
+sub-052 1 ok 16215 win, 7 sz-win
+sub-052 3 ok 28487 win, 36 sz-win
+sub-052 5 ok 28355 win, 231 sz-win
+sub-052 7 ok 18989 win, 213 sz-win
+sub-052 8 ok 16552 win, 31 sz-win
+sub-053 2 ok 16778 win, 127 sz-win
+sub-053 3 ok 16368 win, 4 sz-win
+sub-054 4 ok 28375 win, 22 sz-win
+sub-055 1 ok 22598 win, 656 sz-win
+sub-055 2 ok 28407 win, 26 sz-win
+141 complete downloaded runs to process with 6 workers
+sub-001 3 skip
+sub-001 5 skip
+sub-001 7 skip
+sub-001 8 skip
+sub-002 1 skip
+sub-002 2 skip
+sub-002 3 skip
+sub-002 5 skip
+sub-002 6 skip
+sub-002 9 skip
+sub-002 10 skip
+sub-003 6 skip
+sub-004 1 skip
+sub-005 22 skip
+sub-005 23 skip
+sub-006 1 skip
+sub-007 3 skip
+sub-008 1 skip
+sub-008 9 skip
+sub-009 9 skip
+sub-010 8 skip
+sub-011 2 skip
+sub-011 3 skip
+sub-011 5 skip
+sub-012 3 skip
+sub-012 5 skip
+sub-013 1 skip
+sub-014 1 skip
+sub-014 3 skip
+sub-015 1 skip
+sub-015 3 skip
+sub-015 4 skip
+sub-015 6 skip
+sub-015 8 skip
+sub-015 9 skip
+sub-016 2 skip
+sub-016 3 skip
+sub-017 1 skip
+sub-018 3 skip
+sub-019 7 skip
+sub-020 5 skip
+sub-021 1 skip
+sub-021 4 skip
+sub-022 3 skip
+sub-022 4 skip
+sub-022 6 skip
+sub-022 10 skip
+sub-023 3 skip
+sub-024 1 skip
+sub-024 7 skip
+sub-025 3 skip
+sub-025 4 skip
+sub-026 1 skip
+sub-026 3 skip
+sub-026 4 skip
+sub-026 6 skip
+sub-027 7 skip
+sub-028 1 skip
+sub-028 4 skip
+sub-028 5 skip
+sub-029 8 skip
+sub-029 10 skip
+sub-030 3 skip
+sub-030 4 skip
+sub-030 5 skip
+sub-031 3 skip
+sub-032 5 skip
+sub-033 12 skip
+sub-034 1 skip
+sub-034 3 skip
+sub-034 4 skip
+sub-034 7 skip
+sub-034 8 skip
+sub-034 9 skip
+sub-034 10 skip
+sub-035 3 skip
+sub-035 4 skip
+sub-035 6 skip
+sub-035 7 skip
+sub-035 9 skip
+sub-035 11 skip
+sub-035 12 skip
+sub-035 14 skip
+sub-036 1 skip
+sub-037 1 skip
+sub-038 7 skip
+sub-039 1 skip
+sub-039 2 skip
+sub-039 3 skip
+sub-039 4 skip
+sub-039 6 skip
+sub-039 8 skip
+sub-039 9 skip
+sub-040 4 skip
+sub-040 5 skip
+sub-041 1 skip
+sub-042 1 skip
+sub-042 4 skip
+sub-042 6 skip
+sub-042 7 skip
+sub-042 8 skip
+sub-043 5 skip
+sub-043 6 skip
+sub-043 7 skip
+sub-043 8 skip
+sub-044 1 skip
+sub-044 5 skip
+sub-045 3 skip
+sub-045 9 skip
+sub-046 1 skip
+sub-047 1 skip
+sub-047 2 skip
+sub-047 3 skip
+sub-047 4 skip
+sub-047 6 skip
+sub-047 7 skip
+sub-048 6 skip
+sub-049 2 skip
+sub-050 5 skip
+sub-051 1 skip
+sub-051 2 skip
+sub-052 1 skip
+sub-052 3 skip
+sub-052 5 skip
+sub-052 7 skip
+sub-052 8 skip
+sub-053 2 skip
+sub-053 3 skip
+sub-054 4 skip
+sub-055 1 skip
+sub-055 2 skip
+sub-055 3 ok 24977 win, 9 sz-win
+sub-056 2 ok 27948 win, 126 sz-win
+sub-056 3 ok 17084 win, 96 sz-win
+sub-056 4 ok 31923 win, 411 sz-win
+sub-056 5 ok 19622 win, 72 sz-win
+sub-057 6 ok 15872 win, 18 sz-win
+sub-058 2 ok 17608 win, 64 sz-win
+sub-059 1 ok 16565 win, 21 sz-win
+sub-059 2 ok 25864 win, 39 sz-win
+sub-060 1 ok 11763 win, 96 sz-win
+141 complete downloaded runs to process with 6 workers
+sub-001 3 skip
+sub-001 5 skip
+sub-001 7 skip
+sub-001 8 skip
+sub-002 1 skip
+sub-002 2 skip
+sub-002 3 skip
+sub-002 5 skip
+sub-002 6 skip
+sub-002 9 skip
+sub-002 10 skip
+sub-003 6 skip
+sub-004 1 skip
+sub-005 22 skip
+sub-005 23 skip
+sub-006 1 skip
+sub-007 3 skip
+sub-008 1 skip
+sub-008 9 skip
+sub-009 9 skip
+sub-010 8 skip
+sub-011 2 skip
+sub-011 3 skip
+sub-011 5 skip
+sub-012 3 skip
+sub-012 5 skip
+sub-013 1 skip
+sub-014 1 skip
+sub-014 3 skip
+sub-015 1 skip
+sub-015 3 skip
+sub-015 4 skip
+sub-015 6 skip
+sub-015 8 skip
+sub-015 9 skip
+sub-016 2 skip
+sub-016 3 skip
+sub-017 1 skip
+sub-018 3 skip
+sub-019 7 skip
+sub-020 5 skip
+sub-021 1 skip
+sub-021 4 skip
+sub-022 3 skip
+sub-022 4 skip
+sub-022 6 skip
+sub-022 10 skip
+sub-023 3 skip
+sub-024 1 skip
+sub-024 7 skip
+sub-025 3 skip
+sub-025 4 skip
+sub-026 1 skip
+sub-026 3 skip
+sub-026 4 skip
+sub-026 6 skip
+sub-027 7 skip
+sub-028 1 skip
+sub-028 4 skip
+sub-028 5 skip
+sub-029 8 skip
+sub-029 10 skip
+sub-030 3 skip
+sub-030 4 skip
+sub-030 5 skip
+sub-031 3 skip
+sub-032 5 skip
+sub-033 12 skip
+sub-034 1 skip
+sub-034 3 skip
+sub-034 4 skip
+sub-034 7 skip
+sub-034 8 skip
+sub-034 9 skip
+sub-034 10 skip
+sub-035 3 skip
+sub-035 4 skip
+sub-035 6 skip
+sub-035 7 skip
+sub-035 9 skip
+sub-035 11 skip
+sub-035 12 skip
+sub-035 14 skip
+sub-036 1 skip
+sub-037 1 skip
+sub-038 7 skip
+sub-039 1 skip
+sub-039 2 skip
+sub-039 3 skip
+sub-039 4 skip
+sub-039 6 skip
+sub-039 8 skip
+sub-039 9 skip
+sub-040 4 skip
+sub-040 5 skip
+sub-041 1 skip
+sub-042 1 skip
+sub-042 4 skip
+sub-042 6 skip
+sub-042 7 skip
+sub-042 8 skip
+sub-043 5 skip
+sub-043 6 skip
+sub-043 7 skip
+sub-043 8 skip
+sub-044 1 skip
+sub-044 5 skip
+sub-045 3 skip
+sub-045 9 skip
+sub-046 1 skip
+sub-047 1 skip
+sub-047 2 skip
+sub-047 3 skip
+sub-047 4 skip
+sub-047 6 skip
+sub-047 7 skip
+sub-048 6 skip
+sub-049 2 skip
+sub-050 5 skip
+sub-051 1 skip
+sub-051 2 skip
+sub-052 1 skip
+sub-052 3 skip
+sub-052 5 skip
+sub-052 7 skip
+sub-052 8 skip
+sub-053 2 skip
+sub-053 3 skip
+sub-054 4 skip
+sub-055 1 skip
+sub-055 2 skip
+sub-055 3 skip
+sub-056 2 skip
+sub-056 3 skip
+sub-056 4 skip
+sub-056 5 skip
+sub-057 6 skip
+sub-058 2 skip
+sub-059 1 skip
+sub-059 2 skip
+sub-060 1 skip
+143 complete downloaded runs to process with 6 workers
+sub-001 3 skip
+sub-001 5 skip
+sub-001 7 skip
+sub-001 8 skip
+sub-002 1 skip
+sub-002 2 skip
+sub-002 3 skip
+sub-002 5 skip
+sub-002 6 skip
+sub-002 9 skip
+sub-002 10 skip
+sub-003 6 skip
+sub-004 1 skip
+sub-005 22 skip
+sub-005 23 skip
+sub-006 1 skip
+sub-007 3 skip
+sub-008 1 skip
+sub-008 9 skip
+sub-009 9 skip
+sub-010 8 skip
+sub-011 2 skip
+sub-011 3 skip
+sub-011 5 skip
+sub-012 3 skip
+sub-012 5 skip
+sub-013 1 skip
+sub-014 1 skip
+sub-014 3 skip
+sub-015 1 skip
+sub-015 3 skip
+sub-015 4 skip
+sub-015 6 skip
+sub-015 8 skip
+sub-015 9 skip
+sub-016 2 skip
+sub-016 3 skip
+sub-017 1 skip
+sub-018 3 skip
+sub-019 7 skip
+sub-020 5 skip
+sub-021 1 skip
+sub-021 4 skip
+sub-022 3 skip
+sub-022 4 skip
+sub-022 6 skip
+sub-022 10 skip
+sub-023 3 skip
+sub-024 1 skip
+sub-024 7 skip
+sub-025 3 skip
+sub-025 4 skip
+sub-026 1 skip
+sub-026 3 skip
+sub-026 4 skip
+sub-026 6 skip
+sub-027 7 skip
+sub-028 1 skip
+sub-028 4 skip
+sub-028 5 skip
+sub-029 8 skip
+sub-029 10 skip
+sub-030 3 skip
+sub-030 4 skip
+sub-030 5 skip
+sub-031 3 skip
+sub-032 5 skip
+sub-033 12 skip
+sub-034 1 skip
+sub-034 3 skip
+sub-034 4 skip
+sub-034 7 skip
+sub-034 8 skip
+sub-034 9 skip
+sub-034 10 skip
+sub-035 3 skip
+sub-035 4 skip
+sub-035 6 skip
+sub-035 7 skip
+sub-035 9 skip
+sub-035 11 skip
+sub-035 12 skip
+sub-035 14 skip
+sub-036 1 skip
+sub-037 1 skip
+sub-038 7 skip
+sub-039 1 skip
+sub-039 2 skip
+sub-039 3 skip
+sub-039 4 skip
+sub-039 6 skip
+sub-039 8 skip
+sub-039 9 skip
+sub-040 4 skip
+sub-040 5 skip
+sub-041 1 skip
+sub-042 1 skip
+sub-042 4 skip
+sub-042 6 skip
+sub-042 7 skip
+sub-042 8 skip
+sub-043 5 skip
+sub-043 6 skip
+sub-043 7 skip
+sub-043 8 skip
+sub-044 1 skip
+sub-044 5 skip
+sub-045 3 skip
+sub-045 9 skip
+sub-046 1 skip
+sub-047 1 skip
+sub-047 2 skip
+sub-047 3 skip
+sub-047 4 skip
+sub-047 6 skip
+sub-047 7 skip
+sub-048 6 skip
+sub-049 2 skip
+sub-050 5 skip
+sub-051 1 skip
+sub-051 2 skip
+sub-052 1 skip
+sub-052 3 skip
+sub-052 5 skip
+sub-052 7 skip
+sub-052 8 skip
+sub-053 2 skip
+sub-053 3 skip
+sub-054 4 skip
+sub-055 1 skip
+sub-055 2 skip
+sub-055 3 skip
+sub-056 2 skip
+sub-056 3 skip
+sub-056 4 skip
+sub-056 5 skip
+sub-057 6 skip
+sub-058 2 skip
+sub-059 1 skip
+sub-059 2 skip
+sub-060 1 skip
+sub-060 2 ok 33780 win, 257 sz-win
+sub-060 3 ok 9237 win, 6 sz-win

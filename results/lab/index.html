@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICTRA Lab</title>
+<style>
+:root{
+  --surface-0:#f4f4f2; --surface-1:#fcfcfb; --surface-2:#ecebe7; --border:#dcdbd6;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#7d7c78;
+  --accent:#0e6e6a; --accent-soft:#d3e9e7; --alert:#c93a39;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --acc-sig:#6f8f6a; --rule:#7d7c78; --grid:#e4e3df;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#262624; --border:#34342f;
+    --text-primary:#f0efec; --text-secondary:#c3c2b7; --text-muted:#8f8e86;
+    --accent:#3fb3ab; --accent-soft:#18403d; --alert:#e66767;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --acc-sig:#8fae89; --rule:#9a998f; --grid:#2c2c29;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#262624; --border:#34342f;
+  --text-primary:#f0efec; --text-secondary:#c3c2b7; --text-muted:#8f8e86;
+  --accent:#3fb3ab; --accent-soft:#18403d; --alert:#e66767;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --acc-sig:#8fae89; --rule:#9a998f; --grid:#2c2c29;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-0);color:var(--text-primary);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--surface-1);border-bottom:1px solid var(--border)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.top{display:flex;align-items:center;gap:12px;padding:12px 0 6px;flex-wrap:wrap}
+h1{font-size:18px;margin:0;letter-spacing:.2px}
+.sub{color:var(--text-secondary);font-size:12px}
+.spacer{flex:1}
+button,select{font:inherit;color:var(--text-primary);background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+nav{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px}
+nav button{white-space:nowrap}
+nav button.off{opacity:.45}
+main{padding:16px 0 48px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.card{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:14px 16px;min-width:0}
+.card h2{font-size:14px;margin:0 0 10px;color:var(--text-primary)}
+.card h3{font-size:13px;margin:12px 0 6px;color:var(--text-secondary);font-weight:600}
+.muted{color:var(--text-muted)} .sec{color:var(--text-secondary)} .small{font-size:12px}
+.bar{position:relative;height:22px;background:var(--surface-2);border-radius:6px;overflow:hidden;margin:4px 0 2px}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent)}
+.bar.locked>i{background:var(--text-muted)}
+.barlab{display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);gap:8px;flex-wrap:wrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.tile{background:var(--surface-2);border-radius:10px;padding:10px 12px}
+.tile b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.tile span{font-size:12px;color:var(--text-secondary)}
+table{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--text-secondary);font-weight:600}
+td.num,th.num{text-align:right}
+.tablewrap{overflow-x:auto}
+.jobgrid{display:grid;gap:2px}
+.cell{height:18px;border-radius:3px;background:var(--surface-2);border:1px solid var(--border)}
+.cell.running{background:var(--accent-soft);border-color:var(--accent);animation:pulse 1.4s ease-in-out infinite}
+.cell.done{background:var(--accent);border-color:var(--accent)}
+@keyframes pulse{50%{opacity:.45}}
+.joblab{font-size:11px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:6px;align-self:center}
+.log{font:11px/1.5 ui-monospace,Consolas,monospace;max-height:260px;overflow:auto;background:var(--surface-2);border-radius:8px;padding:8px}
+.log .t{color:var(--text-muted)} .log .s{color:var(--accent)}
+.warn{color:var(--alert)}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;background:var(--surface-2);font-size:11px;color:var(--text-secondary)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text-secondary);margin:6px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{fill:var(--text-secondary);font-size:11px}
+.panels{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.tier{border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--surface-2)}
+.tier b{display:block;margin-bottom:4px}
+.empty{padding:28px;text-align:center;color:var(--text-muted)}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="top">
+    <h1>ICTRA Lab</h1><span class="sub" id="updated">loading…</span><span class="spacer"></span>
+    <button id="theme" title="Switch light / dark">Theme</button>
+  </div>
+  <nav id="tabs"></nav>
+</div></header>
+<main class="wrap" id="main"></main>
+
+<script>
+"use strict";
+// The page draws only what the JSON files say. Numbers are formatted here; nothing is computed from them.
+const TABS = [
+  {id:"now", label:"1 Now"}, {id:"data", label:"2 Data"},
+  {id:"signals", label:"3 Signals", needs:"expR.json"}, {id:"ablation", label:"4 Ablation", needs:/^dev_.*\.json$/},
+];
+const SETS = {A_eeg:["A: EEG","--s1"], B_eeg_ecg:["B: EEG+ECG","--s2"], C_eeg_ecg_emg_acc:["C: EEG+ECG+EMG+ACC","--s3"]};
+const RULES = {rule_hr:"square", rule_emg:"triangle", rule_eeg:"diamond", rule_acc:"tridown"};
+const GROUPS = ["all","FBTC","focal_motor","focal_nonmotor","focal_unknown_motor"];
+const SIG = {eeg_linelength:["EEG line length","--s1"], eeg_power_1_25:["EEG power 1–25 Hz","--s1"], ecg_hr:["Heart rate","--s2"],
+             emg_rms:["EMG RMS","--s3"], emg_hf_power:["EMG power >20 Hz","--s3"], acc_mag:["Movement |a|","--acc-sig"]};
+const S = {tab: location.hash.slice(1) || "now", files: [], status: {}, live: {}, catalog: null, expR: null, dev: {},
+           def: "main", group: "FBTC", lagMode: "annotation", version: null, model: "xgb"};
+
+// ---------- formatting (no arithmetic on results beyond unit display) ----------
+const nf = (v, d=2) => v === null || v === undefined || Number.isNaN(v) ? "–" : Number(v).toFixed(d);
+const pct = (v, d=0) => v === null || v === undefined ? "–" : (100 * v).toFixed(d) + "%";
+const int = v => v === null || v === undefined ? "–" : Number(v).toLocaleString("en-US");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+// ages are measured against the server clock (live.json "time"), so they are right in any browser time zone
+const ago = iso => { if (!iso) return "never"; const now = S.live && S.live.time ? new Date(S.live.time).getTime() : Date.now();
+  const s = Math.max(0, (now - new Date(iso).getTime()) / 1000);
+  return s < 90 ? Math.round(s) + " s ago" : s < 5400 ? Math.round(s / 60) + " min ago" : (s / 3600).toFixed(1) + " h ago"; };
+
+async function getJSON(url){ try { const r = await fetch(url, {cache:"no-store"}); return r.ok ? await r.json() : null; } catch(e){ return null; } }
+
+const MT = {};                      // file -> mtime last fetched
+let busy = false;
+async function refresh(){
+  if (busy) return; busy = true;
+  try {
+    const idx = (await getJSON("data/index.json")) || {};
+    S.files = Object.keys(idx);
+    S.live = (await getJSON("api/live.json")) || S.live;
+    const changed = f => idx[f] !== undefined && idx[f] !== MT[f];
+    if (changed("status.json")) { S.status = (await getJSON("data/status.json")) || S.status; MT["status.json"] = idx["status.json"]; }
+    if (changed("catalog.json")) { S.catalog = await getJSON("data/catalog.json"); MT["catalog.json"] = idx["catalog.json"]; }
+    if (changed("expR.json")) { S.expR = await getJSON("data/expR.json"); MT["expR.json"] = idx["expR.json"]; }
+    for (const f of S.files.filter(f => /^dev_.*\.json$/.test(f))) if (changed(f)) { S.dev[f.slice(4, -5)] = await getJSON("data/" + f); MT[f] = idx[f]; }
+    if (!S.version || !S.dev[S.version]) S.version = Object.keys(S.dev).sort().pop() || null;
+    const live = S.live && S.live.time ? "live " + S.live.time.slice(11) : "server not reachable";
+    document.getElementById("updated").textContent = `${live} · status written ${ago(S.status.updated)} · live counters every 5 s`;
+    render();
+  } finally { busy = false; }
+}
+
+function available(t){ if (!t.needs) return true; return S.files.some(f => t.needs instanceof RegExp ? t.needs.test(f) : f === t.needs); }
+
+function render(){
+  const nav = document.getElementById("tabs");
+  nav.innerHTML = TABS.map(t => `<button data-tab="${t.id}" aria-pressed="${S.tab === t.id}" class="${available(t) ? "" : "off"}"
+     title="${available(t) ? "" : "appears when " + (t.needs instanceof RegExp ? "dev_<version>.json" : t.needs) + " exists"}">${t.label}</button>`).join("");
+  nav.querySelectorAll("button").forEach(b => b.onclick = () => { S.tab = b.dataset.tab; location.hash = S.tab; render(); });
+  const t = TABS.find(t => t.id === S.tab) || TABS[0];
+  const m = document.getElementById("main");
+  if (!available(t)) { m.innerHTML = `<div class="card empty">This tab appears automatically when <b>${t.needs instanceof RegExp ? "results/lab/data/dev_&lt;version&gt;.json" : "results/lab/data/" + t.needs}</b> is written.</div>`; return; }
+  m.innerHTML = ({now: tabNow, data: tabData, signals: tabSignals, ablation: tabAblation})[t.id]();
+  bind();
+}
+
+// ---------- tab 1: now ----------
+function bar(label, done, total, unit, locked){
+  const f = total ? Math.min(1, done / total) : 0;
+  return `<div class="bar ${locked ? "locked" : ""}"><i style="width:${(100 * f).toFixed(1)}%"></i></div>
+    <div class="barlab"><span>${label}</span><span>${locked ? "locked until docs/PREREGISTRATION.sha256 exists" : `${int(done)} / ${int(total)} ${unit}`}</span></div>`;
+}
+function tabNow(){
+  const L = S.live, st = S.status, dl = L.download || st.download || {}, fe = st.features || {};
+  let h = `<div class="grid">`;
+  h += `<div class="card"><h2>Downloads (SeizeIT2 dev split)</h2>`;
+  for (const [k, lab] of [["seizure","Seizure runs (stage 1)"],["nonseizure","Seizure-free runs (stage 2)"]]) {
+    const d = dl[k]; if (!d) continue;
+    h += bar(`${lab} · files`, d.files_done, d.files_total, "files") + bar(`${lab} · GB`, d.gb_done, d.gb_total, "GB");
+  }
+  h += bar("Locked test sub-097..125", 0, 1, "", true);
+  const fl0 = L.in_flight || [], active = fl0.filter(f => f.idle_s < 60).length;
+  h += active ? `<div class="small" style="color:var(--accent);margin-top:6px">● ${active} file${active > 1 ? "s" : ""} downloading now</div>`
+              : `<div class="small warn" style="margin-top:6px">● no file has grown in the last 60 s: no download is running (restart 01_download_seizeit2.py)</div>`;
+  const fl = L.in_flight || [];
+  h += `<h3>In flight (${fl.length})</h3>`;
+  if (fl.length) h += `<div class="tablewrap"><table><tr><th>file</th><th class="num">MB</th><th class="num">of</th><th class="num">MB/s</th><th class="num">idle s</th></tr>` +
+    fl.map(f => `<tr class="${f.idle_s > 120 ? "warn" : ""}"><td>${esc(f.file)}</td><td class="num">${nf(f.mb,0)}</td><td class="num">${nf(f.total_mb,0)}</td><td class="num">${nf(f.speed_mbs,1)}</td><td class="num">${nf(Math.max(0, f.idle_s),0)}</td></tr>`).join("") + `</table></div>`;
+  else h += `<div class="muted small">no .part files right now</div>`;
+  h += `<div class="small sec" style="margin-top:8px">Disk free: <b>${nf(L.disk_free_gb ?? st.disk_free_gb, 0)} GB</b></div></div>`;
+
+  h += `<div class="card"><h2>Feature extraction</h2>`;
+  if (fe.runs_dev_total) {
+    h += bar("Seizure runs with features", fe.seizure_runs_done, fe.seizure_runs_total, "runs");
+    h += bar("All dev runs with features", fe.runs_done, fe.runs_dev_total, "runs");
+    h += `<div class="small sec">seizure-free runs done: ${int(fe.nonseizure_runs_done)} · ready to process on the last pass: ${int(fe.runs_ready)} · workers ${int(fe.workers)} · ${esc(fe.lib_version)}</div>`;
+    if (fe.failed) h += `<div class="warn small">${int(fe.failed)} runs failed, see data/features/_failed.txt</div>`;
+  } else h += `<div class="muted">no feature status yet</div>`;
+  h += `<div class="small sec" style="margin-top:6px">feature files on disk now (live): <b>${int(L.feature_files)}</b> · status from the last feature pass ${ago(fe.updated || st.updated)}</div></div>`;
+  h += `</div>`;
+
+  const tr = st.training || {};
+  const vers = Object.keys(tr).sort();
+  h += `<div class="card" style="margin-top:12px"><h2>Training jobs</h2>`;
+  if (!vers.length) h += `<div class="muted">no training run yet</div>`;
+  for (const v of vers) {
+    const T = tr[v], jobs = T.jobs || {};
+    const keys = Object.keys(jobs);
+    const rows = [...new Set(keys.map(k => k.split("|").slice(0,2).join("|")))].sort();
+    const cols = [...new Set(keys.map(k => k.split("|").slice(2).join("|")))].sort((a,b) => a.localeCompare(b, undefined, {numeric:true}));
+    const cnt = s => keys.filter(k => jobs[k].state === s).length;
+    h += `<h3>${esc(v)} <span class="pill">${cnt("done")} done</span> <span class="pill">${cnt("running")} running</span> <span class="pill">${cnt("queued")} queued</span>
+          <span class="small muted">${esc(T.note || "")} · runs: ${esc(T.runs || "")} · xgboost on ${esc(T.device || "")} · started ${esc(T.started || "")}${T.finished ? " · finished " + esc(T.finished) : ""}</span></h3>`;
+    h += `<div class="tablewrap"><div class="jobgrid" style="grid-template-columns:minmax(150px,220px) repeat(${cols.length}, minmax(14px,1fr))">`;
+    h += `<span></span>` + cols.map(c => `<span class="small muted" style="text-align:center;font-size:9px">${esc(c.replace("|", "·"))}</span>`).join("");
+    for (const r of rows) {
+      h += `<span class="joblab">${esc(r.replace("|", " · "))}</span>`;
+      for (const c of cols) {
+        const j = jobs[r + "|" + c];
+        if (!j) { h += `<span></span>`; continue; }
+        const tip = j.state === "done" && j.f1 !== undefined ? `F1 ${nf(j.f1)} · sens ${nf(j.sensitivity)} · FA/24h ${nf(j.fa_per_24h)} · ${nf(j.minutes,1)} min` : j.state + (j.start ? " since " + j.start : "");
+        h += `<span class="cell ${j.state}" title="${esc(r)} fold·seed ${esc(c)}: ${esc(tip)}"></span>`;
+      }
+    }
+    h += `</div></div>`;
+  }
+  h += `<div class="small muted" style="margin-top:6px">one cell per set × model × fold·seed; hover a finished cell for its held-out-fold F1, sensitivity and FA/24h</div></div>`;
+
+  const log = (st.log || []).slice(-40).reverse();
+  h += `<div class="card" style="margin-top:12px"><h2>Log</h2><div class="log">${log.map(l => `<div><span class="t">${esc(l.t)}</span> <span class="s">${esc(l.src)}</span> ${esc(l.msg)}</div>`).join("") || "<span class='muted'>empty</span>"}</div></div>`;
+  return h;
+}
+
+// ---------- tab 2: data ----------
+function tabData(){
+  const C = S.catalog;
+  if (!C) return `<div class="card empty">catalog.json not written yet (python src/00_seizeit2_catalog.py --json)</div>`;
+  const tr = C.by_split.train, lt = C.by_split.locked_test;
+  let h = `<div class="card"><h2>${esc(C.dataset)}</h2><div class="tiles">
+    <div class="tile"><b>${int(C.patients)}</b><span>patients</span></div><div class="tile"><b>${int(Math.round(C.hours))}</b><span>hours</span></div>
+    <div class="tile"><b>${int(C.runs)}</b><span>recording runs</span></div><div class="tile"><b>${int(C.seizures)}</b><span>annotated seizures</span></div>
+    <div class="tile"><b>${int(tr.patients)} / ${int(lt.patients)}</b><span>patients dev / locked test</span></div>
+    <div class="tile"><b>${nf(C.seizure_duration_s.median,0)} s</b><span>median seizure duration</span></div></div></div>`;
+  // seizures by group, stacked by split
+  const groups = Object.keys(C.seizures_by_group);
+  const max = Math.max(...groups.map(g => (C.seizures_by_group[g].train || 0) + (C.seizures_by_group[g].locked_test || 0)));
+  const W = 560, rowH = 30, left = 150, H = groups.length * rowH + 30;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Seizures by group and split">`;
+  groups.forEach((g, i) => {
+    const a = C.seizures_by_group[g].train || 0, b = C.seizures_by_group[g].locked_test || 0, y = i * rowH + 6;
+    const sx = v => (W - left - 60) * v / max;
+    svg += `<text x="${left - 8}" y="${y + 15}" text-anchor="end">${esc(g)}</text>
+      <rect x="${left}" y="${y}" width="${sx(a)}" height="20" rx="4" fill="${css("--s1")}"><title>${esc(g)} dev: ${a}</title></rect>
+      <rect x="${left + sx(a) + 2}" y="${y}" width="${Math.max(0, sx(b) - 2)}" height="20" rx="4" fill="${css("--text-muted")}"><title>${esc(g)} locked test: ${b}</title></rect>
+      <text x="${left + sx(a) + sx(b) + 6}" y="${y + 15}">${a} + ${b}</text>`;
+  });
+  svg += `</svg>`;
+  h += `<div class="grid" style="margin-top:12px"><div class="card"><h2>Seizures by group</h2>
+    <div class="legend"><span><i class="sw" style="background:var(--s1)"></i>dev sub-001..096</span><span><i class="sw" style="background:var(--text-muted)"></i>locked test sub-097..125</span></div>${svg}
+    <div class="small muted">${int(C.seizure_duration_s.under_10s)} seizures are shorter than 10 s; seizures without an ECG/EMG file: dev ${int(C.seizures_without_ecg_emg.train)}, locked ${int(C.seizures_without_ecg_emg.locked_test)}</div></div>`;
+  // montage + modality
+  const mont = tr.montage, mk = Object.keys(mont), tot = mk.reduce((s, k) => s + mont[k], 0);
+  let x = 0, ms = `<svg viewBox="0 0 560 50" role="img" aria-label="EEG montage of dev runs">`;
+  const mcol = {left:"--s1", right:"--s2", generalized:"--s3"};
+  mk.forEach(k => { const w = 560 * mont[k] / tot; ms += `<rect x="${x}" y="4" width="${Math.max(0, w - 2)}" height="22" rx="4" fill="${css(mcol[k] || "--text-muted")}"><title>${k}: ${mont[k]} runs</title></rect><text x="${x + 4}" y="42">${esc(k)} ${mont[k]}</text>`; x += w; });
+  ms += `</svg>`;
+  h += `<div class="card"><h2>EEG montage (dev runs)</h2>${ms}<div class="small muted">left = BTEleft + CROSStop · right = BTEright + CROSStop · generalized = BTEleft + BTEright (docs/DATA_NOTES.md §1)</div>
+    <h3>Modality coverage (runs)</h3><table><tr><th></th><th class="num">dev</th><th class="num">locked test</th></tr>
+    <tr><td>runs</td><td class="num">${int(tr.runs)}</td><td class="num">${int(lt.runs)}</td></tr>
+    <tr><td>hours</td><td class="num">${int(Math.round(tr.hours))}</td><td class="num">${int(Math.round(lt.hours))}</td></tr>
+    <tr><td>runs with ECG + EMG file</td><td class="num">${int(tr.runs_with_ecg_emg)}</td><td class="num">${int(lt.runs_with_ecg_emg)}</td></tr>
+    <tr><td>runs with movement file</td><td class="num">${int(tr.runs_with_mov)}</td><td class="num">${int(lt.runs_with_mov)}</td></tr>
+    <tr><td>runs containing a seizure</td><td class="num">${int(tr.seizure_runs)}</td><td class="num">${int(lt.seizure_runs)}</td></tr></table></div></div>`;
+  h += `<div class="card" style="margin-top:12px"><h2>Three evaluation tiers (docs/EVALUATION_PROTOCOL.md)</h2><div class="tiers">
+    <div class="tier"><b>1 Development</b>SeizeIT2 sub-001..096, ${Object.keys(C.dev_folds).length} patient-wise folds (${Object.values(C.dev_folds).join(" / ")} patients). Opened repeatedly to choose versions.</div>
+    <div class="tier"><b>2 Locked internal test</b>SeizeIT2 sub-097..125. Opened once, after the pre-registration is hashed.</div>
+    <div class="tier"><b>3 External tests</b>Siena, Billeci, TUSZ, szdb, My Seizure Gauge, OSDB: never trained on, each opened once after pre-registration.</div></div></div>`;
+  const I = C.inventory || [];
+  h += `<div class="card" style="margin-top:12px"><h2>Dataset inventory (${I.length} checked)</h2><div class="tablewrap"><table><tr><th>tier</th><th>dataset</th><th>signals</th><th>subjects</th><th>seizures</th><th>decision</th><th>role</th></tr>` +
+    I.map(r => `<tr><td>${esc(r.tier)}</td><td>${esc(r.dataset)}</td><td>${esc(r.signals)}</td><td>${esc(r.subjects)}</td><td>${esc(r.seizures)}</td><td>${esc(r.decision)}</td><td class="small">${esc(r.role_in_ICTRA)}</td></tr>`).join("") + `</table></div></div>`;
+  return h;
+}
+
+// ---------- small SVG helpers ----------
+function axisLinear(lo, hi, n=5){ const out = []; const step = (hi - lo) / n; for (let i = 0; i <= n; i++) out.push(lo + i * step); return out; }
+function marker(shape, x, y, r, fill, stroke){
+  if (shape === "circle") return `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  if (shape === "square") return `<rect x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  if (shape === "diamond") return `<path d="M${x} ${y - r * 1.3}L${x + r * 1.3} ${y}L${x} ${y + r * 1.3}L${x - r * 1.3} ${y}Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  if (shape === "triangle") return `<path d="M${x} ${y - r * 1.3}L${x + r * 1.2} ${y + r}L${x - r * 1.2} ${y + r}Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  return `<path d="M${x} ${y + r * 1.3}L${x + r * 1.2} ${y - r}L${x - r * 1.2} ${y - r}Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+}
+
+// ---------- tab 3: signals (Exp R) ----------
+function tabSignals(){
+  const E = S.expR, defs = Object.keys(E.definitions || {});
+  if (!defs.includes(S.def)) S.def = defs[0];
+  const D = E.definitions[S.def], gs = Object.keys(D.groups).filter(g => g !== "all").concat(["all"]);
+  if (!gs.includes(S.group)) S.group = gs[0];
+  let h = `<div class="card"><div class="controls">
+    <span class="small sec">onset definition</span>${defs.map(d => `<button data-def="${d}" aria-pressed="${d === S.def}">${d === "main" ? "z > " + E.definitions[d].z_thr + " for " + E.definitions[d].min_dur_s + " s" : esc(d) + " (z > " + E.definitions[d].z_thr + " for " + E.definitions[d].min_dur_s + " s)"}</button>`).join("")}
+    <span class="spacer"></span><span class="small sec">group</span>${gs.map(g => `<button data-group="${g}" aria-pressed="${g === S.group}">${esc(g)}</button>`).join("")}</div>`;
+  const G = D.groups[S.group];
+  h += `<h2>${esc(S.group)}: median z-score of each signal vs its own −300..−60 s baseline (IQR shaded) · ${int(G.n_seizures)} seizures, ${int(G.n_patients)} patients</h2><div class="panels">`;
+  for (const [f, [lab, col]] of Object.entries(SIG)) {
+    const c = G.curves[f]; if (!c || !c.n) { h += `<div><div class="small sec">${lab}</div><div class="muted small">no recordings</div></div>`; continue; }
+    const W = 300, Hh = 120, l = 30, r = 6, t = 6, b = 22;
+    const vals = c.q25.concat(c.q75).filter(v => v !== null);
+    let lo = Math.min(-1, ...vals), hi = Math.max(3, ...vals); hi = Math.min(hi, 25); lo = Math.max(lo, -10);
+    const sx = v => l + (W - l - r) * (v - (-120)) / (300); const sy = v => t + (Hh - t - b) * (1 - (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo));
+    const pts = (arr) => c.t.map((tt, i) => arr[i] === null ? null : `${sx(tt).toFixed(1)},${sy(arr[i]).toFixed(1)}`);
+    const up = pts(c.q75), dn = pts(c.q25), md = pts(c.median);
+    let band = ""; const seg = [];
+    for (let i = 0; i < c.t.length; i++) if (up[i] && dn[i]) seg.push(i);
+    if (seg.length) band = `<path d="M${seg.map(i => up[i]).join("L")}L${seg.slice().reverse().map(i => dn[i]).join("L")}Z" fill="${css(col)}" opacity=".18"/>`;
+    const line = `<path d="M${md.filter(Boolean).join("L")}" fill="none" stroke="${css(col)}" stroke-width="2"/>`;
+    let ax = `<line x1="${sx(0)}" x2="${sx(0)}" y1="${t}" y2="${Hh - b}" stroke="${css("--text-secondary")}" stroke-dasharray="3 3"/>`;
+    ax += `<line x1="${l}" x2="${W - r}" y1="${sy(0)}" y2="${sy(0)}" stroke="${css("--grid")}"/>`;
+    for (const tt of [-120, -60, 0, 60, 120, 180]) ax += `<text x="${sx(tt)}" y="${Hh - 6}" text-anchor="middle">${tt}</text>`;
+    for (const v of [lo, 0, hi]) ax += `<text x="${l - 4}" y="${sy(v) + 4}" text-anchor="end">${nf(v, 0)}</text>`;
+    h += `<div><div class="small sec">${lab} <span class="muted">(n=${c.n})</span></div><svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${lab} median z-curve">${ax}${band}${line}</svg></div>`;
+  }
+  h += `</div><div class="small muted">x: seconds from the annotated onset (dashed). y: z-score, clipped to −10..25 for display.</div></div>`;
+  // lag dot plot
+  const ann = S.lagMode === "annotation";
+  const kinds = ann ? [["t_eeg","EEG change"],["t_hr","heart rate change"],["t_emg","EMG change"],["t_acc","movement change"]]
+                    : [["lag_eeg_to_hr","EEG → heart rate"],["lag_eeg_to_emg","EEG → EMG"],["lag_eeg_to_acc","EEG → movement"],["lag_emg_to_acc","EMG → movement"]];
+  const groupsAll = Object.keys(D.groups).filter(g => g !== "all");
+  const Wd = 720, rowH = 22, left = 170, top = 20, lo = -60, hi = 180;
+  const sx = v => left + (Wd - left - 20) * (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo);
+  let rows = []; for (const [k, lab] of kinds) for (const g of groupsAll) rows.push([k, lab, g]);
+  const Hd = top + rows.length * rowH + 26;
+  let svg = `<svg viewBox="0 0 ${Wd} ${Hd}" role="img" aria-label="lag dot plot">`;
+  for (const tt of [-60, -30, 0, 30, 60, 90, 120, 150, 180]) svg += `<line x1="${sx(tt)}" x2="${sx(tt)}" y1="${top - 6}" y2="${Hd - 22}" stroke="${css(tt === 0 ? "--text-secondary" : "--grid")}" ${tt === 0 ? 'stroke-dasharray="3 3"' : ""}/><text x="${sx(tt)}" y="${Hd - 8}" text-anchor="middle">${tt}</text>`;
+  const seizures = D.seizures || [];
+  rows.forEach(([k, lab, g], i) => {
+    const y = top + i * rowH + rowH / 2, st = D.groups[g].stats[k];
+    const col = css(k.includes("hr") ? "--s2" : k.includes("emg") && !k.endsWith("acc") ? "--s3" : k.includes("acc") ? "--acc-sig" : "--s1");
+    svg += `<text x="${left - 8}" y="${y + 4}" text-anchor="end">${esc(lab)} · ${esc(g)}</text>`;
+    seizures.filter(s => s.group === g && s[k] !== null && s[k] !== undefined).forEach((s, j) => {
+      const jit = ((j * 7919) % 13 - 6) * 0.9;
+      svg += `<circle cx="${sx(s[k])}" cy="${y + jit}" r="2.6" fill="${col}" opacity=".55"><title>${esc(s.seizure_id)}: ${s[k]} s</title></circle>`;
+    });
+    if (st && st.n) svg += `<line x1="${sx(st.q25)}" x2="${sx(st.q75)}" y1="${y}" y2="${y}" stroke="${css("--text-primary")}" stroke-width="2"/>
+       <line x1="${sx(st.median)}" x2="${sx(st.median)}" y1="${y - 8}" y2="${y + 8}" stroke="${css("--text-primary")}" stroke-width="3"><title>median ${st.median} s [${st.q25}, ${st.q75}], n=${st.n}</title></line>
+       <text x="${Wd - 16}" y="${y + 4}" text-anchor="end" class="small">${nf(st.median,0)} s · n=${st.n}</text>`;
+  });
+  svg += `</svg>`;
+  h += `<div class="card" style="margin-top:12px"><div class="controls"><h2 style="margin:0">When does each signal change?</h2><span class="spacer"></span>
+      <button data-lag="annotation" aria-pressed="${ann}">relative to annotated onset</button><button data-lag="eeg" aria-pressed="${!ann}">relative to first bte-EEG change</button></div>
+      ${svg}<div class="small muted">dots: one seizure each (x clipped to −60..180 s); black bar: IQR; tick: median (both from expR.json). A signal with no change from −30 s on has no dot.</div></div>`;
+  // response heat table
+  h += `<div class="card" style="margin-top:12px"><h2>Which signal responds (share of seizures where it was recorded)</h2><div class="tablewrap"><table>
+    <tr><th>group</th><th class="num">seizures</th><th class="num">EEG</th><th class="num">heart rate</th><th class="num">EMG</th><th class="num">movement</th><th class="num">HR rise ≥ 20 bpm</th><th class="num">≥ 50 bpm</th><th class="num">≥ 50 bpm (5-s median HR)</th></tr>` +
+    Object.keys(D.groups).map(g => { const Gr = D.groups[g], rs = Gr.respond;
+      const cell = k => `<td class="num" style="background:color-mix(in srgb, var(--accent) ${Math.round(100 * (rs[k].share || 0) * 0.55)}%, transparent)" title="${rs[k].n_respond} of ${rs[k].n_recorded}">${pct(rs[k].share)} <span class="muted small">/${rs[k].n_recorded}</span></td>`;
+      return `<tr><td>${esc(g)}</td><td class="num">${int(Gr.n_seizures)}</td>${cell("eeg")}${cell("hr")}${cell("emg")}${cell("acc")}
+        <td class="num">${pct(Gr.hr_rise.ge20.share)}</td><td class="num">${pct(Gr.hr_rise.ge50.share)}</td><td class="num">${pct(Gr.hr_rise.ge50.share_med5)}</td></tr>`; }).join("") +
+    `</table></div><div class="small muted">HR rise = max HR in 0..60 s minus baseline median; the 5-s-median variant resists single mis-detected beats (docs: 02_relationship_study.py).</div></div>`;
+  return h;
+}
+
+// ---------- tab 4: ablation ----------
+function tabAblation(){
+  const vs = Object.keys(S.dev).sort(), J = S.dev[S.version];
+  if (!J || !J.summary) return `<div class="card empty">dev_${esc(S.version)}.json has no summary yet</div>`;
+  const models = [...new Set(J.summary.filter(r => r.set !== "rule").map(r => r.model))];
+  if (!models.includes(S.model)) S.model = models[0];
+  let h = `<div class="card"><div class="controls"><span class="small sec">version</span>${vs.map(v => `<button data-ver="${v}" aria-pressed="${v === S.version}">${esc(v)}</button>`).join("")}
+     <span class="spacer"></span><span class="small sec">model family</span>${models.map(m => `<button data-model="${m}" aria-pressed="${m === S.model}">${esc(m)}</button>`).join("")}</div>
+     <h2>Sensitivity vs false alarms per 24 h, A → B → C and the four single-input rules</h2>
+     <div class="legend">${Object.entries(SETS).map(([k, [lab, c]]) => `<span><i class="sw" style="background:var(${c});border-radius:50%"></i>${lab}</span>`).join("")}
+       ${Object.entries(RULES).map(([k, sh]) => `<span><svg viewBox="-8 -8 16 16" style="width:14px;height:14px">${marker(sh, 0, 0, 5, "none", css("--rule"))}</svg>${k}</span>`).join("")}</div><div class="panels">`;
+  const bySG = {}; (J.by_group || []).forEach(r => bySG[r.set + "|" + r.model + "|" + r.group] = r);
+  const pts = J.summary.filter(r => (r.set === "rule") || (r.model === S.model && SETS[r.set]));
+  const fas = pts.map(r => r.fa_hi ?? r.fa_per_24h).filter(v => v > 0);
+  const xmax = Math.pow(10, Math.ceil(Math.log10(Math.max(10, ...fas)))), xmin = 0.1;
+  for (const g of GROUPS) {
+    const W = 260, Hh = 220, l = 34, r = 8, t = 10, b = 30;
+    const sx = v => l + (W - l - r) * (Math.log10(Math.max(xmin, Math.min(xmax, v))) - Math.log10(xmin)) / (Math.log10(xmax) - Math.log10(xmin));
+    const sy = v => t + (Hh - t - b) * (1 - v);
+    let svg = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${g} panel">`;
+    for (let e = Math.log10(xmin); e <= Math.log10(xmax); e++) svg += `<line x1="${sx(10 ** e)}" x2="${sx(10 ** e)}" y1="${t}" y2="${Hh - b}" stroke="${css("--grid")}"/><text x="${sx(10 ** e)}" y="${Hh - b + 14}" text-anchor="middle">${10 ** e >= 1 ? 10 ** e : (10 ** e).toFixed(1)}</text>`;
+    for (const v of [0, .25, .5, .75, 1]) svg += `<line x1="${l}" x2="${W - r}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css("--grid")}"/><text x="${l - 4}" y="${sy(v) + 4}" text-anchor="end">${v}</text>`;
+    svg += `<text x="${(W + l) / 2}" y="${Hh - 2}" text-anchor="middle">false alarms / 24 h (log)</text>`;
+    for (const rr of pts) {
+      const sens = g === "all" ? rr.sensitivity : (bySG[rr.set + "|" + rr.model + "|" + g] || {}).sensitivity;
+      if (sens === null || sens === undefined) continue;
+      const isRule = rr.set === "rule", x = sx(rr.fa_per_24h), y = sy(sens);
+      const col = isRule ? css("--rule") : css(SETS[rr.set][1]);
+      if (g === "all" && rr.sens_lo !== undefined) svg += `<line x1="${x}" x2="${x}" y1="${sy(rr.sens_lo)}" y2="${sy(rr.sens_hi)}" stroke="${col}" stroke-width="1.5" opacity=".7"/>
+          <line x1="${sx(rr.fa_lo)}" x2="${sx(rr.fa_hi)}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="1.5" opacity=".7"/>`;
+      const tip = `${isRule ? rr.model : SETS[rr.set][0] + " " + rr.model} · ${g}: sensitivity ${nf(sens)}${g === "all" ? ` [${nf(rr.sens_lo)}, ${nf(rr.sens_hi)}]` : ""} · FA/24h ${nf(rr.fa_per_24h)} [${nf(rr.fa_lo)}, ${nf(rr.fa_hi)}] · F1 ${nf(rr.f1)}`;
+      svg += `<g><title>${esc(tip)}</title>${isRule ? marker(RULES[rr.model] || "circle", x, y, 5, css("--surface-1"), col) : marker("circle", x, y, 6, col, css("--surface-1"))}</g>`;
+      if (!isRule) svg += `<text x="${x + 8}" y="${y + ({A_eeg:-6, B_eeg_ecg:4, C_eeg_ecg_emg_acc:14})[rr.set]}" style="fill:var(--text-primary)">${rr.set[0]}</text>`;
+    }
+    svg += `</svg>`;
+    h += `<div><div class="small sec"><b>${esc(g)}</b></div>${svg}</div>`;
+  }
+  h += `</div><div class="small muted">Deployable points: threshold tuned on the inner split of the training folds. Bars: ${esc(J.ci_note || "")}; per-group panels have no CI yet. FA/24h does not depend on seizure group, so each point keeps its x-position in every panel.</div></div>`;
+  // summary table
+  const cols = [["set","set"],["model","model"],["seizures","seizures",0],["hours","hours",0],["sensitivity","sens"],["ci_s","95% CI"],["fa_per_24h","FA/24h"],["ci_f","95% CI"],["f1","F1"],["ci_1","95% CI"],["median_delay_s","delay s",0]]
+    .concat(GROUPS.slice(1).map(g => ["sens_" + g, "sens " + g.replace("focal_", "")]));
+  h += `<div class="card" style="margin-top:12px"><h2>${esc(S.version)} summary <span class="small muted">${esc(J.note || "")}</span></h2><div class="tablewrap"><table><tr>${cols.map(c => `<th class="${c[0] === "set" || c[0] === "model" ? "" : "num"}">${c[1]}</th>`).join("")}</tr>` +
+    J.summary.map(r => `<tr>${cols.map(([k, , d]) => {
+      if (k === "ci_s") return `<td class="num">[${nf(r.sens_lo)}, ${nf(r.sens_hi)}]</td>`;
+      if (k === "ci_f") return `<td class="num">[${nf(r.fa_lo)}, ${nf(r.fa_hi)}]</td>`;
+      if (k === "ci_1") return `<td class="num">[${nf(r.f1_lo)}, ${nf(r.f1_hi)}]</td>`;
+      return k === "set" || k === "model" ? `<td>${esc(r[k])}</td>` : `<td class="num">${nf(r[k], d ?? 2)}</td>`; }).join("")}</tr>`).join("") + `</table></div></div>`;
+  // per-patient dot plot: A vs C
+  const pp = J.per_patient || [];
+  const A = {}, Cc = {}; pp.filter(r => r.model === S.model).forEach(r => { if (r.set === "A_eeg") A[r.sub] = r; if (r.set === "C_eeg_ecg_emg_acc") Cc[r.sub] = r; });
+  const subs = Object.keys(A).filter(s => Cc[s] && A[s].sensitivity !== null && Cc[s].sensitivity !== null);
+  if (subs.length) {
+    const W = 340, Hh = 340, l = 40, b = 36, t = 10, r = 10;
+    const sx = v => l + (W - l - r) * v, sy = v => t + (Hh - t - b) * (1 - v);
+    let svg = `<svg viewBox="0 0 ${W} ${Hh}" style="max-width:420px" role="img" aria-label="per-patient sensitivity, A vs C">`;
+    for (const v of [0, .25, .5, .75, 1]) svg += `<line x1="${sx(v)}" x2="${sx(v)}" y1="${t}" y2="${Hh - b}" stroke="${css("--grid")}"/><line x1="${l}" x2="${W - r}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css("--grid")}"/><text x="${sx(v)}" y="${Hh - b + 14}" text-anchor="middle">${v}</text><text x="${l - 4}" y="${sy(v) + 4}" text-anchor="end">${v}</text>`;
+    svg += `<line x1="${sx(0)}" y1="${sy(0)}" x2="${sx(1)}" y2="${sy(1)}" stroke="${css("--text-muted")}" stroke-dasharray="4 3"/>`;
+    subs.forEach((s, j) => { const jit = ((j * 7919) % 9 - 4) * 0.004;
+      svg += `<circle cx="${sx(A[s].sensitivity + jit)}" cy="${sy(Cc[s].sensitivity - jit)}" r="${3 + Math.min(6, Math.sqrt(A[s].n_ref))}" fill="${css("--s3")}" opacity=".55" stroke="${css("--surface-1")}"><title>${s}: A ${nf(A[s].sensitivity)} (${A[s].tp}/${A[s].n_ref}), C ${nf(Cc[s].sensitivity)} (${Cc[s].tp}/${Cc[s].n_ref}), FA/24h A ${nf(A[s].fa_per_24h)} C ${nf(Cc[s].fa_per_24h)}</title></circle>`; });
+    svg += `<text x="${(W + l) / 2}" y="${Hh - 4}" text-anchor="middle">sensitivity with A (EEG)</text><text transform="translate(12 ${(Hh - b) / 2}) rotate(-90)" text-anchor="middle">sensitivity with C (all signals)</text></svg>`;
+    h += `<div class="grid" style="margin-top:12px"><div class="card"><h2>Per patient: A vs C (${esc(S.model)}, summed over seeds)</h2>${svg}<div class="small muted">one dot per patient, size ~ seizures; above the dashed line C finds more of that patient's seizures than A</div></div>`;
+  } else h += `<div class="grid" style="margin-top:12px">`;
+  // operating points
+  const OP = J.operating_points;
+  h += `<div class="card"><h2>Operating points (${esc(S.model)})</h2>`;
+  if (OP) {
+    h += `<div class="small muted" style="margin-bottom:6px">${esc(J.operating_note || "")}</div><div class="tablewrap"><table><tr><th>set</th><th>group</th><th class="num">sens @ ≤0.5</th><th class="num">≤1</th><th class="num">≤2</th><th class="num">≤5 FA/24h</th><th class="num">FA/24h @ sens ≥ 0.8</th></tr>` +
+      OP.filter(r => r.model === S.model || r.set === "rule").map(r => `<tr><td>${esc(r.set === "rule" ? r.model : r.set)}</td><td>${esc(r.group)}</td><td class="num">${nf(r["sens_at_fa_le_0.5"])}</td><td class="num">${nf(r.sens_at_fa_le_1)}</td><td class="num">${nf(r.sens_at_fa_le_2)}</td><td class="num">${nf(r.sens_at_fa_le_5)}</td><td class="num">${nf(r["fa24_at_sens_ge_0.80"], 1)}</td></tr>`).join("") + `</table></div>`;
+  } else h += `<div class="muted">appears after python src/05_operating_points.py --version ${esc(S.version)}</div>`;
+  h += `</div></div>`;
+  return h;
+}
+
+function bind(){
+  document.querySelectorAll("[data-def]").forEach(b => b.onclick = () => { S.def = b.dataset.def; render(); });
+  document.querySelectorAll("[data-group]").forEach(b => b.onclick = () => { S.group = b.dataset.group; render(); });
+  document.querySelectorAll("[data-lag]").forEach(b => b.onclick = () => { S.lagMode = b.dataset.lag; render(); });
+  document.querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { S.version = b.dataset.ver; render(); });
+  document.querySelectorAll("[data-model]").forEach(b => b.onclick = () => { S.model = b.dataset.model; render(); });
+}
+
+// theme toggle: OS default, then light / dark stamped on <html>; remembered per viewer
+(function(){
+  let saved = null; try { saved = localStorage.getItem("ictra-theme"); } catch(e) {}
+  if (saved) document.documentElement.dataset.theme = saved;
+  document.getElementById("theme").onclick = () => {
+    const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("ictra-theme", document.documentElement.dataset.theme); } catch(e) {}
+    render();
+  };
+})();
+refresh(); setInterval(refresh, 5000);
+</script>
+</body>
+</html>

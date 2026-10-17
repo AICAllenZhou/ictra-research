@@ -1,0 +1,87 @@
+7439 files selected, 78.3 GB; still to download: 7374 files, 75.9 GB
+modality
+ecg    15.8
+eeg    29.5
+emg    15.8
+mov    17.1
+free disk: 141 GB
+  sub-018: 37 new sidecar files
+  sub-019: 45 new sidecar files
+  sub-020: 45 new sidecar files
+  sub-021: 45 new sidecar files
+  sub-022: 55 new sidecar files
+  sub-023: 45 new sidecar files
+  sub-024: 45 new sidecar files
+  sub-025: 60 new sidecar files
+  sub-026: 45 new sidecar files
+  sub-027: 45 new sidecar files
+  sub-028: 40 new sidecar files
+  sub-029: 50 new sidecar files
+  sub-030: 45 new sidecar files
+  sub-031: 50 new sidecar files
+  sub-032: 55 new sidecar files
+  sub-033: 65 new sidecar files
+  sub-034: 70 new sidecar files
+  sub-035: 70 new sidecar files
+  sub-036: 5 new sidecar files
+  sub-037: 5 new sidecar files
+  sub-038: 35 new sidecar files
+  sub-039: 45 new sidecar files
+  sub-040: 25 new sidecar files
+  sub-041: 5 new sidecar files
+  sub-042: 42 new sidecar files
+  sub-043: 55 new sidecar files
+  sub-044: 45 new sidecar files
+  sub-045: 50 new sidecar files
+  sub-046: 45 new sidecar files
+  sub-047: 35 new sidecar files
+  sub-048: 28 new sidecar files
+  sub-049: 25 new sidecar files
+  sub-050: 30 new sidecar files
+  sub-051: 15 new sidecar files
+  sub-052: 40 new sidecar files
+  sub-053: 15 new sidecar files
+  sub-054: 31 new sidecar files
+  sub-055: 15 new sidecar files
+  sub-056: 25 new sidecar files
+  sub-057: 30 new sidecar files
+  sub-058: 8 new sidecar files
+  sub-059: 20 new sidecar files
+  sub-060: 20 new sidecar files
+  sub-061: 36 new sidecar files
+  sub-062: 30 new sidecar files
+  sub-063: 30 new sidecar files
+  sub-064: 15 new sidecar files
+  sub-065: 64 new sidecar files
+  sub-066: 95 new sidecar files
+  sub-067: 25 new sidecar files
+  sub-068: 60 new sidecar files
+  sub-069: 185 new sidecar files
+  sub-070: 135 new sidecar files
+  sub-071: 195 new sidecar files
+  sub-072: 140 new sidecar files
+  sub-073: 308 new sidecar files
+  sub-074: 160 new sidecar files
+  sub-075: 243 new sidecar files
+  sub-076: 108 new sidecar files
+  sub-077: 65 new sidecar files
+  sub-078: 384 new sidecar files
+  sub-079: 100 new sidecar files
+  sub-080: 153 new sidecar files
+  sub-081: 404 new sidecar files
+  sub-082: 92 new sidecar files
+  sub-083: 330 new sidecar files
+  sub-084: 305 new sidecar files
+  sub-085: 284 new sidecar files
+  sub-086: 455 new sidecar files
+  sub-087: 100 new sidecar files
+  sub-088: 325 new sidecar files
+  sub-089: 560 new sidecar files
+  sub-090: 16 new sidecar files
+  sub-091: 20 new sidecar files
+  sub-092: 599 new sidecar files
+  sub-093: 491 new sidecar files
+  sub-094: 244 new sidecar files
+  sub-095: 545 new sidecar files
+  sub-096: 435 new sidecar files
+sidecars: 9342 new files

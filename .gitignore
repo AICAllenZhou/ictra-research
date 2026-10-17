@@ -1,0 +1,11 @@
+data/raw/
+data/features/
+results/dev/*/preds/
+__pycache__/
+*.pyc
+results/lab/logs/
+results/lab/data/status.json
+results/lab/data/status.lock
+*.part
+*.lock
+*.tmp
