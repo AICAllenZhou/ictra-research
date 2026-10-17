@@ -176,6 +176,43 @@ def tune_threshold(model, subs, cols):
     return float(best), best_key
 
 
+def monitor(m, kind, val_subs, cols, out, stem, event_f1, seed, n_checkpoints=40, max_windows=1_000_000):
+    """Training curves and gain importance for the website export (docs/DELIVERABLES_SPEC.md). Computed AFTER the final
+    fit, on the held-out fold, for display only: nothing here feeds back into the model, its threshold or the version
+    decision. Windows: held-out fold, edge / impd / flat-EEG excluded, natural class ratio (uniform subsample to
+    max_windows if larger, which keeps the ratio). Writes curve_<stem>.csv and importance_<stem>.csv."""
+    from sklearn.metrics import log_loss, average_precision_score
+    parts = []
+    for f in run_files(val_subs):
+        d = read_cols(f, cols + ["y", "edge", "impd", "flat_eeg"])
+        keep = ~d.edge.astype(bool) & ~d.impd.astype(bool) & ~d.flat_eeg.fillna(False).astype(bool)
+        parts.append(d[keep.values])
+    V = pd.concat(parts, ignore_index=True)
+    if len(V) > max_windows:
+        V = V.sample(max_windows, random_state=seed)
+    n_iter = m.get_params()["n_estimators"]
+    its = sorted(set(np.linspace(1, n_iter, n_checkpoints).astype(int)))
+    rows, raw, prev = [], np.zeros(len(V)), 0
+    X = V[cols]
+    for k in its:
+        if kind == "xgb":
+            p = m.predict_proba(X, iteration_range=(0, k))[:, 1]
+        else:   # LightGBM: add the raw score of trees prev..k only, so every tree is evaluated once per window
+            raw += m.booster_.predict(X, start_iteration=prev, num_iteration=k - prev, raw_score=True); prev = k
+            p = 1 / (1 + np.exp(-raw))
+        p = np.clip(p, 1e-7, 1 - 1e-7)
+        rows.append(dict(iteration=k, val_logloss=log_loss(V.y, p, labels=[0, 1]),
+                         val_auprc=average_precision_score(V.y, p) if V.y.sum() else np.nan, val_event_f1=np.nan,
+                         n_windows=len(V), n_seizure_windows=int(V.y.sum())))
+    rows[-1]["val_event_f1"] = event_f1                      # event F1 only at the end of the fold (threshold + k-of-n)
+    pd.DataFrame(rows).to_csv(out / f"curve_{stem}.csv", index=False)
+    if kind == "xgb":
+        g = m.get_booster().get_score(importance_type="gain")
+    else:
+        g = dict(zip(m.booster_.feature_name(), m.booster_.feature_importance("gain")))
+    pd.DataFrame({"feature": cols, "gain": [float(g.get(c, 0.0)) for c in cols]}).to_csv(out / f"importance_{stem}.csv", index=False)
+
+
 def job(args):
     fs_name, kind, fold, seed, version, device, runs = args
     global DEVICE, RUNS
@@ -207,6 +244,8 @@ def job(args):
     out = L.ROOT / "results/dev" / version
     (out / "preds").mkdir(parents=True, exist_ok=True)
     pd.concat(preds).to_parquet(out / "preds" / f"{fs_name}__{kind}__f{fold}_s{seed}.parquet", index=False)
+    if kind in ("xgb", "lgbm"):
+        monitor(m, kind, val_subs, cols, out, f"{fs_name}__{kind}__f{fold}_s{seed}", L.pool_scores(rows)["f1"], seed)
     res = pd.DataFrame(rows); res["inner_f1"] = f1_in; res["minutes"] = (time.time() - t) / 60
     import psutil
     mi = psutil.Process().memory_info()
