@@ -151,3 +151,4 @@ The stability goal was met: the per-seed τ SD per fold fell from 0.005–0.031 
 an operating-point shift (a slightly higher τ moves along the same curve), not a model change. v02 therefore runs with
 v01's threshold method (inner_split), and v03b (sensitivity-floor objective, logged above) runs after v02. Official
 table: `results/dev/v03_threshold_stability/REPORT.md`.
+Rejected on sensitivity only; τ stability goal achieved — carried into v03b with a sensitivity-constrained τ.

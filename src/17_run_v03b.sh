@@ -20,4 +20,6 @@ kill $GPID
 python -u src/04_train_ablation.py --compare v01_baseline v03b_thr_sens_floor > results/lab/logs/v03b_compare.log 2>&1
 python -u src/05_operating_points.py --version v03b_thr_sens_floor --workers $W > results/lab/logs/v03b_sweep.log 2>&1
 python -u src/15_version_report.py --version v03b_thr_sens_floor > /dev/null 2>&1
+# matched-FA operating point at v01's deployable C xgb FA (9.67 FA/24h), next to the section-1 compare (Allen 2026-10-17)
+python -u src/18_matched_fa.py --ref v01_baseline --new v03b_thr_sens_floor --fa 9.67 > results/lab/logs/v03b_matched_fa.log 2>&1
 echo "V03B DONE $(grep -c 'Falling back' results/lab/logs/v03b.err.log) fallback warnings" >> $LOG
