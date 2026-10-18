@@ -11,3 +11,4 @@ results/lab/data/status.lock
 *.tmp
 results/expR/**/curves.parquet
 results/dev/*/preds/
+results/expP/curves.parquet

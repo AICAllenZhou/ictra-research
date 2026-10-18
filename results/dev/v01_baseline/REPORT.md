@@ -2,6 +2,8 @@
 
 Dev cross-validation (sub-001..096), offline pipeline. Each cell = **seed-mean / seed-median** over the seeds (3 for learned models, 1 for rules). [95% CI] = patient bootstrap (1,000 resamples) of seed 0. Threshold tuned on the inner split of the training folds; 3-of-5 windows; SzCORE scoring; impd and flat-EEG masked.
 
+**Pooling:** counts (seizures, hits, false alarms, hours) are summed over all patients of all 5 held-out folds, then the rates are computed, then averaged over seeds. This is pooled over patients, not the mean over folds that EVALUATION_PROTOCOL.md section 1 names. Per-fold numbers are in scores_by_fold.csv and compare_*_by_fold.csv.
+
 ## Overall
 
 | model | seizures | hours | sensitivity | [CI] | FA/24h | [CI] | precision | F1 | [CI] | median delay s |
@@ -31,6 +33,21 @@ Dev cross-validation (sub-001..096), offline pipeline. Each cell = **seed-mean /
 | rule_eeg | 0.97 / 0.97 [0.90, 1.00] | 0.50 / 0.50 [0.30, 0.67] | 0.15 / 0.15 [0.08, 0.25] | 0.33 / 0.33 [0.14, 0.55] |
 | rule_emg | 0.76 / 0.76 [0.58, 0.90] | 0.43 / 0.43 [0.25, 0.56] | 0.08 / 0.08 [0.03, 0.15] | 0.27 / 0.27 [0.07, 0.55] |
 | rule_hr | 0.73 / 0.73 [0.53, 0.88] | 0.54 / 0.54 [0.36, 0.73] | 0.14 / 0.14 [0.06, 0.29] | 0.46 / 0.46 [0.11, 0.69] |
+
+## Sensitivity by seizure duration
+
+| model | < 15 s (n=212) | 15-60 s (n=225) | > 60 s (n=265) |
+|---|---|---|---|
+| A lgbm | 0.08 / 0.08 [0.03, 0.12] | 0.33 / 0.32 [0.20, 0.40] | 0.61 / 0.61 [0.41, 0.69] |
+| A xgb | 0.07 / 0.06 [0.03, 0.16] | 0.34 / 0.35 [0.20, 0.39] | 0.62 / 0.62 [0.44, 0.67] |
+| B lgbm | 0.14 / 0.12 [0.01, 0.18] | 0.31 / 0.30 [0.15, 0.33] | 0.68 / 0.71 [0.42, 0.76] |
+| B xgb | 0.16 / 0.10 [0.02, 0.20] | 0.32 / 0.32 [0.16, 0.34] | 0.67 / 0.69 [0.44, 0.73] |
+| C lgbm | 0.19 / 0.16 [0.05, 0.25] | 0.34 / 0.35 [0.21, 0.38] | 0.72 / 0.73 [0.50, 0.80] |
+| C xgb | 0.20 / 0.16 [0.05, 0.26] | 0.35 / 0.33 [0.22, 0.39] | 0.71 / 0.71 [0.49, 0.80] |
+| rule_acc | 0.29 / 0.29 [0.10, 0.49] | 0.20 / 0.20 [0.15, 0.27] | 0.39 / 0.39 [0.24, 0.49] |
+| rule_eeg | 0.20 / 0.20 [0.08, 0.40] | 0.36 / 0.36 [0.23, 0.51] | 0.52 / 0.52 [0.29, 0.71] |
+| rule_emg | 0.18 / 0.18 [0.04, 0.41] | 0.26 / 0.26 [0.13, 0.40] | 0.42 / 0.42 [0.22, 0.56] |
+| rule_hr | 0.43 / 0.43 [0.07, 0.77] | 0.29 / 0.29 [0.16, 0.45] | 0.45 / 0.45 [0.34, 0.57] |
 
 ## Sensitivity at a fixed false-alarm budget (operating-point sweep)
 

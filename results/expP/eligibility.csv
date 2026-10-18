@@ -1,0 +1,703 @@
+seizure_id,sub,run,group,onset_s,eligible,reason
+sub-001_r03_57975,sub-001,3,focal_nonmotor,57975.0,True,ok
+sub-001_r05_60968,sub-001,5,focal_nonmotor,60968.0,True,ok
+sub-001_r07_16300,sub-001,7,focal_motor,16300.0,True,ok
+sub-001_r08_28285,sub-001,8,focal_motor,28285.0,True,ok
+sub-002_r01_4046,sub-002,1,focal_nonmotor,4046.0,True,ok
+sub-002_r01_10629,sub-002,1,focal_motor,10629.0,True,ok
+sub-002_r02_5224,sub-002,2,focal_motor,5224.0,True,ok
+sub-002_r02_13745,sub-002,2,focal_motor,13745.0,True,ok
+sub-002_r03_31537,sub-002,3,focal_motor,31537.0,True,ok
+sub-002_r05_69796,sub-002,5,focal_motor,69796.0,True,ok
+sub-002_r05_74529,sub-002,5,focal_motor,74529.0,True,ok
+sub-002_r06_72558,sub-002,6,focal_motor,72558.0,True,ok
+sub-002_r06_77054,sub-002,6,focal_motor,77054.0,True,ok
+sub-002_r06_80526,sub-002,6,focal_motor,80526.0,True,ok
+sub-002_r09_16790,sub-002,9,focal_motor,16790.0,True,ok
+sub-002_r09_22216,sub-002,9,focal_motor,22216.0,True,ok
+sub-002_r09_27736,sub-002,9,focal_motor,27736.0,True,ok
+sub-002_r09_28456,sub-002,9,focal_motor,28456.0,True,ok
+sub-002_r10_4494,sub-002,10,focal_motor,4494.0,True,ok
+sub-003_r06_32694,sub-003,6,focal_motor,32694.0,True,ok
+sub-004_r01_1359,sub-004,1,focal_nonmotor,1359.0,True,ok
+sub-004_r01_8300,sub-004,1,focal_nonmotor,8300.0,True,ok
+sub-004_r01_19956,sub-004,1,focal_nonmotor,19956.0,True,ok
+sub-004_r01_26559,sub-004,1,focal_nonmotor,26559.0,True,ok
+sub-005_r22_6229,sub-005,22,focal_nonmotor,6229.0,True,ok
+sub-005_r23_29813,sub-005,23,focal_nonmotor,29813.0,True,ok
+sub-006_r01_16370,sub-006,1,focal_motor,16370.0,True,ok
+sub-007_r03_22266,sub-007,3,focal_nonmotor,22266.0,True,ok
+sub-007_r03_69419,sub-007,3,focal_nonmotor,69419.0,True,ok
+sub-008_r01_9492,sub-008,1,focal_motor,9492.0,True,ok
+sub-008_r09_4077,sub-008,9,focal_motor,4077.0,True,ok
+sub-009_r09_12198,sub-009,9,focal_motor,12198.0,True,ok
+sub-010_r08_13121,sub-010,8,focal_nonmotor,13121.0,True,ok
+sub-011_r02_33,sub-011,2,focal_unknown_motor,33.0,False,onset < 600 s into the recording
+sub-011_r03_20528,sub-011,3,focal_motor,20528.0,True,ok
+sub-011_r03_34064,sub-011,3,focal_motor,34064.0,True,ok
+sub-011_r05_2413,sub-011,5,focal_motor,2413.0,True,ok
+sub-012_r03_29432,sub-012,3,focal_nonmotor,29432.0,True,ok
+sub-012_r03_75236,sub-012,3,focal_motor,75236.0,True,ok
+sub-012_r05_19217,sub-012,5,focal_motor,19217.0,True,ok
+sub-013_r01_13124,sub-013,1,focal_nonmotor,13124.0,True,ok
+sub-013_r01_43588,sub-013,1,focal_nonmotor,43588.0,True,ok
+sub-014_r01_32885,sub-014,1,focal_unknown_motor,32885.0,True,ok
+sub-014_r03_23103,sub-014,3,focal_nonmotor,23103.0,True,ok
+sub-015_r01_40361,sub-015,1,focal_motor,40361.0,True,ok
+sub-015_r03_2924,sub-015,3,focal_motor,2924.0,True,ok
+sub-015_r04_13311,sub-015,4,focal_motor,13311.0,True,ok
+sub-015_r04_23038,sub-015,4,focal_motor,23038.0,True,ok
+sub-015_r04_52473,sub-015,4,FBTC,52473.0,True,ok
+sub-015_r06_3724,sub-015,6,focal_motor,3724.0,True,ok
+sub-015_r08_6817,sub-015,8,focal_motor,6817.0,True,ok
+sub-015_r09_10406,sub-015,9,focal_motor,10406.0,True,ok
+sub-015_r09_37974,sub-015,9,focal_motor,37974.0,True,ok
+sub-016_r02_12491,sub-016,2,focal_nonmotor,12491.0,True,ok
+sub-016_r03_3076,sub-016,3,FBTC,3076.0,True,ok
+sub-017_r01_21268,sub-017,1,FBTC,21268.0,True,ok
+sub-018_r03_55807,sub-018,3,focal_motor,55807.0,True,ok
+sub-019_r07_33765,sub-019,7,FBTC,33765.0,True,ok
+sub-020_r05_25633,sub-020,5,focal_nonmotor,25633.0,True,ok
+sub-021_r01_12601,sub-021,1,focal_motor,12601.0,True,ok
+sub-021_r04_12746,sub-021,4,focal_motor,12746.0,True,ok
+sub-021_r04_59556,sub-021,4,focal_motor,59556.0,True,ok
+sub-021_r04_68064,sub-021,4,focal_motor,68064.0,True,ok
+sub-022_r03_2840,sub-022,3,focal_motor,2840.0,True,ok
+sub-022_r04_1961,sub-022,4,focal_motor,1961.0,True,ok
+sub-022_r04_18571,sub-022,4,focal_motor,18571.0,True,ok
+sub-022_r04_65318,sub-022,4,focal_motor,65318.0,True,ok
+sub-022_r06_19703,sub-022,6,focal_motor,19703.0,True,ok
+sub-022_r06_27743,sub-022,6,focal_motor,27743.0,True,ok
+sub-022_r10_15635,sub-022,10,focal_motor,15635.0,True,ok
+sub-023_r03_47185,sub-023,3,FBTC,47185.0,True,ok
+sub-024_r01_33583,sub-024,1,FBTC,33583.0,True,ok
+sub-024_r07_57264,sub-024,7,FBTC,57264.0,True,ok
+sub-025_r03_3986,sub-025,3,focal_motor,3986.0,True,ok
+sub-025_r04_11582,sub-025,4,focal_motor,11582.0,True,ok
+sub-025_r04_62990,sub-025,4,FBTC,62990.0,True,ok
+sub-026_r01_2418,sub-026,1,focal_motor,2418.0,True,ok
+sub-026_r03_3446,sub-026,3,focal_motor,3446.0,True,ok
+sub-026_r04_13221,sub-026,4,focal_motor,13221.0,True,ok
+sub-026_r06_4611,sub-026,6,focal_motor,4611.0,True,ok
+sub-027_r07_59406,sub-027,7,FBTC,59406.0,True,ok
+sub-028_r01_4980,sub-028,1,focal_motor,4980.0,True,ok
+sub-028_r04_46055,sub-028,4,focal_nonmotor,46055.0,True,ok
+sub-028_r04_66452,sub-028,4,focal_motor,66452.0,True,ok
+sub-028_r05_8024,sub-028,5,focal_motor,8024.0,True,ok
+sub-029_r08_36543,sub-029,8,focal_nonmotor,36543.0,True,ok
+sub-029_r08_46370,sub-029,8,FBTC,46370.0,True,ok
+sub-029_r10_26972,sub-029,10,focal_nonmotor,26972.0,True,ok
+sub-029_r10_54485,sub-029,10,focal_nonmotor,54485.0,True,ok
+sub-030_r03_52442,sub-030,3,focal_nonmotor,52442.0,True,ok
+sub-030_r03_72505,sub-030,3,focal_motor,72505.0,True,ok
+sub-030_r04_1446,sub-030,4,focal_nonmotor,1446.0,True,ok
+sub-030_r04_2951,sub-030,4,focal_nonmotor,2951.0,True,ok
+sub-030_r05_19023,sub-030,5,focal_nonmotor,19023.0,True,ok
+sub-030_r05_28292,sub-030,5,focal_nonmotor,28292.0,True,ok
+sub-030_r05_39155,sub-030,5,focal_nonmotor,39155.0,True,ok
+sub-031_r03_877,sub-031,3,focal_nonmotor,877.0,True,ok
+sub-031_r03_42179,sub-031,3,focal_nonmotor,42179.0,True,ok
+sub-031_r03_56454,sub-031,3,FBTC,56454.0,True,ok
+sub-032_r05_1585,sub-032,5,FBTC,1585.0,True,ok
+sub-033_r12_10130,sub-033,12,focal_motor,10130.0,True,ok
+sub-034_r01_5477,sub-034,1,focal_motor,5477.0,True,ok
+sub-034_r03_11462,sub-034,3,focal_motor,11462.0,True,ok
+sub-034_r03_16836,sub-034,3,focal_motor,16836.0,True,ok
+sub-034_r03_19827,sub-034,3,focal_motor,19827.0,True,ok
+sub-034_r03_22516,sub-034,3,focal_motor,22516.0,True,ok
+sub-034_r03_25156,sub-034,3,focal_motor,25156.0,True,ok
+sub-034_r03_29297,sub-034,3,focal_motor,29297.0,True,ok
+sub-034_r03_31427,sub-034,3,focal_motor,31427.0,True,ok
+sub-034_r04_2135,sub-034,4,focal_motor,2135.0,True,ok
+sub-034_r07_47994,sub-034,7,focal_motor,47994.0,True,ok
+sub-034_r07_50359,sub-034,7,focal_motor,50359.0,True,ok
+sub-034_r07_52019,sub-034,7,focal_motor,52019.0,True,ok
+sub-034_r07_54651,sub-034,7,focal_motor,54651.0,True,ok
+sub-034_r07_56463,sub-034,7,focal_motor,56463.0,True,ok
+sub-034_r07_66142,sub-034,7,focal_motor,66142.0,True,ok
+sub-034_r08_1813,sub-034,8,focal_motor,1813.0,True,ok
+sub-034_r08_6321,sub-034,8,focal_motor,6321.0,True,ok
+sub-034_r09_1664,sub-034,9,focal_motor,1664.0,True,ok
+sub-034_r09_41984,sub-034,9,focal_motor,41984.0,True,ok
+sub-034_r09_44446,sub-034,9,focal_motor,44446.0,True,ok
+sub-034_r09_46490,sub-034,9,focal_motor,46490.0,True,ok
+sub-034_r09_49665,sub-034,9,focal_motor,49665.0,True,ok
+sub-034_r09_52260,sub-034,9,focal_motor,52260.0,True,ok
+sub-034_r09_53435,sub-034,9,focal_motor,53435.0,True,ok
+sub-034_r09_55077,sub-034,9,focal_motor,55077.0,True,ok
+sub-034_r09_56422,sub-034,9,focal_motor,56422.0,True,ok
+sub-034_r09_57799,sub-034,9,focal_motor,57799.0,True,ok
+sub-034_r09_59797,sub-034,9,focal_motor,59797.0,True,ok
+sub-034_r10_800,sub-034,10,focal_motor,800.0,True,ok
+sub-034_r10_5975,sub-034,10,focal_motor,5975.0,True,ok
+sub-035_r03_20397,sub-035,3,focal_motor,20397.0,True,ok
+sub-035_r03_23343,sub-035,3,focal_motor,23343.0,True,ok
+sub-035_r03_24019,sub-035,3,focal_motor,24019.0,True,ok
+sub-035_r03_30747,sub-035,3,focal_motor,30747.0,True,ok
+sub-035_r03_31486,sub-035,3,focal_motor,31486.0,True,ok
+sub-035_r03_32328,sub-035,3,focal_motor,32328.0,True,ok
+sub-035_r03_32566,sub-035,3,focal_motor,32566.0,False,another seizure in the preceding 600 s
+sub-035_r03_33188,sub-035,3,focal_motor,33188.0,True,ok
+sub-035_r03_34090,sub-035,3,focal_motor,34090.0,True,ok
+sub-035_r03_34606,sub-035,3,focal_motor,34606.0,False,another seizure in the preceding 600 s
+sub-035_r03_34941,sub-035,3,focal_motor,34941.0,False,another seizure in the preceding 600 s
+sub-035_r03_35134,sub-035,3,focal_motor,35134.0,False,another seizure in the preceding 600 s
+sub-035_r03_35686,sub-035,3,focal_motor,35686.0,False,another seizure in the preceding 600 s
+sub-035_r04_412,sub-035,4,focal_motor,412.0,False,onset < 600 s into the recording
+sub-035_r04_1099,sub-035,4,focal_motor,1099.0,True,ok
+sub-035_r04_4660,sub-035,4,focal_motor,4660.0,True,ok
+sub-035_r06_10398,sub-035,6,focal_motor,10398.0,True,ok
+sub-035_r06_10679,sub-035,6,focal_motor,10679.0,False,another seizure in the preceding 600 s
+sub-035_r06_24666,sub-035,6,focal_motor,24666.0,True,ok
+sub-035_r07_18120,sub-035,7,focal_motor,18120.0,True,ok
+sub-035_r07_31615,sub-035,7,focal_motor,31615.0,True,ok
+sub-035_r07_32069,sub-035,7,focal_motor,32069.0,False,another seizure in the preceding 600 s
+sub-035_r07_32754,sub-035,7,focal_motor,32754.0,True,ok
+sub-035_r07_33273,sub-035,7,focal_motor,33273.0,False,another seizure in the preceding 600 s
+sub-035_r07_33551,sub-035,7,focal_motor,33551.0,False,another seizure in the preceding 600 s
+sub-035_r07_35733,sub-035,7,focal_motor,35733.0,True,ok
+sub-035_r07_35965,sub-035,7,focal_motor,35965.0,False,another seizure in the preceding 600 s
+sub-035_r07_36701,sub-035,7,focal_motor,36701.0,True,ok
+sub-035_r07_37098,sub-035,7,focal_motor,37098.0,False,another seizure in the preceding 600 s
+sub-035_r07_37596,sub-035,7,focal_motor,37596.0,False,another seizure in the preceding 600 s
+sub-035_r07_37916,sub-035,7,focal_motor,37916.0,False,another seizure in the preceding 600 s
+sub-035_r07_38407,sub-035,7,focal_motor,38407.0,False,another seizure in the preceding 600 s
+sub-035_r07_38691,sub-035,7,focal_motor,38691.0,False,another seizure in the preceding 600 s
+sub-035_r09_11841,sub-035,9,focal_motor,11841.0,True,ok
+sub-035_r09_13318,sub-035,9,focal_motor,13318.0,True,ok
+sub-035_r09_13689,sub-035,9,focal_motor,13689.0,False,another seizure in the preceding 600 s
+sub-035_r09_13840,sub-035,9,focal_motor,13840.0,False,another seizure in the preceding 600 s
+sub-035_r11_25905,sub-035,11,focal_motor,25905.0,True,ok
+sub-035_r11_28581,sub-035,11,focal_motor,28581.0,True,ok
+sub-035_r11_29756,sub-035,11,focal_motor,29756.0,True,ok
+sub-035_r11_30872,sub-035,11,focal_motor,30872.0,True,ok
+sub-035_r11_32598,sub-035,11,focal_motor,32598.0,True,ok
+sub-035_r11_34286,sub-035,11,focal_motor,34286.0,True,ok
+sub-035_r11_34664,sub-035,11,focal_motor,34664.0,False,another seizure in the preceding 600 s
+sub-035_r11_34998,sub-035,11,focal_motor,34998.0,False,another seizure in the preceding 600 s
+sub-035_r11_35467,sub-035,11,focal_motor,35467.0,False,another seizure in the preceding 600 s
+sub-035_r11_36099,sub-035,11,focal_motor,36099.0,True,ok
+sub-035_r11_36589,sub-035,11,focal_motor,36589.0,False,another seizure in the preceding 600 s
+sub-035_r11_37098,sub-035,11,focal_motor,37098.0,False,another seizure in the preceding 600 s
+sub-035_r12_1801,sub-035,12,focal_motor,1801.0,True,ok
+sub-035_r14_9057,sub-035,14,focal_motor,9057.0,True,ok
+sub-035_r14_9450,sub-035,14,focal_motor,9450.0,False,another seizure in the preceding 600 s
+sub-035_r14_9688,sub-035,14,focal_motor,9688.0,False,another seizure in the preceding 600 s
+sub-035_r14_11239,sub-035,14,focal_motor,11239.0,True,ok
+sub-035_r14_11738,sub-035,14,focal_motor,11738.0,False,another seizure in the preceding 600 s
+sub-036_r01_40971,sub-036,1,focal_motor,40971.0,True,ok
+sub-036_r01_43485,sub-036,1,focal_motor,43485.0,True,ok
+sub-036_r01_46456,sub-036,1,focal_motor,46456.0,True,ok
+sub-037_r01_70421,sub-037,1,focal_motor,70421.0,True,ok
+sub-037_r01_74430,sub-037,1,focal_motor,74430.0,True,ok
+sub-038_r07_86416,sub-038,7,focal_motor,86416.0,True,ok
+sub-039_r01_11410,sub-039,1,focal_motor,11410.0,True,ok
+sub-039_r01_15928,sub-039,1,focal_motor,15928.0,True,ok
+sub-039_r01_30269,sub-039,1,focal_motor,30269.0,True,ok
+sub-039_r01_35010,sub-039,1,focal_motor,35010.0,True,ok
+sub-039_r01_35631,sub-039,1,focal_motor,35631.0,True,ok
+sub-039_r01_36044,sub-039,1,focal_motor,36044.0,False,another seizure in the preceding 600 s
+sub-039_r01_36402,sub-039,1,focal_motor,36402.0,False,another seizure in the preceding 600 s
+sub-039_r01_37011,sub-039,1,focal_nonmotor,37011.0,True,ok
+sub-039_r01_42268,sub-039,1,focal_nonmotor,42268.0,True,ok
+sub-039_r01_45330,sub-039,1,focal_nonmotor,45330.0,True,ok
+sub-039_r01_61394,sub-039,1,focal_nonmotor,61394.0,True,ok
+sub-039_r01_67186,sub-039,1,focal_nonmotor,67186.0,True,ok
+sub-039_r02_2471,sub-039,2,focal_motor,2471.0,True,ok
+sub-039_r02_8852,sub-039,2,focal_motor,8852.0,True,ok
+sub-039_r03_1283,sub-039,3,focal_motor,1283.0,True,ok
+sub-039_r04_336,sub-039,4,focal_motor,336.0,False,onset < 600 s into the recording
+sub-039_r04_4094,sub-039,4,focal_motor,4094.0,True,ok
+sub-039_r04_7193,sub-039,4,focal_motor,7193.0,True,ok
+sub-039_r04_13338,sub-039,4,focal_motor,13338.0,True,ok
+sub-039_r04_21502,sub-039,4,focal_motor,21502.0,True,ok
+sub-039_r04_28824,sub-039,4,focal_nonmotor,28824.0,True,ok
+sub-039_r04_29274,sub-039,4,focal_nonmotor,29274.0,False,another seizure in the preceding 600 s
+sub-039_r04_29863,sub-039,4,focal_nonmotor,29863.0,False,another seizure in the preceding 600 s
+sub-039_r04_30271,sub-039,4,focal_nonmotor,30271.0,False,another seizure in the preceding 600 s
+sub-039_r04_30967,sub-039,4,focal_motor,30967.0,True,ok
+sub-039_r04_31632,sub-039,4,focal_motor,31632.0,True,ok
+sub-039_r04_34405,sub-039,4,focal_motor,34405.0,True,ok
+sub-039_r04_37352,sub-039,4,focal_motor,37352.0,True,ok
+sub-039_r04_38336,sub-039,4,focal_motor,38336.0,True,ok
+sub-039_r04_39865,sub-039,4,focal_motor,39865.0,True,ok
+sub-039_r04_40827,sub-039,4,focal_motor,40827.0,True,ok
+sub-039_r04_42518,sub-039,4,focal_nonmotor,42518.0,True,ok
+sub-039_r04_46813,sub-039,4,focal_motor,46813.0,True,ok
+sub-039_r04_47255,sub-039,4,focal_motor,47255.0,False,another seizure in the preceding 600 s
+sub-039_r04_48488,sub-039,4,focal_motor,48488.0,True,ok
+sub-039_r04_61281,sub-039,4,focal_motor,61281.0,True,ok
+sub-039_r04_63218,sub-039,4,focal_motor,63218.0,True,ok
+sub-039_r06_551,sub-039,6,focal_motor,551.0,False,onset < 600 s into the recording
+sub-039_r06_7857,sub-039,6,focal_motor,7857.0,True,ok
+sub-039_r06_15660,sub-039,6,focal_motor,15660.0,True,ok
+sub-039_r06_19330,sub-039,6,focal_motor,19330.0,True,ok
+sub-039_r06_22393,sub-039,6,focal_motor,22393.0,True,ok
+sub-039_r06_26606,sub-039,6,focal_motor,26606.0,True,ok
+sub-039_r06_31747,sub-039,6,focal_motor,31747.0,True,ok
+sub-039_r06_47474,sub-039,6,focal_unknown_motor,47474.0,True,ok
+sub-039_r06_47825,sub-039,6,focal_unknown_motor,47825.0,False,another seizure in the preceding 600 s
+sub-039_r06_48152,sub-039,6,focal_unknown_motor,48152.0,False,another seizure in the preceding 600 s
+sub-039_r06_48544,sub-039,6,focal_unknown_motor,48544.0,False,another seizure in the preceding 600 s
+sub-039_r06_54875,sub-039,6,focal_unknown_motor,54875.0,True,ok
+sub-039_r06_62041,sub-039,6,focal_unknown_motor,62041.0,True,ok
+sub-039_r06_65191,sub-039,6,focal_unknown_motor,65191.0,True,ok
+sub-039_r06_66305,sub-039,6,focal_unknown_motor,66305.0,True,ok
+sub-039_r06_68378,sub-039,6,focal_unknown_motor,68378.0,True,ok
+sub-039_r06_78789,sub-039,6,focal_unknown_motor,78789.0,True,ok
+sub-039_r08_15465,sub-039,8,focal_unknown_motor,15465.0,True,ok
+sub-039_r09_10591,sub-039,9,focal_motor,10591.0,True,ok
+sub-039_r09_26285,sub-039,9,focal_unknown_motor,26285.0,True,ok
+sub-039_r09_26484,sub-039,9,focal_unknown_motor,26484.0,False,another seizure in the preceding 600 s
+sub-039_r09_26769,sub-039,9,focal_motor,26769.0,False,another seizure in the preceding 600 s
+sub-039_r09_27016,sub-039,9,focal_unknown_motor,27016.0,False,another seizure in the preceding 600 s
+sub-039_r09_27223,sub-039,9,focal_unknown_motor,27223.0,False,another seizure in the preceding 600 s
+sub-039_r09_27710,sub-039,9,focal_unknown_motor,27710.0,False,another seizure in the preceding 600 s
+sub-039_r09_28421,sub-039,9,focal_unknown_motor,28421.0,True,ok
+sub-039_r09_29554,sub-039,9,focal_unknown_motor,29554.0,True,ok
+sub-039_r09_31119,sub-039,9,focal_unknown_motor,31119.0,True,ok
+sub-039_r09_31783,sub-039,9,focal_unknown_motor,31783.0,True,ok
+sub-039_r09_33117,sub-039,9,focal_unknown_motor,33117.0,True,ok
+sub-039_r09_35283,sub-039,9,focal_unknown_motor,35283.0,True,ok
+sub-039_r09_38127,sub-039,9,focal_unknown_motor,38127.0,True,ok
+sub-039_r09_39542,sub-039,9,focal_unknown_motor,39542.0,True,ok
+sub-039_r09_45761,sub-039,9,focal_unknown_motor,45761.0,True,ok
+sub-039_r09_52515,sub-039,9,focal_unknown_motor,52515.0,True,ok
+sub-039_r09_53438,sub-039,9,focal_unknown_motor,53438.0,True,ok
+sub-039_r09_57337,sub-039,9,focal_unknown_motor,57337.0,True,ok
+sub-039_r09_61026,sub-039,9,focal_unknown_motor,61026.0,True,ok
+sub-040_r04_7532,sub-040,4,focal_motor,7532.0,True,ok
+sub-040_r04_72267,sub-040,4,focal_motor,72267.0,True,ok
+sub-040_r05_36743,sub-040,5,focal_motor,36743.0,True,ok
+sub-041_r01_7458,sub-041,1,focal_nonmotor,7458.0,True,ok
+sub-041_r01_11431,sub-041,1,focal_nonmotor,11431.0,True,ok
+sub-042_r01_6886,sub-042,1,focal_unknown_motor,6886.0,True,ok
+sub-042_r01_7194,sub-042,1,focal_unknown_motor,7194.0,False,another seizure in the preceding 600 s
+sub-042_r01_13071,sub-042,1,focal_unknown_motor,13071.0,True,ok
+sub-042_r04_33583,sub-042,4,focal_nonmotor,33583.0,True,ok
+sub-042_r04_50273,sub-042,4,focal_nonmotor,50273.0,True,ok
+sub-042_r06_18480,sub-042,6,focal_unknown_motor,18480.0,True,ok
+sub-042_r07_5870,sub-042,7,focal_nonmotor,5870.0,True,ok
+sub-042_r07_6457,sub-042,7,focal_nonmotor,6457.0,False,another seizure in the preceding 600 s
+sub-042_r08_28419,sub-042,8,focal_nonmotor,28419.0,True,ok
+sub-042_r08_28849,sub-042,8,focal_nonmotor,28849.0,False,another seizure in the preceding 600 s
+sub-042_r08_33846,sub-042,8,focal_motor,33846.0,True,ok
+sub-043_r05_50155,sub-043,5,focal_unknown_motor,50155.0,True,ok
+sub-043_r06_5713,sub-043,6,focal_unknown_motor,5713.0,True,ok
+sub-043_r07_4616,sub-043,7,focal_motor,4616.0,True,ok
+sub-043_r08_3970,sub-043,8,focal_unknown_motor,3970.0,True,ok
+sub-043_r08_12664,sub-043,8,focal_unknown_motor,12664.0,True,ok
+sub-044_r01_34212,sub-044,1,focal_motor,34212.0,True,ok
+sub-044_r05_72867,sub-044,5,focal_motor,72867.0,True,ok
+sub-044_r05_73301,sub-044,5,focal_nonmotor,73301.0,False,another seizure in the preceding 600 s
+sub-044_r05_74661,sub-044,5,focal_nonmotor,74661.0,True,ok
+sub-045_r03_2067,sub-045,3,focal_motor,2067.0,True,ok
+sub-045_r09_4648,sub-045,9,focal_motor,4648.0,True,ok
+sub-046_r01_22736,sub-046,1,focal_nonmotor,22736.0,True,ok
+sub-046_r01_45983,sub-046,1,focal_nonmotor,45983.0,True,ok
+sub-046_r01_49920,sub-046,1,FBTC,49920.0,True,ok
+sub-046_r01_55096,sub-046,1,FBTC,55096.0,True,ok
+sub-047_r01_5357,sub-047,1,focal_nonmotor,5357.0,True,ok
+sub-047_r01_5547,sub-047,1,focal_nonmotor,5547.0,False,another seizure in the preceding 600 s
+sub-047_r01_5852,sub-047,1,focal_nonmotor,5852.0,False,another seizure in the preceding 600 s
+sub-047_r01_6018,sub-047,1,focal_nonmotor,6018.0,False,another seizure in the preceding 600 s
+sub-047_r01_6099,sub-047,1,focal_nonmotor,6099.0,False,another seizure in the preceding 600 s
+sub-047_r01_6235,sub-047,1,focal_nonmotor,6235.0,False,another seizure in the preceding 600 s
+sub-047_r02_35594,sub-047,2,focal_nonmotor,35594.0,True,ok
+sub-047_r02_35837,sub-047,2,focal_nonmotor,35837.0,False,another seizure in the preceding 600 s
+sub-047_r02_36044,sub-047,2,focal_nonmotor,36044.0,False,another seizure in the preceding 600 s
+sub-047_r02_57461,sub-047,2,focal_nonmotor,57461.0,True,ok
+sub-047_r02_57603,sub-047,2,focal_nonmotor,57603.0,False,another seizure in the preceding 600 s
+sub-047_r02_57663,sub-047,2,focal_nonmotor,57663.0,False,another seizure in the preceding 600 s
+sub-047_r02_57738,sub-047,2,focal_nonmotor,57738.0,False,another seizure in the preceding 600 s
+sub-047_r02_58087,sub-047,2,focal_nonmotor,58087.0,False,another seizure in the preceding 600 s
+sub-047_r02_58190,sub-047,2,focal_nonmotor,58190.0,False,another seizure in the preceding 600 s
+sub-047_r02_58369,sub-047,2,focal_nonmotor,58369.0,False,another seizure in the preceding 600 s
+sub-047_r02_58652,sub-047,2,focal_nonmotor,58652.0,False,another seizure in the preceding 600 s
+sub-047_r02_59088,sub-047,2,focal_nonmotor,59088.0,False,another seizure in the preceding 600 s
+sub-047_r03_2602,sub-047,3,focal_nonmotor,2602.0,True,ok
+sub-047_r03_2683,sub-047,3,focal_nonmotor,2683.0,False,another seizure in the preceding 600 s
+sub-047_r03_2767,sub-047,3,focal_nonmotor,2767.0,False,another seizure in the preceding 600 s
+sub-047_r03_2873,sub-047,3,focal_nonmotor,2873.0,False,another seizure in the preceding 600 s
+sub-047_r03_3449,sub-047,3,focal_nonmotor,3449.0,False,another seizure in the preceding 600 s
+sub-047_r04_38412,sub-047,4,focal_nonmotor,38412.0,True,ok
+sub-047_r04_38490,sub-047,4,focal_nonmotor,38490.0,False,another seizure in the preceding 600 s
+sub-047_r04_38530,sub-047,4,focal_nonmotor,38530.0,False,another seizure in the preceding 600 s
+sub-047_r04_38575,sub-047,4,focal_nonmotor,38575.0,False,another seizure in the preceding 600 s
+sub-047_r04_38631,sub-047,4,focal_nonmotor,38631.0,False,another seizure in the preceding 600 s
+sub-047_r04_38691,sub-047,4,focal_nonmotor,38691.0,False,another seizure in the preceding 600 s
+sub-047_r04_38766,sub-047,4,focal_nonmotor,38766.0,False,another seizure in the preceding 600 s
+sub-047_r04_38858,sub-047,4,focal_nonmotor,38858.0,False,another seizure in the preceding 600 s
+sub-047_r04_38892,sub-047,4,focal_nonmotor,38892.0,False,another seizure in the preceding 600 s
+sub-047_r04_39052,sub-047,4,focal_nonmotor,39052.0,False,another seizure in the preceding 600 s
+sub-047_r04_39091,sub-047,4,focal_nonmotor,39091.0,False,another seizure in the preceding 600 s
+sub-047_r04_39154,sub-047,4,focal_nonmotor,39154.0,False,another seizure in the preceding 600 s
+sub-047_r04_68924,sub-047,4,focal_nonmotor,68924.0,True,ok
+sub-047_r04_69039,sub-047,4,focal_nonmotor,69039.0,False,another seizure in the preceding 600 s
+sub-047_r04_69108,sub-047,4,focal_nonmotor,69108.0,False,another seizure in the preceding 600 s
+sub-047_r04_69186,sub-047,4,focal_nonmotor,69186.0,False,another seizure in the preceding 600 s
+sub-047_r04_69278,sub-047,4,focal_nonmotor,69278.0,False,another seizure in the preceding 600 s
+sub-047_r04_69379,sub-047,4,focal_nonmotor,69379.0,False,another seizure in the preceding 600 s
+sub-047_r04_69450,sub-047,4,focal_nonmotor,69450.0,False,another seizure in the preceding 600 s
+sub-047_r04_69548,sub-047,4,focal_nonmotor,69548.0,False,another seizure in the preceding 600 s
+sub-047_r04_69906,sub-047,4,focal_nonmotor,69906.0,False,another seizure in the preceding 600 s
+sub-047_r06_14441,sub-047,6,focal_nonmotor,14441.0,True,ok
+sub-047_r06_14506,sub-047,6,focal_nonmotor,14506.0,False,another seizure in the preceding 600 s
+sub-047_r06_14579,sub-047,6,focal_nonmotor,14579.0,False,another seizure in the preceding 600 s
+sub-047_r06_14672,sub-047,6,focal_nonmotor,14672.0,False,another seizure in the preceding 600 s
+sub-047_r06_14839,sub-047,6,focal_nonmotor,14839.0,False,another seizure in the preceding 600 s
+sub-047_r06_14917,sub-047,6,focal_nonmotor,14917.0,False,another seizure in the preceding 600 s
+sub-047_r07_31873,sub-047,7,focal_nonmotor,31873.0,True,ok
+sub-047_r07_47628,sub-047,7,focal_nonmotor,47628.0,True,ok
+sub-047_r07_47776,sub-047,7,focal_nonmotor,47776.0,False,another seizure in the preceding 600 s
+sub-047_r07_49202,sub-047,7,focal_nonmotor,49202.0,True,ok
+sub-047_r07_49383,sub-047,7,focal_nonmotor,49383.0,False,another seizure in the preceding 600 s
+sub-047_r07_49592,sub-047,7,focal_nonmotor,49592.0,False,another seizure in the preceding 600 s
+sub-047_r07_49709,sub-047,7,focal_nonmotor,49709.0,False,another seizure in the preceding 600 s
+sub-047_r07_49944,sub-047,7,focal_nonmotor,49944.0,False,another seizure in the preceding 600 s
+sub-047_r07_50099,sub-047,7,focal_nonmotor,50099.0,False,another seizure in the preceding 600 s
+sub-047_r07_50224,sub-047,7,focal_nonmotor,50224.0,False,another seizure in the preceding 600 s
+sub-047_r07_50316,sub-047,7,focal_nonmotor,50316.0,False,another seizure in the preceding 600 s
+sub-047_r07_50462,sub-047,7,focal_nonmotor,50462.0,False,another seizure in the preceding 600 s
+sub-047_r07_50663,sub-047,7,focal_nonmotor,50663.0,False,another seizure in the preceding 600 s
+sub-047_r07_50884,sub-047,7,focal_nonmotor,50884.0,False,another seizure in the preceding 600 s
+sub-048_r06_15077,sub-048,6,focal_unknown_motor,15077.0,False,no ECG/EMG/MOV file
+sub-049_r02_30380,sub-049,2,FBTC,30380.0,True,ok
+sub-050_r05_15811,sub-050,5,focal_nonmotor,15811.0,True,ok
+sub-050_r05_17521,sub-050,5,focal_motor,17521.0,True,ok
+sub-050_r05_25235,sub-050,5,focal_motor,25235.0,True,ok
+sub-051_r01_12608,sub-051,1,focal_unknown_motor,12608.0,True,ok
+sub-051_r01_27803,sub-051,1,focal_unknown_motor,27803.0,True,ok
+sub-051_r01_46770,sub-051,1,focal_motor,46770.0,True,ok
+sub-051_r02_17418,sub-051,2,focal_motor,17418.0,True,ok
+sub-051_r02_21688,sub-051,2,focal_motor,21688.0,True,ok
+sub-052_r01_29580,sub-052,1,focal_nonmotor,29580.0,True,ok
+sub-052_r03_15248,sub-052,3,focal_nonmotor,15248.0,True,ok
+sub-052_r05_11235,sub-052,5,focal_nonmotor,11235.0,True,ok
+sub-052_r05_16727,sub-052,5,focal_motor,16727.0,True,ok
+sub-052_r05_35901,sub-052,5,focal_motor,35901.0,True,ok
+sub-052_r07_7833,sub-052,7,focal_nonmotor,7833.0,True,ok
+sub-052_r07_17785,sub-052,7,focal_nonmotor,17785.0,True,ok
+sub-052_r07_28287,sub-052,7,focal_nonmotor,28287.0,True,ok
+sub-052_r08_32186,sub-052,8,focal_nonmotor,32186.0,True,ok
+sub-053_r02_31223,sub-053,2,focal_motor,31223.0,True,ok
+sub-053_r03_13670,sub-053,3,focal_motor,13670.0,True,ok
+sub-054_r04_11683,sub-054,4,FBTC,11683.0,True,ok
+sub-055_r01_40004,sub-055,1,focal_nonmotor,40004.0,True,ok
+sub-055_r01_40380,sub-055,1,focal_nonmotor,40380.0,False,another seizure in the preceding 600 s
+sub-055_r01_40842,sub-055,1,focal_nonmotor,40842.0,False,another seizure in the preceding 600 s
+sub-055_r01_41183,sub-055,1,focal_nonmotor,41183.0,False,another seizure in the preceding 600 s
+sub-055_r01_41284,sub-055,1,focal_nonmotor,41284.0,False,another seizure in the preceding 600 s
+sub-055_r02_70,sub-055,2,focal_nonmotor,70.0,False,onset < 600 s into the recording
+sub-055_r02_19901,sub-055,2,focal_nonmotor,19901.0,True,ok
+sub-055_r03_9199,sub-055,3,focal_nonmotor,9199.0,True,ok
+sub-056_r02_780,sub-056,2,focal_motor,780.0,True,ok
+sub-056_r02_20503,sub-056,2,focal_motor,20503.0,True,ok
+sub-056_r02_44280,sub-056,2,focal_motor,44280.0,True,ok
+sub-056_r03_12667,sub-056,3,focal_motor,12667.0,True,ok
+sub-056_r03_29846,sub-056,3,focal_motor,29846.0,True,ok
+sub-056_r04_7,sub-056,4,focal_motor,7.0,False,onset < 600 s into the recording
+sub-056_r04_13855,sub-056,4,focal_motor,13855.0,True,ok
+sub-056_r04_16547,sub-056,4,focal_motor,16547.0,True,ok
+sub-056_r04_19223,sub-056,4,focal_motor,19223.0,True,ok
+sub-056_r04_21967,sub-056,4,focal_motor,21967.0,True,ok
+sub-056_r04_49621,sub-056,4,focal_motor,49621.0,True,ok
+sub-056_r05_9882,sub-056,5,focal_motor,9882.0,True,ok
+sub-056_r05_21536,sub-056,5,focal_motor,21536.0,True,ok
+sub-057_r06_19057,sub-057,6,focal_motor,19057.0,True,ok
+sub-058_r02_2390,sub-058,2,FBTC,2390.0,True,ok
+sub-059_r01_32171,sub-059,1,focal_nonmotor,32171.0,True,ok
+sub-059_r01_32329,sub-059,1,focal_nonmotor,32329.0,False,another seizure in the preceding 600 s
+sub-059_r01_32597,sub-059,1,focal_nonmotor,32597.0,False,another seizure in the preceding 600 s
+sub-059_r01_33103,sub-059,1,focal_motor,33103.0,False,another seizure in the preceding 600 s
+sub-059_r02_316,sub-059,2,focal_motor,316.0,False,onset < 600 s into the recording
+sub-059_r02_1118,sub-059,2,focal_nonmotor,1118.0,True,ok
+sub-059_r02_1316,sub-059,2,focal_motor,1316.0,False,another seizure in the preceding 600 s
+sub-059_r02_27825,sub-059,2,FBTC,27825.0,True,ok
+sub-060_r01_288,sub-060,1,focal_nonmotor,288.0,False,onset < 600 s into the recording
+sub-060_r01_12246,sub-060,1,focal_nonmotor,12246.0,True,ok
+sub-060_r01_15558,sub-060,1,focal_nonmotor,15558.0,True,ok
+sub-060_r01_15965,sub-060,1,focal_nonmotor,15965.0,False,another seizure in the preceding 600 s
+sub-060_r02_34613,sub-060,2,focal_nonmotor,34613.0,True,ok
+sub-060_r02_35554,sub-060,2,focal_nonmotor,35554.0,True,ok
+sub-060_r02_36070,sub-060,2,focal_nonmotor,36070.0,False,another seizure in the preceding 600 s
+sub-060_r02_36872,sub-060,2,focal_nonmotor,36872.0,True,ok
+sub-060_r02_38410,sub-060,2,focal_nonmotor,38410.0,True,ok
+sub-060_r02_39702,sub-060,2,focal_nonmotor,39702.0,True,ok
+sub-060_r02_41039,sub-060,2,focal_nonmotor,41039.0,True,ok
+sub-060_r02_57930,sub-060,2,focal_nonmotor,57930.0,True,ok
+sub-060_r02_59874,sub-060,2,focal_nonmotor,59874.0,True,ok
+sub-060_r03_12999,sub-060,3,focal_nonmotor,12999.0,True,ok
+sub-060_r04_31331,sub-060,4,focal_nonmotor,31331.0,True,ok
+sub-060_r04_31769,sub-060,4,focal_nonmotor,31769.0,False,another seizure in the preceding 600 s
+sub-060_r04_32112,sub-060,4,focal_nonmotor,32112.0,False,another seizure in the preceding 600 s
+sub-060_r04_34820,sub-060,4,focal_nonmotor,34820.0,True,ok
+sub-060_r04_36445,sub-060,4,focal_nonmotor,36445.0,True,ok
+sub-060_r04_38627,sub-060,4,focal_nonmotor,38627.0,True,ok
+sub-060_r04_45654,sub-060,4,focal_nonmotor,45654.0,True,ok
+sub-060_r04_49895,sub-060,4,focal_nonmotor,49895.0,True,ok
+sub-060_r04_55567,sub-060,4,focal_nonmotor,55567.0,True,ok
+sub-060_r04_59813,sub-060,4,focal_nonmotor,59813.0,True,ok
+sub-060_r04_60952,sub-060,4,focal_nonmotor,60952.0,True,ok
+sub-061_r03_18791,sub-061,3,focal_unknown_motor,18791.0,True,ok
+sub-062_r01_35670,sub-062,1,focal_nonmotor,35670.0,True,ok
+sub-062_r02_19269,sub-062,2,focal_nonmotor,19269.0,True,ok
+sub-062_r06_2812,sub-062,6,focal_nonmotor,2812.0,True,ok
+sub-063_r04_18099,sub-063,4,focal_nonmotor,18099.0,True,ok
+sub-063_r04_49559,sub-063,4,focal_nonmotor,49559.0,True,ok
+sub-064_r01_14099,sub-064,1,FBTC,14099.0,True,ok
+sub-064_r02_31780,sub-064,2,focal_nonmotor,31780.0,True,ok
+sub-064_r02_59813,sub-064,2,focal_nonmotor,59813.0,True,ok
+sub-065_r03_10683,sub-065,3,focal_unknown_motor,10683.0,True,ok
+sub-065_r05_9938,sub-065,5,focal_unknown_motor,9938.0,True,ok
+sub-066_r06_24699,sub-066,6,focal_nonmotor,24699.0,True,ok
+sub-066_r09_8900,sub-066,9,focal_nonmotor,8900.0,True,ok
+sub-066_r12_1596,sub-066,12,focal_motor,1596.0,True,ok
+sub-066_r14_15856,sub-066,14,focal_motor,15856.0,True,ok
+sub-067_r05_27849,sub-067,5,focal_motor,27849.0,True,ok
+sub-067_r05_29422,sub-067,5,focal_motor,29422.0,True,ok
+sub-067_r05_32019,sub-067,5,focal_motor,32019.0,True,ok
+sub-067_r05_34533,sub-067,5,focal_motor,34533.0,True,ok
+sub-068_r05_26184,sub-068,5,FBTC,26184.0,True,ok
+sub-068_r06_9616,sub-068,6,FBTC,9616.0,True,ok
+sub-068_r09_2478,sub-068,9,focal_nonmotor,2478.0,True,ok
+sub-069_r33_17768,sub-069,33,FBTC,17768.0,True,ok
+sub-070_r12_17864,sub-070,12,FBTC,17864.0,True,ok
+sub-070_r14_240,sub-070,14,FBTC,240.0,False,onset < 600 s into the recording
+sub-071_r05_4645,sub-071,5,focal_unknown_motor,4645.0,True,ok
+sub-071_r08_719,sub-071,8,focal_unknown_motor,719.0,True,ok
+sub-071_r12_10508,sub-071,12,focal_unknown_motor,10508.0,True,ok
+sub-071_r13_11185,sub-071,13,focal_unknown_motor,11185.0,True,ok
+sub-071_r17_14406,sub-071,17,focal_unknown_motor,14406.0,True,ok
+sub-071_r18_1327,sub-071,18,focal_unknown_motor,1327.0,True,ok
+sub-072_r12_7298,sub-072,12,focal_motor,7298.0,True,ok
+sub-072_r12_10219,sub-072,12,focal_motor,10219.0,True,ok
+sub-072_r12_13635,sub-072,12,focal_motor,13635.0,True,ok
+sub-072_r12_18807,sub-072,12,focal_motor,18807.0,True,ok
+sub-072_r14_6,sub-072,14,focal_nonmotor,6.0,False,onset < 600 s into the recording
+sub-072_r15_78,sub-072,15,focal_nonmotor,78.0,False,onset < 600 s into the recording
+sub-072_r16_5706,sub-072,16,focal_nonmotor,5706.0,True,ok
+sub-072_r16_18435,sub-072,16,focal_nonmotor,18435.0,True,ok
+sub-072_r17_4789,sub-072,17,focal_nonmotor,4789.0,True,ok
+sub-072_r17_9134,sub-072,17,focal_nonmotor,9134.0,True,ok
+sub-072_r17_10946,sub-072,17,focal_nonmotor,10946.0,True,ok
+sub-072_r17_12708,sub-072,17,focal_nonmotor,12708.0,True,ok
+sub-072_r17_16270,sub-072,17,focal_nonmotor,16270.0,True,ok
+sub-072_r18_3247,sub-072,18,focal_nonmotor,3247.0,True,ok
+sub-072_r18_12274,sub-072,18,focal_nonmotor,12274.0,True,ok
+sub-072_r18_16964,sub-072,18,focal_nonmotor,16964.0,True,ok
+sub-072_r18_18566,sub-072,18,focal_nonmotor,18566.0,True,ok
+sub-072_r19_388,sub-072,19,focal_nonmotor,388.0,False,onset < 600 s into the recording
+sub-072_r22_2,sub-072,22,focal_nonmotor,2.0,False,onset < 600 s into the recording
+sub-072_r22_15960,sub-072,22,focal_nonmotor,15960.0,True,ok
+sub-073_r16_3369,sub-073,16,focal_motor,3369.0,True,ok
+sub-073_r20_233,sub-073,20,focal_unknown_motor,233.0,False,onset < 600 s into the recording
+sub-073_r24_14818,sub-073,24,focal_motor,14818.0,True,ok
+sub-073_r26_2612,sub-073,26,focal_unknown_motor,2612.0,True,ok
+sub-073_r27_18464,sub-073,27,focal_motor,18464.0,True,ok
+sub-073_r30_2628,sub-073,30,focal_motor,2628.0,True,ok
+sub-073_r31_7346,sub-073,31,focal_motor,7346.0,True,ok
+sub-073_r31_15378,sub-073,31,focal_motor,15378.0,True,ok
+sub-073_r32_7144,sub-073,32,focal_motor,7144.0,True,ok
+sub-073_r34_12104,sub-073,34,focal_unknown_motor,12104.0,True,ok
+sub-073_r35_15371,sub-073,35,focal_nonmotor,15371.0,True,ok
+sub-073_r36_6443,sub-073,36,focal_motor,6443.0,True,ok
+sub-073_r36_13207,sub-073,36,focal_motor,13207.0,True,ok
+sub-073_r36_14028,sub-073,36,focal_motor,14028.0,True,ok
+sub-073_r36_17995,sub-073,36,focal_motor,17995.0,True,ok
+sub-073_r37_2449,sub-073,37,FBTC,2449.0,True,ok
+sub-073_r37_4910,sub-073,37,focal_motor,4910.0,True,ok
+sub-073_r37_7308,sub-073,37,focal_motor,7308.0,True,ok
+sub-073_r37_12098,sub-073,37,focal_motor,12098.0,True,ok
+sub-073_r38_2982,sub-073,38,focal_unknown_motor,2982.0,True,ok
+sub-073_r38_6032,sub-073,38,focal_unknown_motor,6032.0,True,ok
+sub-073_r39_539,sub-073,39,focal_motor,539.0,False,onset < 600 s into the recording
+sub-073_r39_782,sub-073,39,focal_motor,782.0,False,another seizure in the preceding 600 s
+sub-073_r39_5458,sub-073,39,focal_motor,5458.0,True,ok
+sub-073_r39_6751,sub-073,39,focal_motor,6751.0,True,ok
+sub-073_r39_10239,sub-073,39,FBTC,10239.0,True,ok
+sub-073_r39_12677,sub-073,39,focal_motor,12677.0,True,ok
+sub-073_r40_1670,sub-073,40,focal_motor,1670.0,True,ok
+sub-073_r40_7351,sub-073,40,focal_motor,7351.0,True,ok
+sub-073_r40_9908,sub-073,40,focal_motor,9908.0,True,ok
+sub-073_r40_11982,sub-073,40,focal_motor,11982.0,True,ok
+sub-073_r40_14698,sub-073,40,focal_motor,14698.0,True,ok
+sub-073_r41_389,sub-073,41,focal_nonmotor,389.0,False,onset < 600 s into the recording
+sub-073_r41_781,sub-073,41,focal_nonmotor,781.0,False,another seizure in the preceding 600 s
+sub-073_r41_1145,sub-073,41,focal_nonmotor,1145.0,False,another seizure in the preceding 600 s
+sub-073_r41_1251,sub-073,41,focal_motor,1251.0,False,another seizure in the preceding 600 s
+sub-073_r41_2806,sub-073,41,focal_motor,2806.0,True,ok
+sub-073_r41_4197,sub-073,41,focal_motor,4197.0,True,ok
+sub-073_r42_1,sub-073,42,focal_unknown_motor,1.0,False,onset < 600 s into the recording
+sub-073_r42_3661,sub-073,42,focal_unknown_motor,3661.0,True,ok
+sub-073_r42_6342,sub-073,42,focal_unknown_motor,6342.0,True,ok
+sub-073_r42_9011,sub-073,42,focal_unknown_motor,9011.0,True,ok
+sub-073_r42_12005,sub-073,42,focal_unknown_motor,12005.0,True,ok
+sub-073_r42_12783,sub-073,42,focal_unknown_motor,12783.0,True,ok
+sub-073_r43_888,sub-073,43,focal_motor,888.0,True,ok
+sub-073_r43_7604,sub-073,43,focal_motor,7604.0,True,ok
+sub-073_r43_11902,sub-073,43,focal_motor,11902.0,True,ok
+sub-073_r45_1599,sub-073,45,focal_motor,1599.0,True,ok
+sub-073_r45_9472,sub-073,45,focal_motor,9472.0,True,ok
+sub-073_r45_14671,sub-073,45,focal_motor,14671.0,True,ok
+sub-073_r46_15492,sub-073,46,focal_motor,15492.0,True,ok
+sub-073_r47_13521,sub-073,47,focal_motor,13521.0,True,ok
+sub-073_r47_14144,sub-073,47,focal_motor,14144.0,False,another seizure in the preceding 600 s
+sub-073_r47_15694,sub-073,47,focal_motor,15694.0,True,ok
+sub-073_r47_16820,sub-073,47,focal_motor,16820.0,True,ok
+sub-073_r48_522,sub-073,48,focal_unknown_motor,522.0,False,onset < 600 s into the recording
+sub-073_r48_3471,sub-073,48,focal_unknown_motor,3471.0,True,ok
+sub-073_r48_4903,sub-073,48,focal_unknown_motor,4903.0,True,ok
+sub-073_r48_6254,sub-073,48,focal_unknown_motor,6254.0,True,ok
+sub-073_r48_13632,sub-073,48,focal_unknown_motor,13632.0,True,ok
+sub-073_r48_15830,sub-073,48,focal_unknown_motor,15830.0,True,ok
+sub-073_r50_7481,sub-073,50,focal_motor,7481.0,True,ok
+sub-073_r50_16721,sub-073,50,focal_motor,16721.0,True,ok
+sub-073_r50_19691,sub-073,50,focal_motor,19691.0,True,ok
+sub-073_r51_977,sub-073,51,focal_motor,977.0,True,ok
+sub-073_r51_5337,sub-073,51,focal_motor,5337.0,True,ok
+sub-073_r51_7802,sub-073,51,focal_motor,7802.0,True,ok
+sub-073_r51_9045,sub-073,51,focal_motor,9045.0,True,ok
+sub-073_r51_9728,sub-073,51,focal_motor,9728.0,False,another seizure in the preceding 600 s
+sub-073_r51_10209,sub-073,51,focal_motor,10209.0,False,another seizure in the preceding 600 s
+sub-073_r51_10747,sub-073,51,focal_motor,10747.0,False,another seizure in the preceding 600 s
+sub-073_r51_11386,sub-073,51,focal_motor,11386.0,False,another seizure in the preceding 600 s
+sub-073_r51_12126,sub-073,51,focal_motor,12126.0,True,ok
+sub-073_r52_14003,sub-073,52,focal_motor,14003.0,True,ok
+sub-073_r54_21106,sub-073,54,focal_nonmotor,21106.0,True,ok
+sub-074_r02_6045,sub-074,2,focal_unknown_motor,6045.0,True,ok
+sub-074_r02_9501,sub-074,2,focal_unknown_motor,9501.0,True,ok
+sub-074_r04_7974,sub-074,4,focal_motor,7974.0,True,ok
+sub-074_r05_4017,sub-074,5,focal_nonmotor,4017.0,True,ok
+sub-074_r06_5396,sub-074,6,focal_motor,5396.0,True,ok
+sub-074_r06_12335,sub-074,6,focal_motor,12335.0,True,ok
+sub-074_r07_5078,sub-074,7,focal_motor,5078.0,True,ok
+sub-074_r16_18883,sub-074,16,focal_motor,18883.0,True,ok
+sub-074_r17_13016,sub-074,17,focal_motor,13016.0,True,ok
+sub-075_r01_16448,sub-075,1,focal_unknown_motor,16448.0,True,ok
+sub-075_r33_1052,sub-075,33,focal_unknown_motor,1052.0,True,ok
+sub-076_r01_1838,sub-076,1,focal_unknown_motor,1838.0,True,ok
+sub-076_r08_1082,sub-076,8,focal_nonmotor,1082.0,True,ok
+sub-076_r16_8644,sub-076,16,focal_nonmotor,8644.0,True,ok
+sub-077_r02_13636,sub-077,2,focal_nonmotor,13636.0,True,ok
+sub-077_r02_18588,sub-077,2,focal_nonmotor,18588.0,True,ok
+sub-077_r04_1900,sub-077,4,focal_unknown_motor,1900.0,True,ok
+sub-077_r04_2460,sub-077,4,focal_unknown_motor,2460.0,False,another seizure in the preceding 600 s
+sub-077_r04_3250,sub-077,4,focal_unknown_motor,3250.0,True,ok
+sub-077_r06_9932,sub-077,6,focal_nonmotor,9932.0,True,ok
+sub-077_r06_12485,sub-077,6,focal_nonmotor,12485.0,True,ok
+sub-077_r06_13162,sub-077,6,focal_nonmotor,13162.0,False,another seizure in the preceding 600 s
+sub-077_r10_2349,sub-077,10,focal_unknown_motor,2349.0,True,ok
+sub-078_r26_9144,sub-078,26,FBTC,9144.0,True,ok
+sub-079_r01_13097,sub-079,1,focal_nonmotor,13097.0,True,ok
+sub-079_r01_17337,sub-079,1,FBTC,17337.0,True,ok
+sub-079_r02_5234,sub-079,2,focal_unknown_motor,5234.0,True,ok
+sub-079_r07_5989,sub-079,7,focal_nonmotor,5989.0,True,ok
+sub-079_r07_8938,sub-079,7,focal_nonmotor,8938.0,True,ok
+sub-079_r09_4487,sub-079,9,focal_nonmotor,4487.0,True,ok
+sub-079_r12_6311,sub-079,12,focal_nonmotor,6311.0,True,ok
+sub-079_r12_11511,sub-079,12,focal_nonmotor,11511.0,True,ok
+sub-079_r14_4593,sub-079,14,focal_nonmotor,4593.0,True,ok
+sub-079_r14_10913,sub-079,14,focal_nonmotor,10913.0,True,ok
+sub-079_r14_14465,sub-079,14,focal_nonmotor,14465.0,True,ok
+sub-079_r15_258,sub-079,15,focal_nonmotor,258.0,False,onset < 600 s into the recording
+sub-079_r16_18980,sub-079,16,focal_nonmotor,18980.0,True,ok
+sub-079_r17_3910,sub-079,17,focal_nonmotor,3910.0,True,ok
+sub-079_r17_12514,sub-079,17,focal_nonmotor,12514.0,True,ok
+sub-080_r02_2755,sub-080,2,focal_motor,2755.0,True,ok
+sub-080_r05_6863,sub-080,5,focal_motor,6863.0,True,ok
+sub-080_r06_9134,sub-080,6,focal_motor,9134.0,True,ok
+sub-080_r12_3821,sub-080,12,focal_motor,3821.0,True,ok
+sub-080_r15_6709,sub-080,15,focal_motor,6709.0,True,ok
+sub-080_r15_13244,sub-080,15,FBTC,13244.0,True,ok
+sub-080_r16_7328,sub-080,16,focal_motor,7328.0,True,ok
+sub-080_r19_3344,sub-080,19,focal_motor,3344.0,True,ok
+sub-081_r05_2691,sub-081,5,focal_unknown_motor,2691.0,True,ok
+sub-081_r18_1299,sub-081,18,focal_unknown_motor,1299.0,True,ok
+sub-081_r19_2503,sub-081,19,focal_unknown_motor,2503.0,True,ok
+sub-081_r45_188,sub-081,45,focal_unknown_motor,188.0,False,onset < 600 s into the recording
+sub-082_r11_7793,sub-082,11,focal_unknown_motor,7793.0,True,ok
+sub-082_r11_17073,sub-082,11,focal_unknown_motor,17073.0,True,ok
+sub-082_r11_26262,sub-082,11,focal_unknown_motor,26262.0,True,ok
+sub-082_r11_30841,sub-082,11,focal_unknown_motor,30841.0,True,ok
+sub-083_r32_2970,sub-083,32,FBTC,2970.0,True,ok
+sub-084_r05_1128,sub-084,5,focal_motor,1128.0,True,ok
+sub-084_r07_2449,sub-084,7,focal_motor,2449.0,True,ok
+sub-084_r09_815,sub-084,9,focal_motor,815.0,True,ok
+sub-084_r21_776,sub-084,21,focal_motor,776.0,True,ok
+sub-085_r34_78,sub-085,34,focal_motor,78.0,False,onset < 600 s into the recording
+sub-085_r40_2429,sub-085,40,focal_motor,2429.0,True,ok
+sub-085_r42_748,sub-085,42,FBTC,748.0,True,ok
+sub-086_r05_2608,sub-086,5,focal_unknown_motor,2608.0,True,ok
+sub-086_r29_799,sub-086,29,focal_motor,799.0,True,ok
+sub-086_r35_2934,sub-086,35,focal_motor,2934.0,True,ok
+sub-086_r49_1798,sub-086,49,focal_motor,1798.0,True,ok
+sub-087_r01_1464,sub-087,1,focal_nonmotor,1464.0,True,ok
+sub-087_r02_2380,sub-087,2,focal_nonmotor,2380.0,True,ok
+sub-087_r02_3472,sub-087,2,focal_nonmotor,3472.0,True,ok
+sub-087_r03_2753,sub-087,3,focal_nonmotor,2753.0,True,ok
+sub-087_r04_416,sub-087,4,focal_unknown_motor,416.0,False,onset < 600 s into the recording
+sub-087_r05_149,sub-087,5,focal_unknown_motor,149.0,False,onset < 600 s into the recording
+sub-087_r06_718,sub-087,6,focal_nonmotor,718.0,True,ok
+sub-087_r06_2139,sub-087,6,focal_nonmotor,2139.0,True,ok
+sub-087_r06_2588,sub-087,6,focal_nonmotor,2588.0,False,another seizure in the preceding 600 s
+sub-087_r07_237,sub-087,7,focal_nonmotor,237.0,False,onset < 600 s into the recording
+sub-087_r08_2165,sub-087,8,focal_nonmotor,2165.0,True,ok
+sub-087_r08_3327,sub-087,8,focal_nonmotor,3327.0,True,ok
+sub-087_r09_575,sub-087,9,focal_unknown_motor,575.0,False,onset < 600 s into the recording
+sub-087_r10_539,sub-087,10,focal_nonmotor,539.0,False,onset < 600 s into the recording
+sub-087_r10_3321,sub-087,10,focal_nonmotor,3321.0,True,ok
+sub-087_r11_308,sub-087,11,focal_nonmotor,308.0,False,onset < 600 s into the recording
+sub-087_r12_2900,sub-087,12,focal_nonmotor,2900.0,True,ok
+sub-087_r13_188,sub-087,13,focal_unknown_motor,188.0,False,onset < 600 s into the recording
+sub-087_r13_1484,sub-087,13,focal_unknown_motor,1484.0,True,ok
+sub-087_r13_2194,sub-087,13,focal_unknown_motor,2194.0,True,ok
+sub-087_r13_2872,sub-087,13,focal_unknown_motor,2872.0,True,ok
+sub-087_r14_57,sub-087,14,focal_unknown_motor,57.0,False,onset < 600 s into the recording
+sub-087_r14_2386,sub-087,14,focal_nonmotor,2386.0,True,ok
+sub-087_r15_37,sub-087,15,focal_nonmotor,37.0,False,onset < 600 s into the recording
+sub-087_r15_2054,sub-087,15,focal_nonmotor,2054.0,True,ok
+sub-087_r16_213,sub-087,16,focal_nonmotor,213.0,False,onset < 600 s into the recording
+sub-087_r16_683,sub-087,16,focal_nonmotor,683.0,False,another seizure in the preceding 600 s
+sub-087_r16_2680,sub-087,16,focal_nonmotor,2680.0,True,ok
+sub-087_r17_38,sub-087,17,focal_unknown_motor,38.0,False,onset < 600 s into the recording
+sub-087_r18_1051,sub-087,18,focal_nonmotor,1051.0,True,ok
+sub-087_r18_3503,sub-087,18,focal_nonmotor,3503.0,True,ok
+sub-087_r20_1666,sub-087,20,focal_nonmotor,1666.0,True,ok
+sub-087_r21_2149,sub-087,21,focal_nonmotor,2149.0,True,ok
+sub-087_r21_3389,sub-087,21,focal_nonmotor,3389.0,True,ok
+sub-087_r22_840,sub-087,22,focal_nonmotor,840.0,True,ok
+sub-087_r22_1671,sub-087,22,focal_nonmotor,1671.0,True,ok
+sub-087_r23_217,sub-087,23,focal_nonmotor,217.0,False,onset < 600 s into the recording
+sub-087_r23_3412,sub-087,23,focal_nonmotor,3412.0,True,ok
+sub-087_r24_2290,sub-087,24,focal_nonmotor,2290.0,True,ok
+sub-087_r25_9,sub-087,25,focal_unknown_motor,9.0,False,onset < 600 s into the recording
+sub-087_r25_1178,sub-087,25,focal_nonmotor,1178.0,True,ok
+sub-087_r25_2606,sub-087,25,focal_nonmotor,2606.0,True,ok
+sub-088_r21_1366,sub-088,21,focal_motor,1366.0,True,ok
+sub-089_r105_2306,sub-089,105,focal_motor,2306.0,True,ok
+sub-089_r36_3441,sub-089,36,focal_motor,3441.0,True,ok
+sub-089_r57_1777,sub-089,57,focal_motor,1777.0,True,ok
+sub-089_r61_1444,sub-089,61,focal_motor,1444.0,True,ok
+sub-089_r80_3243,sub-089,80,focal_motor,3243.0,True,ok
+sub-090_r01_1721,sub-090,1,focal_nonmotor,1721.0,True,ok
+sub-090_r02_5,sub-090,2,focal_nonmotor,5.0,False,onset < 600 s into the recording
+sub-090_r03_2355,sub-090,3,focal_nonmotor,2355.0,True,ok
+sub-090_r04_2641,sub-090,4,focal_nonmotor,2641.0,True,ok
+sub-091_r01_111,sub-091,1,focal_unknown_motor,111.0,False,onset < 600 s into the recording
+sub-091_r02_240,sub-091,2,focal_unknown_motor,240.0,False,onset < 600 s into the recording
+sub-091_r03_269,sub-091,3,focal_unknown_motor,269.0,False,onset < 600 s into the recording
+sub-091_r04_284,sub-091,4,focal_unknown_motor,284.0,False,onset < 600 s into the recording
+sub-091_r05_294,sub-091,5,focal_unknown_motor,294.0,False,onset < 600 s into the recording
+sub-092_r44_2065,sub-092,44,focal_motor,2065.0,True,ok
+sub-092_r50_929,sub-092,50,focal_motor,929.0,True,ok
+sub-092_r53_3198,sub-092,53,focal_motor,3198.0,True,ok
+sub-092_r68_3298,sub-092,68,focal_motor,3298.0,True,ok
+sub-092_r74_2747,sub-092,74,focal_motor,2747.0,True,ok
+sub-092_r79_1182,sub-092,79,focal_motor,1182.0,True,ok
+sub-093_r63_3450,sub-093,63,FBTC,3450.0,True,ok
+sub-094_r08_2042,sub-094,8,focal_motor,2042.0,True,ok
+sub-094_r13_2598,sub-094,13,focal_motor,2598.0,True,ok
+sub-094_r26_1211,sub-094,26,focal_motor,1211.0,True,ok
+sub-095_r60_580,sub-095,60,focal_unknown_motor,580.0,False,onset < 600 s into the recording
+sub-096_r30_2395,sub-096,30,FBTC,2395.0,True,ok

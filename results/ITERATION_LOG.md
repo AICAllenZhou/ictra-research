@@ -71,3 +71,31 @@ official table `REPORT.md` (seed-mean / seed-median).
   - three short-seizure patients (sub-039/047/035, 28% of seizures, median 10–13 s) are mostly missed;
   - 82% of C's misses changed on ≥ 1 signal in Exp R (only 16% are "invisible");
   - the per-seed threshold spread reaches SD 0.052 within a fold, which is why v03 targets it.
+
+## 2026-10-17 — plan after the v01 review (Allen; order binding, no model change)
+
+1. v03_threshold_stability (stage 1, `--thr-mode inner_cv`) vs v01.
+2. v02_full_hours: the accepted chain on all runs, C xgb with 3 seeds × 5 background draws, other cells 3 × 1. It becomes
+   the reference.
+3. v07: 2-s window / 1-s hop, via a runtime CFG override and its own feature directory; ictra_lib.py is not edited.
+4. v08: k-of-n grid 2/3, 3/5, 4/6, tuned with τ on the inner split. **v08's report must show the < 15 s row for every
+   model and for `rule_hr` / `rule_acc` side by side, before and after the change. That row is the test of whether v08
+   did its job.**
+5. v11 causal pipeline (`--causal` in ictra_lib, version bump, feature rebuild), compared against the accepted offline
+   version.
+6. FA audit of v02 (`FA_AUDIT.md`); then v09.
+7. v04 relationship features.
+8. `src/14_export_model.py` (frozen xgb → JSON/ONNX + numpy inference to 1e-6).
+9. Task 9 headers.
+
+Every table reports sensitivity by seizure length (< 15 s, 15–60 s, > 60 s). Use `--workers 2` while the CPU is above
+85 °C (`src/thermal.py`).
+
+## 2026-10-17 — Exp P pre-ictal drift (study, not a version; exploratory)
+
+`src/13_preictal_study.py` covers 538 eligible dev seizures (93 patients) against 5,350 same-patient pseudo-onsets. It
+looks for drift in heart rate, HRV (`ecg_rmssd`), EMG log RMS and movement over −120..−30 s compared with −300..−120 s.
+**No signal shows pre-ictal drift in any group: 0 of 20 cells, and 0 of 20 with −60..−30 vs −300..−60 s.** The only CI
+that excludes 0 is FBTC HR, and it points the other way (fewer seizures than controls with z > 2). The curves separate
+only in the last ~20 s before the annotated onset, which is excluded by design and matches Exp R's early changes. On this
+evidence a minutes-ahead warning is not plausible from these signals. Details: `results/expP/FINDINGS.md`.

@@ -170,19 +170,35 @@ def predict_runs(model, subs, cols):
         yield sub, run, prob, ev, len(d), mask, d.sz_group.values
 
 
-def tune_threshold(model, subs, cols, runs=None):
-    """Sweep thresholds on inner-validation patients, maximise pooled event F1 (ties -> fewer false alarms).
-    runs: precomputed predict_runs output (inner_cv mode pools the out-of-fold runs of several inner models)."""
+DEFAULT_KOFN = ((L.CFG["post_k"], L.CFG["post_n"]),)
+
+
+def score_run(pos, ev, nw, mask, kn):
+    """ictra_lib.score_recording with an explicit k-of-n (v08). For the default (3, 5) it IS score_recording; otherwise
+    the same chain from ictra_lib pieces: mask -> k_of_n(k, n) -> windows_to_events -> score_events (masked hours)."""
+    if tuple(kn) == DEFAULT_KOFN[0]:
+        return L.score_recording(pos, ev, nw, mask=mask)
+    pos = pos & ~mask
+    hyp = L.windows_to_events(L.k_of_n(pos, int(kn[0]), int(kn[1])))
+    ref = [(e.onset_s, e.onset_s + e.duration_s) for e in ev.itertuples() if str(e.type).startswith("sz")]
+    return L.score_events(ref, hyp, hours=(nw - int(mask.sum())) * L.CFG["step_s"] / 3600), hyp
+
+
+def tune_threshold(model, subs, cols, runs=None, kofn=DEFAULT_KOFN):
+    """Sweep thresholds (and, for v08, the k-of-n candidates) on inner-validation patients, maximise pooled event F1
+    (ties -> fewer false alarms). runs: precomputed predict_runs output (inner_cv pools several inner models).
+    Returns (thr, (k, n), (f1, -fa))."""
     runs = runs if runs is not None else list(predict_runs(model, subs, cols))
     allp = np.concatenate([r[2] for r in runs])
     cands = np.unique(np.quantile(allp[np.isfinite(allp)], np.linspace(0.90, 0.9999, 40)))
-    best, best_key = cands[-1], (-1, 0)
-    for thr in cands:
-        per = [L.score_recording(p > thr, ev, nw, mask=impd)[0] for _, _, p, ev, nw, impd, _ in runs]
-        s = L.pool_scores(per)
-        key = (np.nan_to_num(s["f1"]), -s["fa_per_24h"])
-        if key > best_key: best_key, best = key, thr
-    return float(best), best_key
+    best, best_kn, best_key = cands[-1], tuple(kofn[0]), (-1, 0)
+    for kn in kofn:
+        for thr in cands:
+            per = [score_run(p > thr, ev, nw, impd, kn)[0] for _, _, p, ev, nw, impd, _ in runs]
+            s = L.pool_scores(per)
+            key = (np.nan_to_num(s["f1"]), -s["fa_per_24h"])
+            if key > best_key: best_key, best, best_kn = key, thr, tuple(kn)
+    return float(best), best_kn, best_key
 
 
 def monitor(m, kind, val_subs, cols, out, stem, event_f1, seed, n_checkpoints=40, max_windows=1_000_000):
@@ -227,7 +243,10 @@ N_INNER = 5
 
 
 def job(args):
-    fs_name, kind, fold, seed, version, device, runs, thr_mode = args
+    fs_name, kind, fold, seed, version, device, runs, thr_mode, kofn, draws = args
+    # draws (protocol 3 x 5): `seed` is then a repeat id r = model_seed * 10 + draw; the model seed is r // 10 and the
+    # background sample / inner split use r, so 3 model seeds x 5 background draws = 15 scored repeats
+    mseed = seed // 10 if draws else seed
     global DEVICE, RUNS
     DEVICE, RUNS = device, runs
     SMOKE_GUARD["v"] = version
@@ -244,8 +263,8 @@ def job(args):
         # v01: one inner split by patient (80/20) for the threshold
         n_in = max(2, int(0.2 * len(tr))); inner_val, inner_tr = list(tr[:n_in]), list(tr[n_in:])
         D = load_training(inner_tr, cols, seed)
-        m = predict_on_cpu(make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
-        thr, (f1_in, _) = tune_threshold(m, inner_val, cols)
+        m = predict_on_cpu(make_model(kind, mseed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
+        thr, kn, (f1_in, _) = tune_threshold(m, inner_val, cols, kofn=kofn)
     else:
         # v03: inner leave-patients-out CV over ALL training patients (N_INNER groups, each inner model trained on the
         # other 80%); the out-of-fold inner predictions of every training patient are pooled and ONE threshold is swept
@@ -254,16 +273,16 @@ def job(args):
         for k in range(N_INNER):
             inner_val = list(groups[k]); inner_tr = [x for j, g in enumerate(groups) if j != k for x in g]
             D = load_training(inner_tr, cols, seed)
-            m = predict_on_cpu(make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
+            m = predict_on_cpu(make_model(kind, mseed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
             pooled += list(predict_runs(m, inner_val, cols))
-        thr, (f1_in, _) = tune_threshold(None, None, cols, runs=pooled)
+        thr, kn, (f1_in, _) = tune_threshold(None, None, cols, runs=pooled, kofn=kofn)
     D = load_training(train_subs, cols, seed)
-    m = predict_on_cpu(make_model(kind, seed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
+    m = predict_on_cpu(make_model(kind, mseed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
     # validation on the held-out fold, full natural class ratio
     rows, preds = [], []
     for sub, run, prob, ev, nw, impd, grp in predict_runs(m, val_subs, cols):
-        s, hyp = L.score_recording(prob > thr, ev, nw, mask=impd)
-        s.update(sub=sub, run=run, fold=fold, seed=seed, model=kind, set=fs_name, thr=thr)
+        s, hyp = score_run(prob > thr, ev, nw, impd, kn)
+        s.update(sub=sub, run=run, fold=fold, seed=seed, model=kind, set=fs_name, thr=thr, post_k=kn[0], post_n=kn[1], model_seed=mseed)
         rows.append(s)
         preds.append(pd.DataFrame({"sub": sub, "run": run, "t0": np.arange(nw) * L.CFG["step_s"], "prob": prob.astype(np.float32)}))
     out = L.ROOT / "results/dev" / version
@@ -291,12 +310,13 @@ def seizure_group_scores(version):
     rows, per_sz = [], []
     for p in sorted((out / "preds").glob("*.parquet")):
         fs_name, kind, fs = p.stem.split("__"); fold, seed = int(fs[1]), int(fs.split("_s")[1])
-        thr = pd.read_csv(out / f"fold_{p.stem}.csv").thr.iloc[0]
+        fc = pd.read_csv(out / f"fold_{p.stem}.csv"); thr = fc.thr.iloc[0]
+        kn = (int(fc.post_k.iloc[0]), int(fc.post_n.iloc[0])) if "post_k" in fc else DEFAULT_KOFN[0]
         P = pd.read_parquet(p)
         for (sub, run), d in P.groupby(["sub", "run"]):
             q = pd.read_parquet(FEAT / f"{sub}_run-{run:02d}.parquet", columns=["impd", "flat_eeg"])
             impd = q.impd.values | q.flat_eeg.fillna(False).astype(bool).values
-            alarm = L.k_of_n((d.prob.values > thr) & ~impd); hyp = L.windows_to_events(alarm)
+            alarm = L.k_of_n((d.prob.values > thr) & ~impd, *kn); hyp = L.windows_to_events(alarm)
             ev = S[(S["sub"] == sub) & (S.run == run)]
             for g, G in ev.groupby("group"):
                 ref = list(zip(G.onset_s, G.onset_s + G.duration_s))
@@ -411,8 +431,14 @@ def write_dev_json(version, note, T, pat, G, M=None, Dl=None):
                ci_note="95% patient-bootstrap CIs (1,000 resamples) from seed 0; point estimates are the mean over seeds",
                summary=T.drop(columns=[c for c in T.columns if c.endswith("_ci")]).to_dict("records"),
                per_patient=pp.to_dict("records"), by_group=gs,
-               by_montage=M.to_dict("records") if M is not None else [], delays=Dl.to_dict("records") if Dl is not None else [])
+               by_montage=M.to_dict("records") if M is not None else [], delays=Dl.to_dict("records") if Dl is not None else [],
+               named_subgroups=NAMED_SUBGROUPS)
     L.lab_write_json(f"dev_{version}.json", L.json_clean(old))
+
+
+# Allen 2026-10-17: shown as a named subgroup in the per-patient figures (v01 NOTES: 194 of 702 dev seizures, median 10-13 s)
+NAMED_SUBGROUPS = {"short-seizure trio": dict(subjects=["sub-039", "sub-047", "sub-035"],
+                                              note="sub-039/047/035, 194 of 702 dev seizures, median duration 10-13 s")}
 
 
 RULE_1 = dict(min_df1=0.01, min_p=0.90, max_dsens=-0.02, max_dfa=0.5)    # docs/EVALUATION_PROTOCOL.md section 1
@@ -503,6 +529,10 @@ def main():
     ap.add_argument("--runs", choices=["seizure", "all"],
                     help="seizure = only seizure-containing runs (v01, stage 1); all = every feature file (v02 on)")
     ap.add_argument("--device", default="cuda", choices=["cuda", "cpu"], help="xgboost device (same model either way)")
+    ap.add_argument("--kofn-grid", default="", help='v08: k-of-n candidates tuned with tau on the inner split, e.g. "2/3,3/5,4/6" '
+                    "(default: ictra_lib CFG 3/5 only)")
+    ap.add_argument("--bg-draws", type=int, default=1, help="protocol 3 x 5: background-sampling draws per seed")
+    ap.add_argument("--bg-draws-cells", nargs="*", default=[], help="cells that get --bg-draws, e.g. C_eeg_ecg_emg_acc:xgb (default: all)")
     ap.add_argument("--thr-mode", default="inner_split", choices=THR_MODES,
                     help="inner_split: one 80/20 inner patient split (v01); inner_cv: pooled out-of-fold predictions of a "
                          f"{N_INNER}-fold inner leave-patients-out CV (v03)")
@@ -531,9 +561,16 @@ def main():
     if a.workers > cap:
         print(f"workers {a.workers} -> {cap}: {per_job:.1f} GB per job x {cap} <= {MAX_RAM_FRAC:.0%} of physical RAM")
         a.workers = cap
-    jobs = [(s, m, f, sd, a.version, a.device, a.runs, a.thr_mode) for s in a.sets for m in a.models for f in a.folds for sd in a.seeds]
+    kofn = tuple(tuple(int(x) for x in g.split("/")) for g in a.kofn_grid.split(",")) if a.kofn_grid else DEFAULT_KOFN
+
+    def reps(s, m):
+        """Repeat ids: plain seeds, or seed * 10 + draw for the cells that get background draws."""
+        if a.bg_draws > 1 and (not a.bg_draws_cells or f"{s}:{m}" in a.bg_draws_cells):
+            return [(sd * 10 + d, True) for sd in a.seeds for d in range(a.bg_draws)]
+        return [(sd, False) for sd in a.seeds]
+    jobs = [(s, m, f, r, a.version, a.device, a.runs, a.thr_mode, kofn, dr) for s in a.sets for m in a.models for f in a.folds for r, dr in reps(s, m)]
     if a.rules:
-        jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs, a.thr_mode) for r in RULES for f in a.folds]
+        jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs, a.thr_mode, kofn, False) for r in RULES for f in a.folds]
     done = {p.stem for p in (L.ROOT / "results/dev" / a.version).glob("fold_*.csv")}
     jobs = [j for j in jobs if f"fold_{j[0]}__{j[1]}__f{j[2]}_s{j[3]}" not in done]
     print(f"{len(jobs)} jobs, {a.workers} workers")
@@ -543,7 +580,7 @@ def main():
         cells[f"{fs_}|{kd_}|{fo_}|{sd_}"] = {"state": "done"}
     for j in jobs:
         cells[f"{j[0]}|{j[1]}|{j[2]}|{j[3]}"] = {"state": "queued", "set": j[0], "model": j[1], "fold": j[2], "seed": j[3]}
-    lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers, "thr_mode": a.thr_mode,
+    lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers, "thr_mode": a.thr_mode, "kofn_grid": a.kofn_grid or "3/5", "bg_draws": a.bg_draws, "bg_draws_cells": a.bg_draws_cells,
                                            "n_jobs": len(cells), "started": pd.Timestamp.now().isoformat(timespec="seconds"), "jobs": cells}}},
                  log=f"{a.version}: {len(jobs)} jobs queued ({a.workers} workers, xgboost on {a.device})", src="04_train")
     with ProcessPoolExecutor(a.workers) as ex:

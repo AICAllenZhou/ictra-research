@@ -408,10 +408,13 @@ function tabAblation(){
     let svg = `<svg viewBox="0 0 ${W} ${Hh}" style="max-width:420px" role="img" aria-label="per-patient sensitivity, A vs C">`;
     for (const v of [0, .25, .5, .75, 1]) svg += `<line x1="${sx(v)}" x2="${sx(v)}" y1="${t}" y2="${Hh - b}" stroke="${css("--grid")}"/><line x1="${l}" x2="${W - r}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css("--grid")}"/><text x="${sx(v)}" y="${Hh - b + 14}" text-anchor="middle">${v}</text><text x="${l - 4}" y="${sy(v) + 4}" text-anchor="end">${v}</text>`;
     svg += `<line x1="${sx(0)}" y1="${sy(0)}" x2="${sx(1)}" y2="${sy(1)}" stroke="${css("--text-muted")}" stroke-dasharray="4 3"/>`;
-    subs.forEach((s, j) => { const jit = ((j * 7919) % 9 - 4) * 0.004;
-      svg += `<circle cx="${sx(A[s].sensitivity + jit)}" cy="${sy(Cc[s].sensitivity - jit)}" r="${3 + Math.min(6, Math.sqrt(A[s].n_ref))}" fill="${css("--s3")}" opacity=".55" stroke="${css("--surface-1")}"><title>${s}: A ${nf(A[s].sensitivity)} (${A[s].tp}/${A[s].n_ref}), C ${nf(Cc[s].sensitivity)} (${Cc[s].tp}/${Cc[s].n_ref}), FA/24h A ${nf(A[s].fa_per_24h)} C ${nf(Cc[s].fa_per_24h)}</title></circle>`; });
+    const NG = J.named_subgroups || {}; const inNG = s => Object.keys(NG).find(k => (NG[k].subjects || []).includes(s));
+    subs.forEach((s, j) => { const jit = ((j * 7919) % 9 - 4) * 0.004; const g = inNG(s);
+      const cx = sx(A[s].sensitivity + jit), cy = sy(Cc[s].sensitivity - jit);
+      if (g) svg += `<text x="${cx + 9}" y="${cy - 6}" class="small" style="fill:var(--text-primary)">${esc(s)}</text>`;
+      svg += `<circle cx="${cx}" cy="${cy}" r="${3 + Math.min(6, Math.sqrt(A[s].n_ref))}" fill="${css("--s3")}" opacity="${g ? ".95" : ".55"}" stroke="${css(g ? "--text-primary" : "--surface-1")}" stroke-width="${g ? 2 : 1}"><title>${s}${g ? " (" + esc(g) + ")" : ""}: A ${nf(A[s].sensitivity)} (${A[s].tp}/${A[s].n_ref}), C ${nf(Cc[s].sensitivity)} (${Cc[s].tp}/${Cc[s].n_ref}), FA/24h A ${nf(A[s].fa_per_24h)} C ${nf(Cc[s].fa_per_24h)}</title></circle>`; });
     svg += `<text x="${(W + l) / 2}" y="${Hh - 4}" text-anchor="middle">sensitivity with A (EEG)</text><text transform="translate(12 ${(Hh - b) / 2}) rotate(-90)" text-anchor="middle">sensitivity with C (all signals)</text></svg>`;
-    h += `<div class="grid" style="margin-top:12px"><div class="card"><h2>Per patient: A vs C (${esc(S.model)}, summed over seeds)</h2>${svg}<div class="small muted">one dot per patient, size ~ seizures; above the dashed line C finds more of that patient's seizures than A</div></div>`;
+    h += `<div class="grid" style="margin-top:12px"><div class="card"><h2>Per patient: A vs C (${esc(S.model)}, summed over seeds)</h2>${svg}<div class="small muted">one dot per patient, size ~ seizures; above the dashed line C finds more of that patient's seizures than A${Object.keys(NG).map(k => `; ringed and named: ${esc(k)} (${esc(NG[k].note || "")})`).join("")}</div></div>`;
   } else h += `<div class="grid" style="margin-top:12px">`;
   // operating points
   const OP = J.operating_points;
