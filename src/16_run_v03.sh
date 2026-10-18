@@ -5,10 +5,10 @@
 cd "$(dirname "$0")/.." || exit 1
 LOG=results/lab/logs/v03.log
 while python -c "import psutil,sys;sys.exit(0 if any('13_preictal_study' in ' '.join(p.info['cmdline'] or []) and 'psutil' not in ' '.join(p.info['cmdline'] or []) for p in psutil.process_iter(['cmdline'])) else 1)"; do sleep 30; done
-W=$(python src/thermal.py --workers 3); T=$(python src/thermal.py)
+W=2; T=$(python src/thermal.py)   # Allen 2026-10-17: CPU read 93.9 C under load, so 2 workers for the rest of tonight
 OUT=results/dev/v03_threshold_stability; mkdir -p $OUT
-echo "$(date +%H:%M) start v03 with $W workers (CPU $T C)" > $LOG
-nvidia-smi --query-gpu=timestamp,utilization.gpu,memory.used,memory.total --format=csv -l 5 > $OUT/gpu_log.csv &
+echo "$(date +%H:%M) start/resume v03 with $W workers (CPU $T C); done jobs are skipped" >> $LOG
+nvidia-smi --query-gpu=timestamp,utilization.gpu,memory.used,memory.total --format=csv -l 5 >> $OUT/gpu_log.csv &
 GPID=$!
 python -u src/04_train_ablation.py --version v03_threshold_stability --runs seizure --thr-mode inner_cv \
   --note "v01 + threshold from pooled out-of-fold inner leave-patients-out CV (one change)" \

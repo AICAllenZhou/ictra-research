@@ -120,7 +120,8 @@ def job(args):
         df = features_for_run(sub, run, ev, montage)
         if df is None:
             return (sub, run, "missing")
-        df.to_parquet(out, index=False)
+        tmp = out.with_suffix(".parquet.tmp")      # atomic: a killed worker never leaves a half-written .parquet
+        df.to_parquet(tmp, index=False); os.replace(tmp, out)
         return (sub, run, f"ok {len(df)} win, {int(df.y.sum())} sz-win")
     except Exception as e:
         with open(OUTD / "_failed.txt", "a") as f:

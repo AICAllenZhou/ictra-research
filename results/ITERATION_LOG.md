@@ -99,3 +99,55 @@ looks for drift in heart rate, HRV (`ecg_rmssd`), EMG log RMS and movement over 
 that excludes 0 is FBTC HR, and it points the other way (fewer seizures than controls with z > 2). The curves separate
 only in the last ~20 s before the annotated onset, which is excluded by design and matches Exp R's early changes. On this
 evidence a minutes-ahead warning is not plausible from these signals. Details: `results/expP/FINDINGS.md`.
+
+## 2026-10-17 — v03b objective (written BEFORE running; Allen)
+
+v03b = v03 (`--thr-mode inner_cv`, same features, models, seeds, folds and runs as v01) with one change: the rule that
+picks τ.
+- **Candidates:** the same 40 τ candidates as v01/v03, applied to the pooled out-of-fold inner predictions of all
+  training patients.
+- **Objective:** maximise pooled inner event F1 **subject to** pooled inner sensitivity ≥ S_ref − 0.02.
+- **Fallback:** if no candidate meets the floor, maximise inner sensitivity subject to inner FA/24h ≤ FA_ref. If none
+  meets that either, take the lowest-FA candidate.
+- **Ties:** fewer false alarms.
+- **References per (set, model):** S_ref and FA_ref are v01's held-out pooled values (`results/dev/v01_baseline/summary.csv`,
+  seed mean). Values:
+
+  | | A xgb | A lgbm | B xgb | B lgbm | C xgb | C lgbm | rule_eeg | rule_hr | rule_emg | rule_acc |
+  |---|---|---|---|---|---|---|---|---|---|---|
+  | S_ref | 0.3656 | 0.3590 | 0.4041 | 0.3993 | 0.4421 | 0.4349 | 0.3718 | 0.3932 | 0.2963 | 0.2977 |
+  | FA_ref | 11.05 | 9.18 | 9.55 | 9.79 | 9.67 | 9.68 | 32.66 | 57.74 | 38.25 | 35.58 |
+
+- **Note:** the floor is checked on inner (training-patient) predictions, not on the held-out fold; the held-out sensitivity
+  can still differ.
+- **Evaluation:** compared with v01 under §1 on C xgb. Runs right after v02, because a full run costs about 2.5 h (> 1 h).
+
+## v03_threshold_stability (2026-10-17 20:10) v01 + threshold from pooled out-of-fold inner leave-patients-out CV (one change)
+
+Dev folds, pooled over patients, patient-bootstrap 95% CI.
+
+| set               | model    |   seizures |   hours |   sensitivity | sens_ci      |   fa_per_24h | fa_ci          |    f1 | f1_ci        |   median_delay_s |
+|:------------------|:---------|-----------:|--------:|--------------:|:-------------|-------------:|:---------------|------:|:-------------|-----------------:|
+| A_eeg             | lgbm     |        702 | 2288.18 |         0.302 | [0.21, 0.44] |        5.493 | [3.94, 8.41]   | 0.295 | [0.22, 0.39] |           27.917 |
+| A_eeg             | xgb      |        702 | 2288.18 |         0.301 | [0.20, 0.44] |        6.174 | [5.11, 10.15]  | 0.282 | [0.19, 0.35] |           26.25  |
+| B_eeg_ecg         | lgbm     |        702 | 2288.18 |         0.349 | [0.23, 0.51] |        4.587 | [3.52, 7.12]   | 0.353 | [0.25, 0.46] |           25.333 |
+| B_eeg_ecg         | xgb      |        702 | 2288.18 |         0.343 | [0.22, 0.48] |        4.419 | [3.23, 6.72]   | 0.352 | [0.24, 0.46] |           24.542 |
+| C_eeg_ecg_emg_acc | xgb      |        702 | 2288.18 |         0.379 | [0.27, 0.55] |        4.479 | [3.25, 5.52]   | 0.381 | [0.29, 0.51] |           22.333 |
+| C_eeg_ecg_emg_acc | lgbm     |        702 | 2288.18 |         0.376 | [0.26, 0.54] |        4.709 | [3.50, 6.06]   | 0.371 | [0.28, 0.48] |           25.333 |
+| rule              | rule_eeg |        702 | 2288.18 |         0.353 | [0.24, 0.49] |       30.323 | [23.37, 38.17] | 0.128 | [0.09, 0.17] |           21.875 |
+| rule              | rule_emg |        702 | 2288.18 |         0.158 | [0.09, 0.23] |       11.191 | [7.71, 15.34]  | 0.119 | [0.07, 0.17] |           35     |
+| rule              | rule_acc |        702 | 2288.18 |         0.252 | [0.17, 0.33] |       23.925 | [20.46, 27.81] | 0.112 | [0.07, 0.16] |           26.75  |
+| rule              | rule_hr  |        702 | 2288.18 |         0.4   | [0.26, 0.54] |       48.615 | [34.59, 64.08] | 0.103 | [0.07, 0.14] |           21     |
+
+Offline pipeline (EVALUATION_PROTOCOL.md amendment 2026-10-17).
+Peak RSS per job (GB; max over folds and seeds of the worker's peak working set): A_eeg/lgbm 1.55, A_eeg/xgb 1.30, B_eeg_ecg/lgbm 1.59, B_eeg_ecg/xgb 1.55, C_eeg_ecg_emg_acc/lgbm 2.08, C_eeg_ecg_emg_acc/xgb 1.66, rule/rule_acc 2.08, rule/rule_eeg 2.08, rule/rule_emg 2.08, rule/rule_hr 2.08. Overall max 2.08 GB.
+
+**Decision v03_threshold_stability vs v01_baseline (§1, C xgb, paired patient bootstrap): REJECT.**
+- ΔF1 +0.061 [+0.015, +0.104], P(ΔF1 > 0) = 0.992;
+- ΔFA/24h −5.19 [−6.81, −3.73] (9.67 → 4.48);
+- **Δsensitivity −0.063 [−0.111, −0.024] (0.442 → 0.379): fails the −0.02 sensitivity cap**, the only failed condition.
+
+The stability goal was met: the per-seed τ SD per fold fell from 0.005–0.031 (v01) to 0.0002–0.0023 (v03). The loss is
+an operating-point shift (a slightly higher τ moves along the same curve), not a model change. v02 therefore runs with
+v01's threshold method (inner_split), and v03b (sensitivity-floor objective, logged above) runs after v02. Official
+table: `results/dev/v03_threshold_stability/REPORT.md`.

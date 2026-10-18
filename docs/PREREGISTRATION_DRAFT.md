@@ -59,6 +59,16 @@ confirm them.**
   - **Status:** descriptive only. Any pre-ictal claim it suggests would need its own pre-registered hypothesis, tested on
     tiers 2–3.
 
+## Design notes (prospective)
+
+- **Matched-FA comparison for threshold-method changes (Allen, 2026-10-17; effective from v04, not applied
+  retroactively to v03).**
+  - A version that changes only how τ (or k-of-n) is chosen moves the operating point along the model's sensitivity–FA
+    curve rather than changing the curve.
+  - Such versions are therefore additionally compared at matched FA/24h budgets of 1, 2 and 5, using the operating-point
+    sweep (`operating_points.csv`, `sens_at_fa_le_*`), next to the §1 decision.
+  - The §1 rule stays the accept/reject criterion.
+
 ## Still to fill at Task 10
 - frozen model files and hashes, threshold, post-processing;
 - metrics and subgroup list;

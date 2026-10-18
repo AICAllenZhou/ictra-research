@@ -184,21 +184,33 @@ def score_run(pos, ev, nw, mask, kn):
     return L.score_events(ref, hyp, hours=(nw - int(mask.sum())) * L.CFG["step_s"] / 3600), hyp
 
 
-def tune_threshold(model, subs, cols, runs=None, kofn=DEFAULT_KOFN):
-    """Sweep thresholds (and, for v08, the k-of-n candidates) on inner-validation patients, maximise pooled event F1
-    (ties -> fewer false alarms). runs: precomputed predict_runs output (inner_cv pools several inner models).
-    Returns (thr, (k, n), (f1, -fa))."""
+def tune_threshold(model, subs, cols, runs=None, kofn=DEFAULT_KOFN, objective=None):
+    """Sweep thresholds (and, for v08, the k-of-n candidates) on inner-validation patients.
+    objective None / max_f1: maximise pooled event F1 (ties -> fewer false alarms).
+    objective dict(kind="f1_sens_floor", s_floor, fa_ref) (v03b, ITERATION_LOG 2026-10-17): maximise F1 subject to inner
+    sensitivity >= s_floor; if infeasible, maximise sensitivity subject to FA/24h <= fa_ref; if that is infeasible too,
+    the lowest-FA candidate. runs: precomputed predict_runs output (inner_cv pools several inner models).
+    Returns (thr, (k, n), (f1, -fa), rule_used)."""
     runs = runs if runs is not None else list(predict_runs(model, subs, cols))
     allp = np.concatenate([r[2] for r in runs])
     cands = np.unique(np.quantile(allp[np.isfinite(allp)], np.linspace(0.90, 0.9999, 40)))
-    best, best_kn, best_key = cands[-1], tuple(kofn[0]), (-1, 0)
+    res = []
     for kn in kofn:
         for thr in cands:
             per = [score_run(p > thr, ev, nw, impd, kn)[0] for _, _, p, ev, nw, impd, _ in runs]
-            s = L.pool_scores(per)
-            key = (np.nan_to_num(s["f1"]), -s["fa_per_24h"])
-            if key > best_key: best_key, best, best_kn = key, thr, tuple(kn)
-    return float(best), best_kn, best_key
+            q = L.pool_scores(per)
+            res.append((float(thr), tuple(kn), float(np.nan_to_num(q["f1"])), float(q["fa_per_24h"]), float(np.nan_to_num(q["sensitivity"]))))
+    rule = "max_f1"
+    if not objective or objective.get("kind", "max_f1") == "max_f1":
+        pick = max(res, key=lambda r: (r[2], -r[3]))
+    else:
+        ok = [r for r in res if r[4] >= objective["s_floor"]]
+        if ok:
+            pick, rule = max(ok, key=lambda r: (r[2], -r[3])), "f1_at_sens_floor"
+        else:
+            ok = [r for r in res if r[3] <= objective["fa_ref"]]
+            pick, rule = (max(ok, key=lambda r: (r[4], -r[3])), "max_sens_at_ref_fa") if ok else (min(res, key=lambda r: r[3]), "lowest_fa")
+    return pick[0], pick[1], (pick[2], -pick[3]), rule
 
 
 def monitor(m, kind, val_subs, cols, out, stem, event_f1, seed, n_checkpoints=40, max_windows=1_000_000):
@@ -243,7 +255,7 @@ N_INNER = 5
 
 
 def job(args):
-    fs_name, kind, fold, seed, version, device, runs, thr_mode, kofn, draws = args
+    fs_name, kind, fold, seed, version, device, runs, thr_mode, kofn, draws, thr_obj = args
     # draws (protocol 3 x 5): `seed` is then a repeat id r = model_seed * 10 + draw; the model seed is r // 10 and the
     # background sample / inner split use r, so 3 model seeds x 5 background draws = 15 scored repeats
     mseed = seed // 10 if draws else seed
@@ -264,7 +276,7 @@ def job(args):
         n_in = max(2, int(0.2 * len(tr))); inner_val, inner_tr = list(tr[:n_in]), list(tr[n_in:])
         D = load_training(inner_tr, cols, seed)
         m = predict_on_cpu(make_model(kind, mseed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
-        thr, kn, (f1_in, _) = tune_threshold(m, inner_val, cols, kofn=kofn)
+        thr, kn, (f1_in, _), thr_rule = tune_threshold(m, inner_val, cols, kofn=kofn, objective=thr_obj)
     else:
         # v03: inner leave-patients-out CV over ALL training patients (N_INNER groups, each inner model trained on the
         # other 80%); the out-of-fold inner predictions of every training patient are pooled and ONE threshold is swept
@@ -275,7 +287,7 @@ def job(args):
             D = load_training(inner_tr, cols, seed)
             m = predict_on_cpu(make_model(kind, mseed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
             pooled += list(predict_runs(m, inner_val, cols))
-        thr, kn, (f1_in, _) = tune_threshold(None, None, cols, runs=pooled, kofn=kofn)
+        thr, kn, (f1_in, _), thr_rule = tune_threshold(None, None, cols, runs=pooled, kofn=kofn, objective=thr_obj)
     D = load_training(train_subs, cols, seed)
     m = predict_on_cpu(make_model(kind, mseed, D.y).fit(apply_dropout(D[cols], mods, rng), D.y), kind)
     # validation on the held-out fold, full natural class ratio
@@ -290,7 +302,8 @@ def job(args):
     pd.concat(preds).to_parquet(out / "preds" / f"{fs_name}__{kind}__f{fold}_s{seed}.parquet", index=False)
     if kind in ("xgb", "lgbm"):
         monitor(m, kind, val_subs, cols, out, f"{fs_name}__{kind}__f{fold}_s{seed}", L.pool_scores(rows)["f1"], seed)
-    res = pd.DataFrame(rows); res["inner_f1"] = f1_in; res["thr_mode"] = thr_mode; res["minutes"] = (time.time() - t) / 60
+    res = pd.DataFrame(rows); res["inner_f1"] = f1_in; res["thr_mode"] = thr_mode; res["thr_rule"] = thr_rule
+    res["minutes"] = (time.time() - t) / 60
     import psutil
     mi = psutil.Process().memory_info()
     peak_gb = getattr(mi, "peak_wset", mi.rss) / 1e9        # Windows: peak working set of this worker process so far
@@ -529,6 +542,10 @@ def main():
     ap.add_argument("--runs", choices=["seizure", "all"],
                     help="seizure = only seizure-containing runs (v01, stage 1); all = every feature file (v02 on)")
     ap.add_argument("--device", default="cuda", choices=["cuda", "cpu"], help="xgboost device (same model either way)")
+    ap.add_argument("--thr-objective", default="max_f1", choices=["max_f1", "f1_sens_floor"],
+                    help="f1_sens_floor (v03b): max inner F1 s.t. inner sensitivity >= S_ref - 0.02, S_ref/FA_ref per "
+                         "(set, model) from --thr-ref's summary.csv; fallback max sensitivity at FA <= FA_ref")
+    ap.add_argument("--thr-ref", default="v01_baseline", help="reference version for --thr-objective f1_sens_floor")
     ap.add_argument("--kofn-grid", default="", help='v08: k-of-n candidates tuned with tau on the inner split, e.g. "2/3,3/5,4/6" '
                     "(default: ictra_lib CFG 3/5 only)")
     ap.add_argument("--bg-draws", type=int, default=1, help="protocol 3 x 5: background-sampling draws per seed")
@@ -568,9 +585,16 @@ def main():
         if a.bg_draws > 1 and (not a.bg_draws_cells or f"{s}:{m}" in a.bg_draws_cells):
             return [(sd * 10 + d, True) for sd in a.seeds for d in range(a.bg_draws)]
         return [(sd, False) for sd in a.seeds]
-    jobs = [(s, m, f, r, a.version, a.device, a.runs, a.thr_mode, kofn, dr) for s in a.sets for m in a.models for f in a.folds for r, dr in reps(s, m)]
+    REF = pd.read_csv(L.ROOT / "results/dev" / a.thr_ref / "summary.csv").set_index(["set", "model"]) if a.thr_objective != "max_f1" else None
+
+    def obj(s, m):
+        if REF is None:
+            return None
+        r = REF.loc[(s, m)]
+        return dict(kind=a.thr_objective, s_floor=float(r.sensitivity) - 0.02, fa_ref=float(r.fa_per_24h))
+    jobs = [(s, m, f, r, a.version, a.device, a.runs, a.thr_mode, kofn, dr, obj(s, m)) for s in a.sets for m in a.models for f in a.folds for r, dr in reps(s, m)]
     if a.rules:
-        jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs, a.thr_mode, kofn, False) for r in RULES for f in a.folds]
+        jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs, a.thr_mode, kofn, False, obj("rule", r)) for r in RULES for f in a.folds]
     done = {p.stem for p in (L.ROOT / "results/dev" / a.version).glob("fold_*.csv")}
     jobs = [j for j in jobs if f"fold_{j[0]}__{j[1]}__f{j[2]}_s{j[3]}" not in done]
     print(f"{len(jobs)} jobs, {a.workers} workers")
@@ -580,7 +604,7 @@ def main():
         cells[f"{fs_}|{kd_}|{fo_}|{sd_}"] = {"state": "done"}
     for j in jobs:
         cells[f"{j[0]}|{j[1]}|{j[2]}|{j[3]}"] = {"state": "queued", "set": j[0], "model": j[1], "fold": j[2], "seed": j[3]}
-    lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers, "thr_mode": a.thr_mode, "kofn_grid": a.kofn_grid or "3/5", "bg_draws": a.bg_draws, "bg_draws_cells": a.bg_draws_cells,
+    lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers, "thr_mode": a.thr_mode, "kofn_grid": a.kofn_grid or "3/5", "thr_objective": a.thr_objective, "bg_draws": a.bg_draws, "bg_draws_cells": a.bg_draws_cells,
                                            "n_jobs": len(cells), "started": pd.Timestamp.now().isoformat(timespec="seconds"), "jobs": cells}}},
                  log=f"{a.version}: {len(jobs)} jobs queued ({a.workers} workers, xgboost on {a.device})", src="04_train")
     with ProcessPoolExecutor(a.workers) as ex:

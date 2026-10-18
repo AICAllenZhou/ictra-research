@@ -35,7 +35,7 @@ DEC=$(python -c "import pandas as pd;print(pd.read_csv('$CMP').decision.iloc[0])
 if [ "$DEC" = "ACCEPT" ]; then MODE=inner_cv; REF=v03_threshold_stability; else MODE=inner_split; REF=v01_baseline; fi
 say "stage 2 complete and featured; v03 $DEC -> v02 with --thr-mode $MODE, compared against $REF"
 OUT=results/dev/v02_full_hours; mkdir -p $OUT
-W=$(python src/thermal.py --workers 3); say "workers $W (CPU $(python src/thermal.py) C)"
+W=2; say "workers $W (CPU $(python src/thermal.py) C)"
 nvidia-smi --query-gpu=timestamp,utilization.gpu,memory.used,memory.total --format=csv -l 5 > $OUT/gpu_log.csv &
 GPID=$!
 python -u src/04_train_ablation.py --version v02_full_hours --runs all --thr-mode $MODE \
