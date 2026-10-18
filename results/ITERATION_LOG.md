@@ -163,3 +163,38 @@ This supersedes the v03b reference values logged above (v01-based S_ref / FA_ref
 - Full text: `docs/EVALUATION_PROTOCOL.md`, amendment "2026-10-17 (evening)".
 - Fair comparisons from here on: v01 vs v02 (and v02 vs v03b) at fixed FA/24h budgets 1 / 2 / 5 / 10, with sensitivity
   and F1, next to the single-τ table.
+
+## v02_full_hours (2026-10-18 03:54) accepted chain (v01_baseline) on all dev runs incl. seizure-free hours
+
+Dev folds, pooled over patients, patient-bootstrap 95% CI.
+
+| set               | model    |   seizures |   hours |   sensitivity | sens_ci      |   fa_per_24h | fa_ci          |    f1 | f1_ci        |   median_delay_s |
+|:------------------|:---------|-----------:|--------:|--------------:|:-------------|-------------:|:---------------|------:|:-------------|-----------------:|
+| A_eeg             | lgbm     |        702 | 8641.56 |         0.174 | [0.09, 0.21] |        1.989 | [0.57, 2.27]   | 0.159 | [0.10, 0.21] |           29.458 |
+| A_eeg             | xgb      |        702 | 8641.56 |         0.171 | [0.05, 0.12] |        2.501 | [0.14, 0.38]   | 0.144 | [0.09, 0.19] |           29.417 |
+| B_eeg_ecg         | lgbm     |        702 | 8641.56 |         0.223 | [0.05, 0.26] |        2.019 | [0.10, 0.27]   | 0.202 | [0.09, 0.38] |           31     |
+| B_eeg_ecg         | xgb      |        702 | 8641.56 |         0.229 | [0.08, 0.28] |        2.203 | [0.46, 1.25]   | 0.196 | [0.11, 0.34] |           31.25  |
+| C_eeg_ecg_emg_acc | lgbm     |        702 | 8641.56 |         0.232 | [0.09, 0.31] |        1.563 | [0.40, 1.24]   | 0.229 | [0.12, 0.37] |           30.417 |
+| C_eeg_ecg_emg_acc | xgb      |        702 | 8641.56 |         0.256 | [0.09, 0.29] |        3.001 | [0.40, 1.24]   | 0.191 | [0.13, 0.34] |           30.242 |
+| rule              | rule_eeg |        702 | 8641.56 |         0.217 | [0.13, 0.34] |       24.054 | [17.28, 32.48] | 0.033 | [0.02, 0.05] |           29.5   |
+| rule              | rule_emg |        702 | 8641.56 |         0.198 | [0.11, 0.29] |       24.037 | [17.73, 30.90] | 0.029 | [0.02, 0.05] |           32.75  |
+| rule              | rule_acc |        702 | 8641.56 |         0.283 | [0.18, 0.38] |       36.449 | [30.47, 42.97] | 0.029 | [0.02, 0.05] |           25     |
+| rule              | rule_hr  |        702 | 8641.56 |         0.366 | [0.24, 0.50] |       60.539 | [46.63, 76.43] | 0.024 | [0.01, 0.04] |           13     |
+
+Offline pipeline (EVALUATION_PROTOCOL.md amendment 2026-10-17).
+Peak RSS per job (GB; max over folds and seeds of the worker's peak working set): A_eeg/lgbm 2.32, A_eeg/xgb 2.32, B_eeg_ecg/lgbm 2.75, B_eeg_ecg/xgb 2.75, C_eeg_ecg_emg_acc/lgbm 3.16, C_eeg_ecg_emg_acc/xgb 3.16, rule/rule_acc 3.16, rule/rule_eeg 3.16, rule/rule_emg 3.16, rule/rule_hr 3.16. Overall max 3.16 GB.
+
+**Decision: v02_full_hours becomes the reference (evaluation-population change, not a §1 method decision).**
+- The §1 compare against v01 (`compare_vs_v01_baseline.csv`) reads REJECT: ΔF1 −0.137, Δsens −0.186, ΔFA/24h −6.67
+  (C xgb). It is not a valid §1 test: v01 scored 2,288 h of seizure-containing runs, v02 scores 8,642 h of all dev runs,
+  so FA/24h and precision have different denominators. Allen's plan (2026-10-17) set v02 as the reference before the run.
+- Fixed-FA comparison (`matched_fa_vs_v01_baseline.md`), C xgb, seed-mean, v01 → v02: sensitivity at FA/24h ≤ 1 / 2 / 5
+  / 10 = 0.235 → 0.268, 0.293 → 0.324, 0.377 → 0.414, 0.448 → 0.498. Every learned model is +0.01 to +0.06 at every
+  budget. F1 at the same budget is lower in v02 (e.g. 0.346 → 0.307 at ≤ 1) because the same FA rate over 3.8× the hours
+  is 3.8× the false-alarm count. Part of the sensitivity gain may be easier seizure-free hours rather than a better model;
+  that is not separated here.
+- Why the single-τ row drops: the inner split now contains the seizure-free hours, and the max-F1 objective picks a
+  higher τ (C xgb median τ per fold 0.987–0.992), trading sensitivity for precision: 0.256 at 3.0 FA/24h, against 0.364
+  on the curve at the same FA. This is the gap v03b's sensitivity floor targets.
+- FBTC check passes for every learned model (0.83–0.92 at the deployable τ; 1.00 for C at FA/24h ≤ 1). τ is still
+  repeat-dependent: C xgb per-fold τ range reaches 0.944–0.994 over the 15 repeats, with FA/24h 0.0–12.7.
