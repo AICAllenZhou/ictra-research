@@ -124,6 +124,21 @@ def fig_per_patient(out, version):
     fig.tight_layout(); fig.savefig(out / "fig_per_patient.png", dpi=150); plt.close(fig)
 
 
+def by_fold_seed(out):
+    """Per (set, model, fold): tau and held-out sensitivity / FA/24h of each seed (repeat), as median and range, so a
+    pooled mean cannot hide one divergent seed (Allen 2026-10-17, v02 B xgb fold 2)."""
+    F = pd.read_csv(out / "scores_by_fold.csv")
+    rows = []
+    for (s_, m_, f_), d in F.groupby(["set", "model", "fold"]):
+        per = d.groupby("seed").apply(lambda g: pd.Series(dict(thr=g.thr.iloc[0], **{k: v for k, v in L.pool_scores(g.to_dict("records")).items()
+                                                                                     if k in ("sensitivity", "fa_per_24h", "f1")})), include_groups=False)
+        r = dict(set=s_, model=m_, fold=int(f_), n_seeds=len(per))
+        for k in ["thr", "sensitivity", "fa_per_24h", "f1"]:
+            r[f"{k}_median"], r[f"{k}_min"], r[f"{k}_max"] = per[k].median(), per[k].min(), per[k].max()
+        rows.append(r)
+    return order(pd.DataFrame(rows))
+
+
 def by_montage(out):
     F = pd.read_csv(out / "scores_by_fold.csv")
     R = pd.read_csv(L.ROOT / "data/catalog/seizeit2_runs.csv")[["sub", "run", "eeg_montage"]]
@@ -170,6 +185,7 @@ def main():
     out = L.ROOT / "results/dev" / a.version
     O, G, M, S, Du = overall(out), by_group(out), by_montage(out), sweep(out), by_duration(out)
     fig_per_patient(out, a.version)
+    FS = by_fold_seed(out); FS.to_csv(out / "report_by_fold_seed.csv", index=False)
     Du.to_csv(out / "report_by_duration.csv", index=False)
     O.to_csv(out / "report_overall.csv", index=False); G.to_csv(out / "report_by_group.csv", index=False)
     M.to_csv(out / "report_by_montage.csv", index=False); S.to_csv(out / "report_sweep.csv", index=False)
@@ -219,6 +235,12 @@ def main():
         for r in keep.itertuples():
             md.append(f"| {name(r.set, r.model)} | {r.group} | {fmt(r.sens_at_fa1_mean, r.sens_at_fa1_median)} | "
                       f"{fmt(r.sens_at_fa2_mean, r.sens_at_fa2_median)} | {fmt(r.sens_at_fa5_mean, r.sens_at_fa5_median)} |")
+    md += ["", "## Per fold: tau and held-out scores per seed (median [min, max] over seeds)", "",
+           "| model | fold | seeds | tau | sensitivity | FA/24h | F1 |", "|---|---|---|---|---|---|---|"]
+    for r in FS[FS.set != "rule"].itertuples():
+        md.append(f"| {name(r.set, r.model)} | {r.fold} | {r.n_seeds} | {r.thr_median:.4f} [{r.thr_min:.4f}, {r.thr_max:.4f}] | "
+                  f"{r.sensitivity_median:.2f} [{r.sensitivity_min:.2f}, {r.sensitivity_max:.2f}] | {r.fa_per_24h_median:.2f} [{r.fa_per_24h_min:.2f}, {r.fa_per_24h_max:.2f}] | "
+                  f"{r.f1_median:.2f} [{r.f1_min:.2f}, {r.f1_max:.2f}] |")
     md += ["", "## By EEG montage", "", "| model | montage | patients | seizures | hours | sensitivity | FA/24h | F1 |", "|---|---|---|---|---|---|---|---|"]
     for r in M.itertuples():
         md.append(f"| {name(r.set, r.model)} | {r.montage} | {r.patients} | {r.seizures} | {r.hours:,.0f} | {fmt(r.sensitivity_mean, r.sensitivity_median)} | "

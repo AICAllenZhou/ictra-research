@@ -7,6 +7,8 @@
 - Official table (every cell seed-mean / seed-median, FBTC first, sweep at FA/24h ≤ 1/2/5, montage): `REPORT.md`.
 - Figures: `fig_ablation.png`, `fig_operating_curves.png`.
 
+> **FA caveat (Allen, 2026-10-17):** v01's FA/24h was measured on seizure-containing runs only (2,288 h) and understates real-world false alarms. **v02_full_hours (all 8,715 dev hours, incl. seizure-free runs) is the realistic FA baseline from here on.** Compare versions across that boundary only at fixed FA/24h budgets (`matched_fa_vs_*.md`), not by the single-τ row.
+
 ## Answers
 
 - **Does C beat A? Yes.** Paired patient bootstrap within v01 (`compare_C_eeg_ecg_emg_acc_xgb_vs_A_eeg_xgb.csv`):

@@ -546,6 +546,9 @@ def main():
                     help="f1_sens_floor (v03b): max inner F1 s.t. inner sensitivity >= S_ref - 0.02, S_ref/FA_ref per "
                          "(set, model) from --thr-ref's summary.csv; fallback max sensitivity at FA <= FA_ref")
     ap.add_argument("--thr-ref", default="v01_baseline", help="reference version for --thr-objective f1_sens_floor")
+    ap.add_argument("--thr-ref-matched", action="store_true",
+                    help="S_ref = the reference's matched-FA sensitivity: best held-out sensitivity on its operating curve "
+                         "at FA/24h <= its deployable FA (seed mean), per (set, model) (protocol amendment 2026-10-17 evening)")
     ap.add_argument("--kofn-grid", default="", help='v08: k-of-n candidates tuned with tau on the inner split, e.g. "2/3,3/5,4/6" '
                     "(default: ictra_lib CFG 3/5 only)")
     ap.add_argument("--bg-draws", type=int, default=1, help="protocol 3 x 5: background-sampling draws per seed")
@@ -587,11 +590,18 @@ def main():
         return [(sd, False) for sd in a.seeds]
     REF = pd.read_csv(L.ROOT / "results/dev" / a.thr_ref / "summary.csv").set_index(["set", "model"]) if a.thr_objective != "max_f1" else None
 
+    CUR = pd.read_csv(L.ROOT / "results/dev" / a.thr_ref / "operating_curve.csv") if (REF is not None and a.thr_ref_matched) else None
+
     def obj(s, m):
         if REF is None:
             return None
-        r = REF.loc[(s, m)]
-        return dict(kind=a.thr_objective, s_floor=float(r.sensitivity) - 0.02, fa_ref=float(r.fa_per_24h))
+        r = REF.loc[(s, m)]; fa_ref = float(r.fa_per_24h); s_ref = float(r.sensitivity)
+        if CUR is not None:                    # matched-FA sensitivity of the reference at its own deployable FA
+            d = CUR[(CUR.set == s) & (CUR.model == m)]
+            v = [ds.loc[ds.fa_per_24h <= fa_ref, "sensitivity"].max() for _, ds in d.groupby("seed")]
+            s_ref = float(np.mean([x if np.isfinite(x) else 0.0 for x in v]))
+        print(f"  tau objective {s}/{m}: inner sensitivity >= {s_ref - 0.02:.4f} (S_ref {s_ref:.4f}), fallback FA <= {fa_ref:.3f}")
+        return dict(kind=a.thr_objective, s_floor=s_ref - 0.02, fa_ref=fa_ref)
     jobs = [(s, m, f, r, a.version, a.device, a.runs, a.thr_mode, kofn, dr, obj(s, m)) for s in a.sets for m in a.models for f in a.folds for r, dr in reps(s, m)]
     if a.rules:
         jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs, a.thr_mode, kofn, False, obj("rule", r)) for r in RULES for f in a.folds]

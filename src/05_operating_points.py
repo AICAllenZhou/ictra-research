@@ -62,10 +62,11 @@ def curve_job(args):
     thrs = np.unique(np.quantile(allp, qs))
     rows = []
     for thr in thrs:
-        tp = {g: 0 for g in GROUPS}; n = {g: 0 for g in GROUPS}; fp = 0; hours = 0.0; lat = []
+        tp = {g: 0 for g in GROUPS}; n = {g: 0 for g in GROUPS}; fp = 0; n_hyp = 0; hours = 0.0; lat = []
         for p, mask, a, b, grp in runs:
             hyp = L.windows_to_events(L.k_of_n((p > thr) & ~mask))
             hours += (len(p) - mask.sum()) * L.CFG["step_s"] / 3600
+            n_hyp += len(hyp)
             if hyp:
                 hs, he = np.array(hyp).T
                 ov = (hs[None, :] < (b + L.CFG["tol_post_s"])[:, None]) & (he[None, :] > (a - L.CFG["tol_pre_s"])[:, None])
@@ -76,8 +77,10 @@ def curve_job(args):
                 hit = np.zeros(len(a), bool)
             for g in GROUPS:
                 k = grp == g; n[g] += int(k.sum()); tp[g] += int(hit[k].sum())
-        r = dict(set=set_name, model=model, seed=seed, thr=float(thr), fp=fp, hours=hours, fa_per_24h=fp / hours * 24,
-                 n_seizures=sum(n.values()), sensitivity=sum(tp.values()) / max(sum(n.values()), 1),
+        sens = sum(tp.values()) / max(sum(n.values()), 1); prec = (n_hyp - fp) / n_hyp if n_hyp else np.nan
+        r = dict(set=set_name, model=model, seed=seed, thr=float(thr), fp=fp, n_hyp=n_hyp, hours=hours, fa_per_24h=fp / hours * 24,
+                 n_seizures=sum(n.values()), sensitivity=sens, precision=prec,
+                 f1=2 * sens * prec / (sens + prec) if (n_hyp and sens + prec > 0) else 0.0,
                  latency_median_s=float(np.median(lat)) if lat else np.nan)
         for g in GROUPS:
             r[f"n_{g}"] = n[g]; r[f"sens_{g}"] = tp[g] / n[g] if n[g] else np.nan

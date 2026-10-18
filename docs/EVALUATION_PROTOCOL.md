@@ -129,3 +129,18 @@ the report, the website and the demo say "offline pipeline". A causal pipeline i
 (`docs/TASKS.md` Task 8). It must report its delta against the accepted offline version on the same dev folds
 (Δsensitivity, ΔFA/24h, ΔF1, Δdelay, with paired-bootstrap CIs). Until v11 exists, the hardware replay demo labels
 itself "offline pipeline".
+
+### 2026-10-17 (evening) — v03b reference and sensitivity floor (Allen; logged before v03b started)
+
+- **Reference.** v03b is compared under §1 with **v02_full_hours**, on the same full-hours data (`--runs all`, 3 seeds; C
+  xgb 3 × 5 draws), not with v01. v01's FA/24h was measured on seizure-containing runs only and understates real-world FA.
+- **Sensitivity floor.** Per (set, model): S_ref = v02's matched-FA sensitivity, i.e. the best held-out sensitivity on
+  v02's operating curve at FA/24h ≤ FA_ref, where FA_ref is v02's deployable FA/24h for that cell (seed mean).
+  - τ maximises pooled inner event F1 subject to inner sensitivity ≥ S_ref − 0.02.
+  - If that is infeasible: maximise inner sensitivity subject to inner FA/24h ≤ FA_ref. Otherwise: the lowest-FA
+    candidate.
+- **What changes relative to v02.** Only the τ-selection procedure: τ comes from pooled out-of-fold predictions of a
+  5-fold inner leave-patients-out CV with the constrained objective, instead of an F1-max τ on one 80/20 inner split.
+  Features, models, seeds, draws and post-processing are unchanged.
+- **Reporting.** Next to the §1 decision: sensitivity and F1 at fixed FA/24h budgets of 1, 2, 5 and 10 (operating sweep),
+  and the per-fold τ and per-seed sensitivity (median, range).

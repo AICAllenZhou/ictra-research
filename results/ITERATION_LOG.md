@@ -152,3 +152,14 @@ an operating-point shift (a slightly higher τ moves along the same curve), not 
 v01's threshold method (inner_split), and v03b (sensitivity-floor objective, logged above) runs after v02. Official
 table: `results/dev/v03_threshold_stability/REPORT.md`.
 Rejected on sensitivity only; τ stability goal achieved — carried into v03b with a sensitivity-constrained τ.
+
+## 2026-10-17 — protocol amendment: v03b compared with v02 on full hours (Allen; before v03b started)
+
+This supersedes the v03b reference values logged above (v01-based S_ref / FA_ref).
+- v03b runs on all dev hours and is compared under §1 with v02_full_hours.
+- Sensitivity floor per cell = v02's matched-FA sensitivity (operating curve at FA/24h ≤ v02's deployable FA) − 0.02;
+  fallback: max sensitivity at FA ≤ v02's FA.
+- The only change relative to v02 is the τ-selection procedure (inner leave-patients-out CV + constrained objective).
+- Full text: `docs/EVALUATION_PROTOCOL.md`, amendment "2026-10-17 (evening)".
+- Fair comparisons from here on: v01 vs v02 (and v02 vs v03b) at fixed FA/24h budgets 1 / 2 / 5 / 10, with sensitivity
+  and F1, next to the single-τ table.
