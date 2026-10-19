@@ -1,0 +1,2 @@
+ref,new,n_patients,sens_ref,sens_new,d_sens,d_sens_ci,fa_ref,fa_new,d_fa,d_fa_ci,f1_ref,f1_new,d_f1,d_f1_ci,p_improve,failed,decision
+v02_full_hours C_eeg_ecg_emg_acc xgb,v03b_thr_sens_floor C_eeg_ecg_emg_acc xgb,96,0.2557454890788224,0.47255460588793924,0.21680911680911685,"[+0.156, +0.274]",3.0013095627654724,7.820438822460705,4.819129259695233,"[+3.90, +5.82]",0.18257946498286806,0.17176348309334044,-0.01081598188952762,"[-0.044, +0.026]",0.289,"dF1 >= +0.01, P(dF1>0) >= 0.90, dFA/24h <= +0.5",REJECT

@@ -198,3 +198,47 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   on the curve at the same FA. This is the gap v03b's sensitivity floor targets.
 - FBTC check passes for every learned model (0.83–0.92 at the deployable τ; 1.00 for C at FA/24h ≤ 1). τ is still
   repeat-dependent: C xgb per-fold τ range reaches 0.944–0.994 over the 15 repeats, with FA/24h 0.0–12.7.
+
+## v03b_thr_sens_floor (2026-10-18 14:03) v02 + tau from inner leave-patients-out CV, max F1 s.t. sensitivity >= v02 matched-FA sensitivity - 0.02 (one change: tau procedure)
+
+Dev folds, pooled over patients, patient-bootstrap 95% CI.
+
+| set               | model    |   seizures |   hours |   sensitivity | sens_ci      |   fa_per_24h | fa_ci          |    f1 | f1_ci        |   median_delay_s |
+|:------------------|:---------|-----------:|--------:|--------------:|:-------------|-------------:|:---------------|------:|:-------------|-----------------:|
+| A_eeg             | lgbm     |        702 | 8641.56 |         0.351 | [0.24, 0.49] |        6.734 | [5.32, 9.32]   | 0.146 | [0.10, 0.19] |           23.167 |
+| A_eeg             | xgb      |        702 | 8641.56 |         0.342 | [0.23, 0.49] |        6.522 | [5.00, 8.70]   | 0.146 | [0.10, 0.20] |           25.833 |
+| B_eeg_ecg         | xgb      |        702 | 8641.56 |         0.435 | [0.30, 0.58] |        7.274 | [6.24, 9.28]   | 0.168 | [0.11, 0.22] |           20.542 |
+| B_eeg_ecg         | lgbm     |        702 | 8641.56 |         0.444 | [0.32, 0.60] |        7.685 | [6.50, 9.83]   | 0.164 | [0.11, 0.22] |           20.5   |
+| C_eeg_ecg_emg_acc | lgbm     |        702 | 8641.56 |         0.48  | [0.34, 0.62] |        7.862 | [6.42, 9.50]   | 0.173 | [0.12, 0.23] |           20.667 |
+| C_eeg_ecg_emg_acc | xgb      |        702 | 8641.56 |         0.473 | [0.35, 0.63] |        7.82  | [6.56, 9.46]   | 0.172 | [0.12, 0.23] |           20.558 |
+| rule              | rule_eeg |        702 | 8641.56 |         0.321 | [0.21, 0.45] |       28.628 | [23.08, 34.48] | 0.04  | [0.02, 0.06] |           21     |
+| rule              | rule_emg |        702 | 8641.56 |         0.246 | [0.17, 0.32] |       27.001 | [22.32, 32.01] | 0.034 | [0.02, 0.05] |           35     |
+| rule              | rule_acc |        702 | 8641.56 |         0.285 | [0.19, 0.38] |       34.891 | [31.21, 39.24] | 0.03  | [0.02, 0.05] |           26     |
+| rule              | rule_hr  |        702 | 8641.56 |         0.46  | [0.31, 0.59] |       60.225 | [47.70, 74.29] | 0.029 | [0.02, 0.05] |           18.25  |
+
+Offline pipeline (EVALUATION_PROTOCOL.md amendment 2026-10-17).
+Peak RSS per job (GB; max over folds and seeds of the worker's peak working set): A_eeg/lgbm 2.95, A_eeg/xgb 2.83, B_eeg_ecg/lgbm 3.52, B_eeg_ecg/xgb 3.38, C_eeg_ecg_emg_acc/lgbm 3.97, C_eeg_ecg_emg_acc/xgb 3.97, rule/rule_acc 3.97, rule/rule_eeg 3.97, rule/rule_emg 3.97, rule/rule_hr 3.97. Overall max 3.97 GB.
+
+**Decision: REJECT (§1, v02_full_hours → v03b, C xgb, paired patient bootstrap, 96 patients).**
+- ΔF1 −0.011 [−0.044, +0.026], P(ΔF1 > 0) = 0.289; Δsens +0.217 [+0.156, +0.274] (0.256 → 0.473); ΔFA/24h +4.82
+  [+3.90, +5.82] (3.00 → 7.82). Fails the F1 gain, P(improve) and FA cap; passes the sensitivity cap
+  (`compare_vs_v02_full_hours.csv`). Second rejection under the rule written before the run.
+- **Same model, threshold chosen in the wrong place — not a worse model.** At fixed FA/24h budgets 1 / 2 / 5 / 10 / 3.00
+  every learned model sits on v02's curve: |Δsens| ≤ 0.013, A models exactly 0; C xgb 0.268 → 0.271 at ≤ 1 and
+  0.364 → 0.365 at ≤ 3.00 (`matched_fa_vs_v02_full_hours.md`).
+- **τ stability goal achieved, recorded although the version is rejected:** C xgb per-fold τ SD 0.013–0.019 (v02) →
+  0.0012–0.0016; fold 0's 15 repeats 0.9496–0.9550 (v02: 0.944–0.994) (`compare_vs_v02_full_hours_by_fold.csv`).
+- **τ quantile check** (`src/19_tau_quantile_check.py`, Allen 2026-10-18; repeat 0 of every learned model × 5 folds +
+  4 rules × 5 folds; `tau_quantile_check.csv/.md`):
+  - Reproduction: τ re-selected from the re-created inner OOF predictions equals the logged τ in 50 / 50 jobs.
+  - Scale drift not supported: P_final / P_inner median 0.97–1.32 per model, P_final > P_inner in only 2–3 of 5 folds;
+    pooled inner and held-out operating points agree (C xgb median inner sens 0.456 vs held-out 0.493, FA/24h 7.66 vs
+    8.51). The fold-to-fold spread of P_final (0.0011–0.0043) is the same size as the rules', which have no fitted scale.
+  - The floor was not the active constraint at the chosen point: inner sensitivity 0.28–0.46 against floors 0.17–0.34.
+  - **What sets the operating point is the τ candidate grid.** `tune_threshold` sweeps 40 quantiles of the pooled
+    probabilities, `np.linspace(0.90, 0.9999, 40)`. All 30 learned-model jobs picked candidate 38 (the 0.99734 quantile,
+    P ≈ 0.0027); the next candidate is the 0.9999 quantile (P ≈ 0.0001), a 27× lower alarm rate with nothing between.
+    Rules picked candidates 24–36. Whether candidate 39 was excluded by the floor or lost on F1 was not recorded.
+  - The same grid plausibly explains the seed-dependent τ since v01: v02 C xgb fold 0 held-out exceedance at τ splits
+    into 0.00007–0.00045 (high-τ repeats) and 0.0030–0.0049 (low-τ repeats), one value between (0.00137), i.e. jumps
+    between the top grid points. Hypothesis, not tested: a version with a denser top grid (one change) would test it.

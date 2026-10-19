@@ -203,7 +203,11 @@ function tabNow(){
     h += `<h3>${esc(v)} <span class="pill">${cnt("done")} done</span> <span class="pill">${cnt("running")} running</span> <span class="pill">${cnt("queued")} queued</span>
           <span class="small muted">${esc(T.note || "")} · runs: ${esc(T.runs || "")} · xgboost on ${esc(T.device || "")} · started ${esc(T.started || "")}${T.finished ? " · finished " + esc(T.finished) : ""}</span></h3>`;
     h += `<div class="tablewrap"><div class="jobgrid" style="grid-template-columns:minmax(150px,220px) repeat(${cols.length}, minmax(14px,1fr))">`;
-    h += `<span></span>` + cols.map(c => `<span class="small muted" style="text-align:center;font-size:9px">${esc(c.replace("|", "·"))}</span>`).join("");
+    // one label per fold (on its first column), not per fold·seed: with 15 repeats per fold the per-column labels collide
+    const fold = c => c.split("|")[0];
+    h += `<span></span>` + cols.map((c, i) => i === 0 || fold(cols[i - 1]) !== fold(c)
+      ? `<span class="small muted" style="font-size:10px;white-space:nowrap;overflow:visible">fold ${esc(fold(c))}</span>`
+      : `<span></span>`).join("");
     for (const r of rows) {
       h += `<span class="joblab">${esc(r.replace("|", " · "))}</span>`;
       for (const c of cols) {
