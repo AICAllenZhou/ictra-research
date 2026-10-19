@@ -242,3 +242,12 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   - The same grid plausibly explains the seed-dependent τ since v01: v02 C xgb fold 0 held-out exceedance at τ splits
     into 0.00007–0.00045 (high-τ repeats) and 0.0030–0.0049 (low-τ repeats), one value between (0.00137), i.e. jumps
     between the top grid points. Hypothesis, not tested: a version with a denser top grid (one change) would test it.
+
+## 2026-10-19 — defect correction: τ candidate grid (Allen; logged before the run)
+
+The τ search in `tune_threshold` was too coarse at the top (linear quantiles 0.90–0.9999, 40 points; last step a 27×
+jump in alarm rate), which pinned τ in v01–v03b (v03b quantile check above). Corrected to `q = 1 − logspace(−1, −5, 81)`
+(log-spaced tail probability). Not a §1 version: v02's configuration is re-run unchanged except for the grid as
+**v02g_grid_fix**, which becomes the reference for all later versions. Full text: `docs/EVALUATION_PROTOCOL.md`,
+amendment 2026-10-19. One-job smoke test before the run (A xgb fold 0 seed 0, same inner split): τ 0.9877 → 0.9727,
+inner F1 0.156 → 0.328, held-out sens / FA/24h / F1 0.108 / 0.13 / 0.186 → 0.303 / 2.43 / 0.269 (one job; not a result).

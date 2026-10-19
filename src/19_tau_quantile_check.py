@@ -50,6 +50,7 @@ def windows(subs, cols, model=None):
 def check(args):
     fs_name, kind, fold, seed, version, ref, device = args
     T.DEVICE, T.RUNS = device, "all"
+    T.THR_GRID = "legacy"                              # v03b ran before the grid correction (2026-10-19)
     T.SMOKE_GUARD["v"] = "_diag"                       # never write Lab job states
     draws = fs_name == "C_eeg_ecg_emg_acc" and kind == "xgb"
     mseed = seed // 10 if draws else seed

@@ -184,6 +184,21 @@ def score_run(pos, ev, nw, mask, kn):
     return L.score_events(ref, hyp, hours=(nw - int(mask.sum())) * L.CFG["step_s"] / 3600), hyp
 
 
+THR_GRID = "tail_log"   # set from --thr-grid in every worker
+
+
+def thr_quantiles():
+    """Quantiles of the inner predictions tried as tau.
+    legacy (v01-v03b): 40 quantiles linear in q from 0.90 to 0.9999; the top two are q = 0.99734 and 0.9999, a 27x jump in
+    alarm rate with nothing between, which pinned tau (ITERATION_LOG v03b quantile check).
+    tail_log (defect correction 2026-10-19, EVALUATION_PROTOCOL amendment): log-spaced in the tail probability 1 - q,
+    because the false-alarm rate is proportional to it; 0.1 -> 1e-5, 20 per decade (81 candidates). The upper end keeps the
+    legacy grid's 0.90 start (rules picked tails 0.008-0.036 in v03b)."""
+    if THR_GRID == "legacy":
+        return np.linspace(0.90, 0.9999, 40)
+    return 1 - np.logspace(-1, -5, 81)
+
+
 def tune_threshold(model, subs, cols, runs=None, kofn=DEFAULT_KOFN, objective=None):
     """Sweep thresholds (and, for v08, the k-of-n candidates) on inner-validation patients.
     objective None / max_f1: maximise pooled event F1 (ties -> fewer false alarms).
@@ -193,7 +208,7 @@ def tune_threshold(model, subs, cols, runs=None, kofn=DEFAULT_KOFN, objective=No
     Returns (thr, (k, n), (f1, -fa), rule_used)."""
     runs = runs if runs is not None else list(predict_runs(model, subs, cols))
     allp = np.concatenate([r[2] for r in runs])
-    cands = np.unique(np.quantile(allp[np.isfinite(allp)], np.linspace(0.90, 0.9999, 40)))
+    cands = np.unique(np.quantile(allp[np.isfinite(allp)], thr_quantiles()))
     res = []
     for kn in kofn:
         for thr in cands:
@@ -255,12 +270,12 @@ N_INNER = 5
 
 
 def job(args):
-    fs_name, kind, fold, seed, version, device, runs, thr_mode, kofn, draws, thr_obj = args
+    fs_name, kind, fold, seed, version, device, runs, thr_mode, kofn, draws, thr_obj, thr_grid = args
     # draws (protocol 3 x 5): `seed` is then a repeat id r = model_seed * 10 + draw; the model seed is r // 10 and the
     # background sample / inner split use r, so 3 model seeds x 5 background draws = 15 scored repeats
     mseed = seed // 10 if draws else seed
-    global DEVICE, RUNS
-    DEVICE, RUNS = device, runs
+    global DEVICE, RUNS, THR_GRID
+    DEVICE, RUNS, THR_GRID = device, runs, thr_grid
     SMOKE_GUARD["v"] = version
     t = time.time()
     key = f"{fs_name}|{kind}|{fold}|{seed}"
@@ -302,7 +317,7 @@ def job(args):
     pd.concat(preds).to_parquet(out / "preds" / f"{fs_name}__{kind}__f{fold}_s{seed}.parquet", index=False)
     if kind in ("xgb", "lgbm"):
         monitor(m, kind, val_subs, cols, out, f"{fs_name}__{kind}__f{fold}_s{seed}", L.pool_scores(rows)["f1"], seed)
-    res = pd.DataFrame(rows); res["inner_f1"] = f1_in; res["thr_mode"] = thr_mode; res["thr_rule"] = thr_rule
+    res = pd.DataFrame(rows); res["inner_f1"] = f1_in; res["thr_mode"] = thr_mode; res["thr_rule"] = thr_rule; res["thr_grid"] = thr_grid
     res["minutes"] = (time.time() - t) / 60
     import psutil
     mi = psutil.Process().memory_info()
@@ -556,6 +571,9 @@ def main():
     ap.add_argument("--thr-mode", default="inner_split", choices=THR_MODES,
                     help="inner_split: one 80/20 inner patient split (v01); inner_cv: pooled out-of-fold predictions of a "
                          f"{N_INNER}-fold inner leave-patients-out CV (v03)")
+    ap.add_argument("--thr-grid", default="tail_log", choices=["tail_log", "legacy"],
+                    help="tau candidates: tail_log = 1 - logspace(-1, -5, 81) (defect correction 2026-10-19); legacy = "
+                         "linspace(0.90, 0.9999, 40), only to reproduce v01-v03b")
     ap.add_argument("--no-log", action="store_true", help="smoke runs: do not append to results/ITERATION_LOG.md")
     ap.add_argument("--compare", nargs=2, metavar=("REF", "NEW"), help="paired bootstrap NEW vs accepted REF, then exit")
     ap.add_argument("--compare-sets", nargs=2, metavar=("SET_REF", "SET_NEW"), default=["C_eeg_ecg_emg_acc", "C_eeg_ecg_emg_acc"])
@@ -602,9 +620,9 @@ def main():
             s_ref = float(np.mean([x if np.isfinite(x) else 0.0 for x in v]))
         print(f"  tau objective {s}/{m}: inner sensitivity >= {s_ref - 0.02:.4f} (S_ref {s_ref:.4f}), fallback FA <= {fa_ref:.3f}")
         return dict(kind=a.thr_objective, s_floor=s_ref - 0.02, fa_ref=fa_ref)
-    jobs = [(s, m, f, r, a.version, a.device, a.runs, a.thr_mode, kofn, dr, obj(s, m)) for s in a.sets for m in a.models for f in a.folds for r, dr in reps(s, m)]
+    jobs = [(s, m, f, r, a.version, a.device, a.runs, a.thr_mode, kofn, dr, obj(s, m), a.thr_grid) for s in a.sets for m in a.models for f in a.folds for r, dr in reps(s, m)]
     if a.rules:
-        jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs, a.thr_mode, kofn, False, obj("rule", r)) for r in RULES for f in a.folds]
+        jobs += [(f"rule", r, f, 0, a.version, a.device, a.runs, a.thr_mode, kofn, False, obj("rule", r), a.thr_grid) for r in RULES for f in a.folds]
     done = {p.stem for p in (L.ROOT / "results/dev" / a.version).glob("fold_*.csv")}
     jobs = [j for j in jobs if f"fold_{j[0]}__{j[1]}__f{j[2]}_s{j[3]}" not in done]
     print(f"{len(jobs)} jobs, {a.workers} workers")
@@ -614,7 +632,7 @@ def main():
         cells[f"{fs_}|{kd_}|{fo_}|{sd_}"] = {"state": "done"}
     for j in jobs:
         cells[f"{j[0]}|{j[1]}|{j[2]}|{j[3]}"] = {"state": "queued", "set": j[0], "model": j[1], "fold": j[2], "seed": j[3]}
-    lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers, "thr_mode": a.thr_mode, "kofn_grid": a.kofn_grid or "3/5", "thr_objective": a.thr_objective, "bg_draws": a.bg_draws, "bg_draws_cells": a.bg_draws_cells,
+    lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers, "thr_mode": a.thr_mode, "kofn_grid": a.kofn_grid or "3/5", "thr_objective": a.thr_objective, "thr_grid": a.thr_grid, "bg_draws": a.bg_draws, "bg_draws_cells": a.bg_draws_cells,
                                            "n_jobs": len(cells), "started": pd.Timestamp.now().isoformat(timespec="seconds"), "jobs": cells}}},
                  log=f"{a.version}: {len(jobs)} jobs queued ({a.workers} workers, xgboost on {a.device})", src="04_train")
     with ProcessPoolExecutor(a.workers) as ex:

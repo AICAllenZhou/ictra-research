@@ -144,3 +144,23 @@ itself "offline pipeline".
   Features, models, seeds, draws and post-processing are unchanged.
 - **Reporting.** Next to the §1 decision: sensitivity and F1 at fixed FA/24h budgets of 1, 2, 5 and 10 (operating sweep),
   and the per-fold τ and per-seed sensitivity (median, range).
+
+### 2026-10-19 — defect correction: τ candidate grid; v02g replaces v02 as the reference (Allen; logged before the run)
+
+- **Defect.** `04_train_ablation.tune_threshold` tried 40 quantiles of the inner predictions, linear in q from 0.90 to
+  0.9999. The top two candidates (q = 0.99734 and 0.9999) differ 27× in alarm rate with nothing between. The v03b
+  quantile check found every learned-model job on the same candidate (q = 0.99734), and v02's held-out exceedance at τ
+  splits into two groups matching the top grid points. The deployable τ of v01–v03b was therefore set by grid
+  resolution, not by the objective.
+- **Correction.** Candidates are log-spaced in the tail probability, which the false-alarm rate is proportional to:
+  `q = 1 − logspace(−1, −5, 81)` (tail 0.1 → 1e-5, 20 per decade). The upper end keeps the old grid's 0.90 start (rules
+  picked tails 0.008–0.036 in v03b). Flag `--thr-grid tail_log` (default); `legacy` reproduces v01–v03b only. Nothing else
+  changes: features, models, seeds, draws, inner split, objective (max inner F1), k-of-n, scoring.
+- **This is a defect correction, not a version.** It is not compared with v02 under §1: v02 is pinned by the same grid,
+  so a §1 difference would be partly the grid. Instead v02's exact configuration is re-run with the corrected grid as
+  **v02g_grid_fix**, which **replaces v02_full_hours as the reference** for every later version (§1 comparisons from
+  here on are against v02g). v02 vs v02g is reported descriptively: the single-τ table side by side (does v02's own
+  deployable point improve?), and fixed FA/24h budgets 1 / 2 / 5 / 10 (expected the same curve: same models).
+- **Earlier decisions stand as made.** v03 and v03b were rejected under the grid they ran with; their log entries keep
+  their numbers. Their fixed-FA comparisons (same curve) do not depend on the grid (05_operating_points.py already
+  sweeps a log-spaced tail grid).
