@@ -6,13 +6,16 @@ the team's own board) lives here, so there is exactly one code path (SlopeAI rul
 import json
 from pathlib import Path
 import numpy as np, pandas as pd
-from scipy.signal import butter, sosfiltfilt, iirnotch, filtfilt, welch
+from scipy.signal import butter, sosfiltfilt, iirnotch, filtfilt, welch, sosfilt, sosfilt_zi, lfilter, lfilter_zi
 
 ROOT = Path(__file__).resolve().parents[1]
 # Bump whenever anything in this file changes; 03_features.py refuses to add files to data/features/ made by another version.
-LIB_VERSION = "lib-2026-10-17e"   # a: first real-data version; b: dropout repair, ACC to g, masked FA hours, memory fixes;
+LIB_VERSION = "lib-2026-10-20f"   # a: first real-data version; b: dropout repair, ACC to g, masked FA hours, memory fixes;
                                   # c: vectorised windows_to_events (same output); d: lab_status helper (no signal change);
                                   # e: montage indicator features eeg_mont_* (Allen, 2026-10-17: v01 must see the montage)
+                                  # f: causal mode (v11, CFG["causal"], features in data/features_causal/); the default
+                                  #    (offline) path is unchanged, checked by src/22_causality_check.py --regression
+DEFAULT_PATH_SAME_AS = ("lib-2026-10-17e",)   # feature stamps whose OFFLINE output is identical to this version's
 CFG = dict(
     fs=256,                 # every signal is resampled to this
     fs_acc=25,
@@ -22,6 +25,7 @@ CFG = dict(
     label_overlap=0.5,      # window is seizure if >= this fraction overlaps an annotated seizure
     post_k=3, post_n=5,     # alarm needs k of the last n windows positive
     merge_s=90, split_s=300, tol_pre_s=30, tol_post_s=60,   # SzCORE event rules
+    causal=False,           # v11: every step uses only samples up to the window end (set_mode / mode_for_version)
 )
 EEG_FEATS = ["ll", "logvar", "zcr", "d", "th", "a", "b", "sef", "kurt"]
 MODALITY_PREFIX = {"eeg": "eeg_", "ecg": "ecg_", "emg": "emg_", "acc": "acc_"}
@@ -33,14 +37,50 @@ FEATURE_SETS = {
 }
 
 
+# ---------------------------------------------------------------- offline vs causal mode (v11)
+def set_mode(causal):
+    """Offline (default) or causal processing for this process; also the ProcessPoolExecutor initializer of 03/04/05."""
+    CFG["causal"] = bool(causal)
+
+
+def features_dir():
+    return ROOT / ("data/features_causal" if CFG["causal"] else "data/features")
+
+
+def write_version_meta(version, **kw):
+    d = ROOT / "results/dev" / version
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "version_meta.json").write_text(json.dumps(dict(causal=CFG["causal"], lib_version=LIB_VERSION, **kw), indent=1))
+
+
+def mode_for_version(version):
+    """Set the mode a version was trained in (results/dev/<version>/version_meta.json; absent = offline)."""
+    f = ROOT / "results/dev" / version / "version_meta.json"
+    set_mode(json.loads(f.read_text()).get("causal", False) if f.exists() else False)
+    return CFG["causal"]
+
+
 # ---------------------------------------------------------------- signal harmonisation
+def _x0(x):
+    """First sample of every channel (the causal filters start in steady state at this level)."""
+    return np.asarray(x)[..., :1]
+
+
 def bandpass(x, lo, hi, fs, order=4):
+    """Offline: zero-phase (sosfiltfilt, uses future samples). Causal: forward-only sosfilt started in steady state at the
+    first sample; same Butterworth design, so it adds the filter's group delay instead of looking ahead."""
     sos = butter(order, [lo, min(hi, fs / 2 - 1)], btype="band", fs=fs, output="sos")
+    if CFG["causal"]:
+        zi = sosfilt_zi(sos).reshape((sos.shape[0],) + (1,) * (np.ndim(x) - 1) + (2,)) * _x0(x)[None]
+        return sosfilt(sos, x, axis=-1, zi=zi)[0]
     return sosfiltfilt(sos, x, axis=-1)
 
 
 def notch(x, f0, fs):
     b, a = iirnotch(f0, 30, fs)
+    if CFG["causal"]:
+        zi = lfilter_zi(b, a).reshape((1,) * (np.ndim(x) - 1) + (-1,)) * _x0(x)
+        return lfilter(b, a, x, axis=-1, zi=zi)[0]
     return filtfilt(b, a, x, axis=-1)
 
 
@@ -61,6 +101,15 @@ def dropout_mask(x, fs, k=3.0, frac=0.25, dc_ratio=3.0):
     if nb:
         blk = x[: nb * fs].reshape(nb, fs)
         lvl = np.median(blk, 1); mad = np.median(np.abs(blk - lvl[:, None]), 1) + 1e-9
+        if CFG["causal"]:
+            # causal: each 1-s block is judged with the PREVIOUS block's level/MAD and the median |diff| of the past
+            # 60 blocks (the first block of a signal uses its own: at most 1 s of look-ahead at the very start)
+            prev = lambda v: np.r_[v[:1], v[:-1]]
+            lvl, mad = prev(lvl), prev(mad)
+            bd = np.median(np.abs(np.diff(blk, axis=1)), 1)
+            nz = 6 * prev(pd.Series(bd).rolling(60, min_periods=1).median().values) + 1e-9
+            noise = np.repeat(nz, fs)
+            noise = np.r_[noise, np.full(n - len(noise), noise[-1])]
         far = np.repeat(np.abs(lvl) > dc_ratio * mad, fs)
         far = np.r_[far, np.full(n - len(far), far[-1])]
     else:
@@ -73,7 +122,8 @@ def dropout_mask(x, fs, k=3.0, frac=0.25, dc_ratio=3.0):
         # every sample of the run is closer to zero than the neighbours' level; at least one by more than frac
         flip = seg * ref < 0
         toward0 = np.all((np.abs(seg) < np.abs(ref)) | flip, axis=0) & np.any((np.abs(seg) < (1 - frac) * np.abs(ref)) | flip, axis=0)
-        hit = toward0 & (dev > k * np.abs(a - b)) & (dev > noise) & (dev > frac * np.abs(ref)) & far[1: n - L]
+        nse = noise[1: n - L] if np.ndim(noise) else noise
+        hit = toward0 & (dev > k * np.abs(a - b)) & (dev > nse) & (dev > frac * np.abs(ref)) & far[1: n - L]
         for j in range(L):
             mask[1 + j: n - L + j] |= hit
     return mask
@@ -86,7 +136,11 @@ def repair_dropouts(x, fs):
     for c in range(x.shape[0]):
         m = dropout_mask(x[c], fs) & np.isfinite(x[c])
         if m.any() and (~m).sum() > 1:
-            x[c, m] = np.interp(i[m], i[~m], x[c, ~m])
+            if CFG["causal"]:      # hold the last good sample (interpolation would use the next one)
+                last = np.maximum.accumulate(np.where(~m, i, 0))
+                x[c, m] = x[c, last[m]]
+            else:
+                x[c, m] = np.interp(i[m], i[~m], x[c, ~m])
     return x
 
 
@@ -96,7 +150,10 @@ def harmonise(x, fs_in, kind, fs_out=None, mains=50):
     from math import gcd
     fs_out = fs_out or (CFG["fs_acc"] if kind == "acc" else CFG["fs"])
     x = repair_dropouts(x, fs_in)
-    x = np.nan_to_num(x - np.nanmedian(x, axis=-1, keepdims=True))
+    # offline: remove the chunk median; causal: remove the first sample (the filters below start in steady state there).
+    # resample_poly is a zero-phase FIR: in causal mode it is the one bounded look-ahead left (half its length, about
+    # 40 ms at 250 -> 256 Hz), which a device sampling at 256 Hz does not need
+    x = np.nan_to_num(x - (np.nan_to_num(_x0(x)) if CFG["causal"] else np.nanmedian(x, axis=-1, keepdims=True)))
     if int(round(fs_in)) != fs_out:
         g = gcd(int(round(fs_in)), fs_out)
         x = resample_poly(x, fs_out // g, int(round(fs_in)) // g, axis=-1)
@@ -115,6 +172,16 @@ def acc_to_g(acc_raw, fs):
     sub-019 run-07; docs/DATA_NOTES.md), so gravity is used as the calibration. Dropouts are repaired first."""
     x = repair_dropouts(acc_raw, fs)
     mag = np.sqrt((x ** 2).sum(0))
+    if CFG["causal"]:
+        # causal: running median |a| over the past 10 min of 1-s block medians (previous blocks only; the first block
+        # uses itself)
+        f = max(1, int(round(fs))); nb = max(1, len(mag) // f)
+        bm = np.array([np.nanmedian(mag[i * f:(i + 1) * f]) for i in range(nb)])
+        g = pd.Series(bm).rolling(600, min_periods=1).median().values
+        g = np.r_[g[:1], g[:-1]]
+        scale = np.repeat(g, f)
+        scale = np.r_[scale, np.full(max(0, len(mag) - len(scale)), scale[-1])][: len(mag)]
+        return x / (scale + 1e-12)
     return x / (np.nanmedian(mag) + 1e-12)
 
 
@@ -203,6 +270,8 @@ def heart_rate_series(ecg, fs=None):
     fs = fs or CFG["fs"]
     n_sec = len(ecg) // fs
     hr = np.full(n_sec, np.nan); q = np.zeros(n_sec)
+    if CFG["causal"]:
+        return _heart_rate_causal(ecg, fs, n_sec)
     try:
         _, info = nk.ecg_peaks(nk.ecg_clean(ecg.astype(np.float64), sampling_rate=fs), sampling_rate=fs)
         peaks = np.asarray(info["ECG_R_Peaks"])
@@ -219,6 +288,61 @@ def heart_rate_series(ecg, fs=None):
     # quality: a beat within 2 s of this second (nearest beat by binary search; memory O(n))
     j = np.clip(np.searchsorted(t, sec), 1, len(t) - 1)
     q = (np.minimum(np.abs(sec - t[j - 1]), np.abs(sec - t[j])) < 2).astype(float)
+    return hr, q
+
+
+QRS_REFRACTORY_S = 0.3   # a beat can be replaced by a larger maximum within this time, so it is final only after it
+
+
+def causal_r_peaks(ecg, fs):
+    """Causal QRS detector for v11. neurokit's detector smooths with a centred window and sets its QRS-length threshold
+    from the whole recording, so it cannot run live. Every step here uses past samples only: 5-15 Hz causal band-pass,
+    derivative, square, trailing 100-ms integration (Pan & Tompkins 1985). A local maximum of that envelope (confirmed one
+    sample later, 4 ms) above 35 % of the envelope's maximum over the previous 2 s is a beat; a larger maximum within
+    QRS_REFRACTORY_S of the last beat replaces it, so a beat is final QRS_REFRACTORY_S after it. Within 360 ms of the
+    previous beat a maximum below half of that beat's is a T wave. Parameters chosen on 12 dev runs against offline
+    neurokit HR (results/data_checks/causality_check.md); beat times lag the R peak by a roughly constant delay, which
+    leaves RR intervals unchanged."""
+    x = np.asarray(ecg, np.float64)
+    if len(x) < int(3 * fs):
+        return np.zeros(0, int)
+    sos = butter(2, [5, 15], btype="band", fs=fs, output="sos")
+    y = sosfilt(sos, x - x[0])
+    c = np.cumsum(np.r_[0.0, np.diff(y)] ** 2)
+    w = max(1, int(0.1 * fs))
+    env = (c - np.r_[np.zeros(w), c[:-w]]) / w
+    ref = pd.Series(env).rolling(int(2 * fs), min_periods=1).max().shift(1).bfill().values
+    cand = np.flatnonzero((env[1:-1] > env[:-2]) & (env[1:-1] >= env[2:]) & (env[1:-1] > 0.35 * ref[1:-1])) + 1
+    peaks, last = [], -10 ** 9
+    R, T = int(QRS_REFRACTORY_S * fs), int(0.36 * fs)
+    for i in cand:
+        if i - last < R:
+            if peaks and env[i] > env[last]:
+                peaks[-1] = i; last = i
+            continue
+        if peaks and i - last < T and env[i] < 0.5 * env[last]:
+            continue
+        peaks.append(i); last = i
+    return np.asarray(peaks, int)
+
+
+def _heart_rate_causal(ecg, fs, n_sec):
+    """Per-second HR from causal R peaks: the RR interval of the last beat that is FINAL at the second's midpoint (beat
+    time + QRS_REFRACTORY_S <= midpoint), held rather than interpolated towards the next beat; quality = such a beat within
+    the previous 2 s."""
+    hr = np.full(n_sec, np.nan); q = np.zeros(n_sec)
+    peaks = causal_r_peaks(ecg, fs)
+    if len(peaks) < 3:
+        return hr, q
+    t = peaks[1:] / fs; bpm = 60 / (np.diff(peaks) / fs)
+    ok = (bpm > 30) & (bpm < 220); t, bpm = t[ok], bpm[ok]
+    if len(t) < 3:
+        return hr, q
+    sec = np.arange(n_sec) + 0.5
+    j = np.searchsorted(t + QRS_REFRACTORY_S, sec, side="right") - 1
+    has = j >= 0
+    hr[has] = bpm[j[has]]
+    q[has] = ((sec[has] - t[j[has]]) < 2).astype(float)
     return hr, q
 
 
@@ -322,7 +446,10 @@ def windows_to_events(alarm, step=None, win=None):
         return []
     d = np.diff(np.r_[0, a.astype(np.int8), 0])
     i = np.flatnonzero(d == 1); j = np.flatnonzero(d == -1) - 1          # runs of consecutive alarm windows
-    s = i * step; e = j * step + win
+    # offline: an alarm run spans its windows; causal: the alarm exists from the END of the window that raised it (when
+    # the data it needs has arrived) to the end of the last alarm window, so delays are not one window early
+    s = (i * step + win) if CFG["causal"] else i * step
+    e = j * step + win
     new = np.r_[True, (s[1:] - e[:-1]) >= CFG["merge_s"]]                  # a gap < merge_s joins the previous event
     ms = s[new]; me = np.maximum.reduceat(e, np.flatnonzero(new))
     n = np.maximum(1, np.ceil((me - ms) / CFG["split_s"]).astype(int))    # events longer than split_s are cut

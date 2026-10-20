@@ -28,7 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import ictra_lib as L
 
 warnings.filterwarnings("ignore")
-FEAT = L.ROOT / "data/features"
+# feature directory: L.features_dir() (data/features, or data/features_causal for --causal versions, v11)
 BG_RATIO, DROPOUT = 5, 0.25
 MAX_RAM_FRAC = 0.5      # training workers x per-job peak RSS must stay under half of physical RAM
 DEVICE = "cpu"   # set from --device in main() and passed to every worker (xgboost only; other families are CPU-only)
@@ -58,7 +58,7 @@ def all_columns():
     for that signal, so the column list must never come from one file (B would silently lose its ECG block)."""
     import pyarrow.parquet as pq
     seen = {}
-    for p in sorted(FEAT.glob("*.parquet")):
+    for p in sorted(L.features_dir().glob("*.parquet")):
         for c in pq.read_schema(p).names:
             seen.setdefault(c, None)
     return list(seen)
@@ -77,7 +77,7 @@ RUNS = "all"     # "seizure" = only runs that contain a seizure (stage 1 / v01);
 
 
 def run_files(subs):
-    files = sorted(p for p in FEAT.glob("*.parquet") if p.name.split("_run")[0] in set(subs))
+    files = sorted(p for p in L.features_dir().glob("*.parquet") if p.name.split("_run")[0] in set(subs))
     return [p for p in files if p.name in SEIZURE_RUNS] if RUNS == "seizure" else files
 
 
@@ -342,7 +342,7 @@ def seizure_group_scores(version):
         kn = (int(fc.post_k.iloc[0]), int(fc.post_n.iloc[0])) if "post_k" in fc else DEFAULT_KOFN[0]
         P = pd.read_parquet(p)
         for (sub, run), d in P.groupby(["sub", "run"]):
-            q = pd.read_parquet(FEAT / f"{sub}_run-{run:02d}.parquet", columns=["impd", "flat_eeg"])
+            q = pd.read_parquet(L.features_dir() / f"{sub}_run-{run:02d}.parquet", columns=["impd", "flat_eeg"])
             impd = q.impd.values | q.flat_eeg.fillna(False).astype(bool).values
             alarm = L.k_of_n((d.prob.values > thr) & ~impd, *kn); hyp = L.windows_to_events(alarm)
             ev = S[(S["sub"] == sub) & (S.run == run)]
@@ -574,18 +574,30 @@ def main():
     ap.add_argument("--thr-grid", default="tail_log", choices=["tail_log", "legacy"],
                     help="tau candidates: tail_log = 1 - logspace(-1, -5, 81) (defect correction 2026-10-19); legacy = "
                          "linspace(0.90, 0.9999, 40), only to reproduce v01-v03b")
+    ap.add_argument("--causal", action="store_true",
+                    help="v11: causal features (data/features_causal, made by 03_features.py --causal) and causal alarm "
+                         "timestamps; recorded in results/dev/<version>/version_meta.json")
     ap.add_argument("--no-log", action="store_true", help="smoke runs: do not append to results/ITERATION_LOG.md")
     ap.add_argument("--compare", nargs=2, metavar=("REF", "NEW"), help="paired bootstrap NEW vs accepted REF, then exit")
     ap.add_argument("--compare-sets", nargs=2, metavar=("SET_REF", "SET_NEW"), default=["C_eeg_ecg_emg_acc", "C_eeg_ecg_emg_acc"])
     ap.add_argument("--compare-models", nargs=2, metavar=("MODEL_REF", "MODEL_NEW"), default=["xgb", "xgb"])
     a = ap.parse_args()
     SMOKE_GUARD["v"] = a.version
+    if a.compare or a.summary_only:
+        L.mode_for_version(a.compare[1] if a.compare else a.version)   # scoring in the mode the version was trained in
     if a.compare:
         compare(a.compare[0], a.compare[1], a.compare_sets[0], a.compare_models[0], a.compare_sets[1], a.compare_models[1]); return
     if a.summary_only:
         summarise(a.version, a.note, log=not a.no_log); return
     if a.runs is None:
         ap.error("--runs seizure|all is required for training")
+    meta = L.ROOT / "results/dev" / a.version / "version_meta.json"
+    if meta.exists() and L.mode_for_version(a.version) != a.causal:
+        ap.error(f"{a.version} was started with causal={not a.causal}; resume it with the same mode")
+    L.set_mode(a.causal)
+    if a.causal and not (L.features_dir() / "_lib_version.txt").exists():
+        ap.error("--causal needs data/features_causal (python src/03_features.py --causal)")
+    L.write_version_meta(a.version, runs=a.runs, thr_mode=a.thr_mode, thr_grid=a.thr_grid)
     # memory cap (Allen, 2026-10-17): the training pool may reserve at most MAX_RAM_FRAC of physical RAM. The per-job
     # peak comes from earlier fold CSVs (peak_rss_gb, +25 % margin), else a conservative 2 GB.
     import psutil
@@ -635,7 +647,7 @@ def main():
     lab({"training": {a.version: {"note": a.note, "runs": a.runs, "device": a.device, "workers": a.workers, "thr_mode": a.thr_mode, "kofn_grid": a.kofn_grid or "3/5", "thr_objective": a.thr_objective, "thr_grid": a.thr_grid, "bg_draws": a.bg_draws, "bg_draws_cells": a.bg_draws_cells,
                                            "n_jobs": len(cells), "started": pd.Timestamp.now().isoformat(timespec="seconds"), "jobs": cells}}},
                  log=f"{a.version}: {len(jobs)} jobs queued ({a.workers} workers, xgboost on {a.device})", src="04_train")
-    with ProcessPoolExecutor(a.workers) as ex:
+    with ProcessPoolExecutor(a.workers, initializer=L.set_mode, initargs=(a.causal,)) as ex:
         for line, key, info in ex.map(job, jobs):
             print(line, flush=True)
             lab({"training": {a.version: {"jobs": {key: info}}}})

@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import ictra_lib as L
 
 RAW = L.ROOT / "data/raw/ds005873"
-OUTD = L.ROOT / "data/features"
+# output directory: L.features_dir() -> data/features, or data/features_causal with --causal (v11)
 CHUNK_S = 3600
 MAINS = 50   # all SeizeIT2 centres are in Europe
 
@@ -109,7 +109,7 @@ def features_for_run(sub, run, events, montage):
 
 def job(args):
     sub, run, montage = args
-    out = OUTD / f"{sub}_run-{run:02d}.parquet"
+    out = L.features_dir() / f"{sub}_run-{run:02d}.parquet"
     if out.exists():
         return (sub, run, "skip")
     try:
@@ -124,7 +124,7 @@ def job(args):
         df.to_parquet(tmp, index=False); os.replace(tmp, out)
         return (sub, run, f"ok {len(df)} win, {int(df.y.sum())} sz-win")
     except Exception as e:
-        with open(OUTD / "_failed.txt", "a") as f:
+        with open(L.features_dir() / "_failed.txt", "a") as f:
             f.write(f"{sub} run-{run:02d}: {e}\n{traceback.format_exc()}\n")
         return (sub, run, f"FAILED {e}")
 
@@ -134,15 +134,22 @@ def main():
     ap.add_argument("--workers", type=int, default=2)
     ap.add_argument("--subjects", nargs="*")
     ap.add_argument("--allow-locked", action="store_true")
+    ap.add_argument("--causal", action="store_true", help="v11: causal processing, output in data/features_causal/")
     a = ap.parse_args()
+    L.set_mode(a.causal)
+    OUTD = L.features_dir()
     OUTD.mkdir(parents=True, exist_ok=True)
     stamp = OUTD / "_lib_version.txt"
     have = stamp.read_text().strip() if stamp.exists() else None
-    if have and have != L.LIB_VERSION:
-        sys.exit(f"data/features/ was made with {have}, ictra_lib is now {L.LIB_VERSION}: delete data/features/ and re-run.")
+    # the offline directory stays valid across versions whose offline output is identical (src/22_causality_check.py
+    # --regression); the causal directory must match exactly
+    valid = (L.LIB_VERSION,) + (() if a.causal else L.DEFAULT_PATH_SAME_AS)
+    if have and have not in valid:
+        sys.exit(f"{OUTD.name}/ was made with {have}, ictra_lib is now {L.LIB_VERSION}: delete {OUTD.name}/ and re-run.")
     if not have and any(OUTD.glob("*.parquet")):
-        sys.exit("data/features/ has parquet files without a _lib_version.txt stamp: delete data/features/ and re-run.")
-    stamp.write_text(L.LIB_VERSION + "\n")
+        sys.exit(f"{OUTD.name}/ has parquet files without a _lib_version.txt stamp: delete it and re-run.")
+    if not have:
+        stamp.write_text(L.LIB_VERSION + "\n")
     R = pd.read_csv(L.ROOT / "data/catalog/seizeit2_runs.csv")
     splits = L.load_splits(); dev = {s for f in splits["dev_folds"].values() for s in f}
     if not a.allow_locked:
@@ -177,7 +184,7 @@ def main():
         for t in todo:
             res = job(t); print(*res); status() if res[2] != "skip" else None
     else:
-        with ProcessPoolExecutor(a.workers) as ex:
+        with ProcessPoolExecutor(a.workers, initializer=L.set_mode, initargs=(a.causal,)) as ex:
             for res in ex.map(job, todo):
                 print(*res, flush=True)
                 if res[2] != "skip":

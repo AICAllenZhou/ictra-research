@@ -27,7 +27,6 @@ import numpy as np, pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import ictra_lib as L
 
-FEAT = L.ROOT / "data/features"
 GROUPS = ["FBTC", "focal_motor", "focal_nonmotor", "focal_unknown_motor"]
 FA_BUDGETS = [0.5, 1, 2, 5]
 SENS_TARGETS = [0.80, 0.90, 0.95]
@@ -42,7 +41,7 @@ INK, INK2, GRID, RULE_GREY = "#0b0b0b", "#52514e", "#e4e3df", "#7d7c78"
 def run_meta(sub, run, cache={}):
     """(mask, seizure refs, seizure groups) for one run; mask = impd | flat EEG, as in 04_train_ablation.py."""
     if (sub, run) not in cache:
-        q = pd.read_parquet(FEAT / f"{sub}_run-{run:02d}.parquet", columns=["impd", "flat_eeg"])
+        q = pd.read_parquet(L.features_dir() / f"{sub}_run-{run:02d}.parquet", columns=["impd", "flat_eeg"])
         cache[(sub, run)] = (q.impd.values | q.flat_eeg.fillna(False).astype(bool).values,)
     return cache[(sub, run)][0]
 
@@ -183,13 +182,14 @@ def main():
     ap.add_argument("--workers", type=int, default=2)
     ap.add_argument("--fig-only", action="store_true")
     a = ap.parse_args()
+    causal = L.mode_for_version(a.version)        # v11 versions are scored with causal alarm timestamps
     out = L.ROOT / "results/dev" / a.version
     if not a.fig_only:
         keys = sorted({tuple(p.stem.split("__")[:2]) + (int(p.stem.split("_s")[-1]),) for p in (out / "preds").glob("*.parquet")})
         jobs = [(a.version, s, m, sd) for s, m, sd in keys]
         print(f"{len(jobs)} (set, model, seed) curves, {a.workers} workers")
         rows = []
-        with ProcessPoolExecutor(a.workers) as ex:
+        with ProcessPoolExecutor(a.workers, initializer=L.set_mode, initargs=(causal,)) as ex:
             for r in ex.map(curve_job, jobs):
                 rows += r; print(f"  {r[0]['set']} {r[0]['model']} seed {r[0]['seed']}", flush=True)
         C = pd.DataFrame(rows); C.to_csv(out / "operating_curve.csv", index=False)

@@ -251,3 +251,26 @@ jump in alarm rate), which pinned τ in v01–v03b (v03b quantile check above). 
 **v02g_grid_fix**, which becomes the reference for all later versions. Full text: `docs/EVALUATION_PROTOCOL.md`,
 amendment 2026-10-19. One-job smoke test before the run (A xgb fold 0 seed 0, same inner split): τ 0.9877 → 0.9727,
 inner F1 0.156 → 0.328, held-out sens / FA/24h / F1 0.108 / 0.13 / 0.186 → 0.303 / 2.43 / 0.269 (one job; not a result).
+
+## 2026-10-20 — v11_causal: what changes (logged before the run)
+
+One change relative to the reference v02g_grid_fix: the causal pipeline (`ictra_lib` lib-2026-10-20f, `CFG["causal"]`;
+features rebuilt into `data/features_causal/` by `03_features.py --causal`; `04 --causal`). Every step uses only samples
+up to the end of the window it describes:
+- band-pass and mains notch: forward-only `sosfilt` / `lfilter` (same Butterworth / notch designs) instead of zero-phase;
+- no whole-chunk median removal (filters start in steady state at the first sample);
+- dropout detection judged with the previous 1-s block's level and a running median of the past 60 blocks; repaired by
+  holding the last good sample instead of interpolating to the next;
+- ACC calibration: running median |a| of the past 10 min instead of the whole-recording median;
+- heart rate: causal Pan-Tompkins-style R-peak detector (neurokit's uses a centred smoother and a whole-recording QRS
+  threshold); HR held at the last final beat instead of interpolated;
+- alarms timestamped at the END of the window that raised them (offline: the window start), so delays are not one
+  window early.
+Bounded look-ahead left: `resample_poly` (≈ 40 ms; none on a device sampling at 256 Hz) and the dropout check's right
+neighbour (1–2 samples). Checks (`src/22_causality_check.py`, `results/data_checks/causality_check.md`):
+- offline path unchanged: sub-001 run-01 recomputed, 32,658 windows × 61 columns, max |diff| 0.0, same NaN pattern;
+- truncation test (sub-001 run-01, cut at 30 min): causal mode 0 differing windows on EEG, ECG, EMG, ACC (898 each);
+  offline mode differs (EEG 4, EMG 1, ACC 898 windows), so the test detects look-ahead;
+- causal vs neurokit HR on 12 dev runs: median |diff| 0.85–5.0 bpm, share within 5 bpm 0.50–0.995; four noisy runs
+  disagree strongly (p90 40–80 bpm). The cost to detection is what v11 measures.
+Decision by §1 against v02g; the offline-vs-causal delta is reported whether or not v11 is accepted (TASKS v11).
