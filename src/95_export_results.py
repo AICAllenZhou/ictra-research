@@ -22,7 +22,7 @@ import ictra_lib as L
 
 ROOT = L.ROOT
 RAW = ROOT / "data/raw/ds005873"
-FEAT = ROOT / "data/features"
+# feature directory: L.features_dir() (data/features_causal for causal versions; set by L.mode_for_version in main)
 STEP = L.CFG["step_s"]
 GROUPS = ["FBTC", "focal_motor", "focal_nonmotor", "focal_unknown_motor"]
 # exported prediction sets: the three fusion levels (xgb, the primary family) and the four single-input rules
@@ -47,7 +47,7 @@ def guard(stage):
 def run_masks(sub, run, cache={}):
     """Window mask (impd | flat EEG, as in 04/05) and has_* flags of one run, from its feature file."""
     if (sub, run) not in cache:
-        q = pd.read_parquet(FEAT / f"{sub}_run-{run:02d}.parquet", columns=["impd", "flat_eeg", "has_ecg", "has_emg", "has_acc"])
+        q = pd.read_parquet(L.features_dir() / f"{sub}_run-{run:02d}.parquet", columns=["impd", "flat_eeg", "has_ecg", "has_emg", "has_acc"])
         cache[(sub, run)] = (q.impd.values | q.flat_eeg.fillna(False).astype(bool).values,
                              dict(ecg=bool(q.has_ecg.iloc[0]), emg=bool(q.has_emg.iloc[0]), acc=bool(q.has_acc.iloc[0])))
     return cache[(sub, run)]
@@ -140,7 +140,7 @@ def export_events(ex, S, version_runs):
                 hit = E[(E.onset.round(2) == round(e.onset_s, 2)) & (E.eventType == e.type)]
                 vig = hit.vigilance.iloc[0] if len(hit) and hit.vigilance.iloc[0] not in ("n/a", None) else np.nan
             w0, w1 = int(e.onset_s // STEP), int(np.ceil((e.onset_s + e.duration_s) / STEP))
-            flat = pd.read_parquet(FEAT / f"{sub}_run-{int(run):02d}.parquet", columns=["flat_ecg", "flat_emg"]).iloc[w0:w1]
+            flat = pd.read_parquet(L.features_dir() / f"{sub}_run-{int(run):02d}.parquet", columns=["flat_ecg", "flat_emg"]).iloc[w0:w1]
             mods = ["eeg"] + [m for m, ok in [("ecg", has["ecg"] and not flat.flat_ecg.fillna(False).all()),
                                               ("emg", has["emg"] and not flat.flat_emg.fillna(False).all()), ("acc", has["acc"])] if ok]
             rows.append(dict(event_id=f"{sub}_ses-01_run-{int(run):02d}_e{k:02d}", subject=sub, session="ses-01", run=int(run),
@@ -365,7 +365,7 @@ def export_stats(vdir, ex, version, runs_mode, E, pred_counts, examples):
     for r in dev.itertuples():
         if (r.sub, int(r.run)) in used_runs:
             continue
-        has_feat = (FEAT / f"{r.sub}_run-{int(r.run):02d}.parquet").exists()
+        has_feat = (L.features_dir() / f"{r.sub}_run-{int(r.run):02d}.parquet").exists()
         why = ("seizure-free run, not part of v01 (--runs seizure; added in v02)" if r.n_seizures == 0 else
                "no feature file" if not has_feat else "not in the held-out predictions")
         excl.append(dict(subject=r.sub, run=int(r.run), hours=r.hours, n_seizures=int(r.n_seizures), reason=why))
@@ -511,6 +511,7 @@ def main():
     ap.add_argument("--skip-predictions", action="store_true", help="re-export metrics/README only (predictions_val/ kept)")
     a = ap.parse_args()
     guard(a.stage)
+    L.mode_for_version(a.version)                  # v11: causal features and alarm timestamps
     vdir = ROOT / "results/dev" / a.version
     if not (vdir / "summary.csv").exists():
         sys.exit(f"{vdir}/summary.csv missing: run 04_train_ablation.py first")
