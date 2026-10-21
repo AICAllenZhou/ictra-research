@@ -274,3 +274,37 @@ neighbour (1–2 samples). Checks (`src/22_causality_check.py`, `results/data_ch
 - causal vs neurokit HR on 12 dev runs: median |diff| 0.85–5.0 bpm, share within 5 bpm 0.50–0.995; four noisy runs
   disagree strongly (p90 40–80 bpm). The cost to detection is what v11 measures.
 Decision by §1 against v02g; the offline-vs-causal delta is reported whether or not v11 is accepted (TASKS v11).
+
+## v02g_grid_fix (2026-10-21 10:19) v02_full_hours re-run with the corrected tau candidate grid (defect correction, not a version)
+
+Dev folds, pooled over patients, patient-bootstrap 95% CI.
+
+| set               | model    |   seizures |   hours |   sensitivity | sens_ci      |   fa_per_24h | fa_ci          |    f1 | f1_ci        |   median_delay_s |
+|:------------------|:---------|-----------:|--------:|--------------:|:-------------|-------------:|:---------------|------:|:-------------|-----------------:|
+| A_eeg             | lgbm     |        702 | 8641.56 |         0.151 | [0.10, 0.28] |        0.867 | [0.75, 1.71]   | 0.188 | [0.12, 0.28] |           31.5   |
+| A_eeg             | xgb      |        702 | 8641.56 |         0.141 | [0.08, 0.24] |        0.901 | [0.78, 1.79]   | 0.175 | [0.10, 0.25] |           31.75  |
+| B_eeg_ecg         | lgbm     |        702 | 8641.56 |         0.23  | [0.11, 0.39] |        1.158 | [0.59, 1.20]   | 0.254 | [0.14, 0.40] |           30.583 |
+| B_eeg_ecg         | xgb      |        702 | 8641.56 |         0.236 | [0.11, 0.39] |        1.32  | [0.37, 0.80]   | 0.254 | [0.17, 0.44] |           32.833 |
+| C_eeg_ecg_emg_acc | xgb      |        702 | 8641.56 |         0.268 | [0.11, 0.40] |        1.312 | [0.26, 0.63]   | 0.28  | [0.17, 0.48] |           30.9   |
+| C_eeg_ecg_emg_acc | lgbm     |        702 | 8641.56 |         0.236 | [0.11, 0.40] |        1.008 | [0.35, 0.88]   | 0.276 | [0.16, 0.45] |           33.833 |
+| rule              | rule_emg |        702 | 8641.56 |         0.078 | [0.04, 0.12] |        5.499 | [3.84, 7.20]   | 0.041 | [0.02, 0.06] |           41     |
+| rule              | rule_eeg |        702 | 8641.56 |         0.085 | [0.05, 0.14] |        9.568 | [6.84, 12.85]  | 0.029 | [0.02, 0.04] |           33.25  |
+| rule              | rule_acc |        702 | 8641.56 |         0.162 | [0.08, 0.27] |       21.327 | [14.80, 29.02] | 0.028 | [0.01, 0.05] |           25     |
+| rule              | rule_hr  |        702 | 8641.56 |         0.162 | [0.08, 0.26] |       25.109 | [16.90, 34.69] | 0.024 | [0.01, 0.05] |           15.75  |
+
+Offline pipeline (EVALUATION_PROTOCOL.md amendment 2026-10-17).
+Peak RSS per job (GB; max over folds and seeds of the worker's peak working set): A_eeg/lgbm 2.30, A_eeg/xgb 2.30, B_eeg_ecg/lgbm 2.61, B_eeg_ecg/xgb 2.61, C_eeg_ecg_emg_acc/lgbm 3.15, C_eeg_ecg_emg_acc/xgb 3.15, rule/rule_acc 3.15, rule/rule_eeg 3.15, rule/rule_emg 3.15, rule/rule_hr 3.15. Overall max 3.15 GB.
+
+**Outcome: v02g_grid_fix is the reference from here on (defect correction; descriptive comparison, not a §1 decision).**
+- Same models, better deployable point: C xgb v02 → v02g sensitivity 0.256 → 0.268, FA/24h 3.00 → 1.31, F1 0.183 →
+  0.276 (paired bootstrap ΔF1 +0.093 [+0.049, +0.140], ΔFA −1.69 [−1.99, −1.41], Δsens +0.012 [−0.010, +0.036];
+  `compare_vs_v02_full_hours.csv` prints ACCEPT, but this is not a version decision). F1 rises in every learned cell
+  (A xgb 0.144 → 0.175, B xgb 0.196 → 0.254, C lgbm 0.229 → 0.276) at lower FA/24h (0.87–1.32). FBTC 0.89–0.96.
+- Same curve, as expected: at fixed FA/24h 1 / 2 / 5 / 10 / 3.00 every model's sensitivity and F1 are identical to
+  v02's (`matched_fa_vs_v02_full_hours.md`), so the whole gain is the operating point the corrected search finds.
+- τ is steadier but still repeat-dependent: C xgb per-fold τ SD 0.013–0.019 → 0.0045–0.0085; per-fold τ range over the
+  15 repeats still 0.961–0.994, held-out FA/24h 0.01–8.95 (`report_by_fold_seed.csv`).
+- The rules move to much higher thresholds under max inner F1 (rule_hr 60.5 → 25.1 FA/24h, sensitivity 0.366 → 0.162;
+  rule_eeg 24.1 → 9.6, 0.217 → 0.085); their F1 stays 0.024–0.041 and their curves are unchanged. Rule FBTC at the
+  deployable point is now below 0.80 (0.36–0.67), a property of single signals at a high threshold.
+- Short seizures (< 15 s) at the deployable point: C xgb 0.055 → 0.035 (fewer alarms); the curve is unchanged.
