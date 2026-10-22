@@ -45,35 +45,28 @@ def read_edf(sub, run, m, t0, t1, picks=None):
     return r.get_data(picks=picks, start=a, stop=b) * 1e6, fs, a / fs
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--run", required=True, help="run stem from docs/DEMO_RUNS.txt, e.g. sub-070_run-12")
-    ap.add_argument("--model", default="models/demo/v02g_grid_fix__C_eeg_ecg_emg_acc__xgb__f4_s0.meta.json")
-    ap.add_argument("--before", type=float, default=150); ap.add_argument("--after", type=float, default=90)
-    ap.add_argument("--speed", type=float, default=1.0, help="1 = real time")
-    ap.add_argument("--save", help="render to an .mp4 instead of a live window")
-    ap.add_argument("--fps", type=int, default=10)
-    ap.add_argument("--preview", type=float, help="write one PNG frame at this many seconds after the replay start, then exit")
-    a = ap.parse_args()
+def prepare(run_stem, model_path, before, after):
+    """Everything the replay needs for one demo run: the demo model and its metadata, the run's ictra_lib features on
+    the window grid, and display signals harmonised by ictra_lib in the model's mode. Dev runs only."""
     R = demo_runs()
-    if a.run not in R:
-        sys.exit(f"{a.run} is not in docs/DEMO_RUNS.txt")
-    sub, run = a.run.split("_run-")[0], int(a.run.split("_run-")[1])
+    if run_stem not in R:
+        sys.exit(f"{run_stem} is not in docs/DEMO_RUNS.txt")
+    sub, run = run_stem.split("_run-")[0], int(run_stem.split("_run-")[1])
     locked = {s for s in L.load_splits().get("locked_test", [])}
     if sub in locked:
         sys.exit("refusing a locked-test patient")
-    meta = json.loads((L.ROOT / a.model).read_text())
+    meta = json.loads((L.ROOT / model_path).read_text())
     if sub not in meta["held_out_subjects"]:
         sys.exit(f"{sub} was in this model's training folds; use a model whose held-out fold contains it")
     L.set_mode(meta["causal"])
     import xgboost as xgb
-    model = xgb.XGBClassifier(); model.load_model(str(L.ROOT / a.model.replace(".meta.json", ".json")))
+    model = xgb.XGBClassifier(); model.load_model(str(L.ROOT / model_path.replace(".meta.json", ".json")))
     model.get_booster().set_param({"device": "cpu"})
-    ev = R[a.run]; on, off = ev["onset"], ev["onset"] + ev["duration"]
-    T0, T1 = on - a.before, off + a.after
+    ev = R[run_stem]; on, off = ev["onset"], ev["onset"] + ev["duration"]
+    T0, T1 = on - before, off + after
 
     # ---- features of this run (the version's ictra_lib output) and the window grid
-    F = pd.read_parquet(L.ROOT / meta["features_dir"] / f"{a.run}.parquet")
+    F = pd.read_parquet(L.ROOT / meta["features_dir"] / f"{run_stem}.parquet")
     step, win = L.CFG["step_s"], L.CFG["win_s"]
     t_end = F.t0.values + win
     mask = F.impd.values | F.flat_eeg.fillna(False).astype(bool).values
@@ -93,6 +86,26 @@ def main():
     fs = L.CFG["fs"]
     k = int(fs * 0.05); env = np.convolve(np.abs(emg), np.ones(k) / k, "same")[::4]       # 50-ms EMG envelope, 64 Hz
     sig = {"eeg": (s_e, fs, eeg), "ecg": (s_c, fs, ecg), "emg": (s_m, fs / 4, env), "acc": (s_a, L.CFG["fs_acc"], accm)}
+
+    from types import SimpleNamespace
+    return SimpleNamespace(run=run_stem, sub=sub, meta=meta, model=model, ev=ev, on=on, off=off, T0=T0, T1=T1, F=F, step=step,
+                           win=win, t_end=t_end, mask=mask, idx=idx, X=X, hr=hr, sig=sig, eeg=eeg, ecg=ecg, env=env, accm=accm)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--run", required=True, help="run stem from docs/DEMO_RUNS.txt, e.g. sub-070_run-12")
+    ap.add_argument("--model", default="models/demo/v02g_grid_fix__C_eeg_ecg_emg_acc__xgb__f4_s0.meta.json")
+    ap.add_argument("--before", type=float, default=150); ap.add_argument("--after", type=float, default=90)
+    ap.add_argument("--speed", type=float, default=1.0, help="1 = real time")
+    ap.add_argument("--save", help="render to an .mp4 instead of a live window")
+    ap.add_argument("--fps", type=int, default=10)
+    ap.add_argument("--preview", type=float, help="write one PNG frame at this many seconds after the replay start, then exit")
+    a = ap.parse_args()
+    S = prepare(a.run, a.model, a.before, a.after)
+    meta, model, ev, on, off, T0, T1 = S.meta, S.model, S.ev, S.on, S.off, S.T0, S.T1
+    F, step, win, t_end, mask, idx, X, hr, sig = S.F, S.step, S.win, S.t_end, S.mask, S.idx, S.X, S.hr, S.sig
+    eeg, ecg, env, accm = S.eeg, S.ecg, S.env, S.accm
 
     # ---- figure
     import matplotlib

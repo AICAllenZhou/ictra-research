@@ -1,8 +1,11 @@
 # Demo replay runs (Stage 4; Allen 2026-10-21). Dev patients only (sub-001..096); never sub-097..125.
-# All four are in dev fold 4, so ONE demo model trained on folds 0-3 (src/24_demo_model.py) has never seen these
-# patients: the replay is an out-of-sample demo, exactly the held-out evaluation of v02g fold 4, repeat 0.
-# Columns: run stem | seizure onset_s | duration_s | annotation | group | v02g C xgb fold 4 repeat 0 (held-out)
-sub-070_run-12 | 17864 | 95 | sz_foc_f2b              | FBTC           | detected, delay 24 s
-sub-080_run-19 | 3344  | 43 | sz_foc_ia_m_automatisms | focal_motor    | detected, delay 10 s
-sub-076_run-08 | 1082  | 58 | sz_foc_ia_nm            | focal_nonmotor | detected, delay 12 s
-sub-064_run-02 | 31780 | 34 | sz_foc_a_nm             | focal_nonmotor | missed (shown on purpose: what the model cannot do)
+# All are in dev fold 4, so the demo models trained on folds 0-3 (src/24_demo_model.py) have never seen these patients:
+# the replay is an out-of-sample demo, exactly the held-out evaluation of fold 4, repeat 0.
+# Columns: run stem | seizure onset_s | duration_s | annotation | group | v02g C xgb (offline) | v11 C xgb (causal) |
+#          Exp R change points (results/expR/onsets.csv: EEG, heart rate; s from onset)
+sub-070_run-12 | 17864 | 95  | sz_foc_f2b              | FBTC           | detected, delay 24 s | detected, delay 28 s | EEG +6, HR +9
+sub-080_run-19 | 3344  | 43  | sz_foc_ia_m_automatisms | focal_motor    | detected, delay 10 s | missed               | EEG +2, HR -13
+sub-076_run-08 | 1082  | 58  | sz_foc_ia_nm            | focal_nonmotor | detected, delay 12 s | detected, delay 16 s | EEG -28, HR -16
+sub-064_run-02 | 31780 | 34  | sz_foc_a_nm             | focal_nonmotor | missed               | missed               | EEG +7, HR +6
+sub-032_run-05 | 1585  | 146 | sz_foc_f2b              | FBTC           | detected, delay 47 s | detected, delay 45 s | EEG +23, HR +27
+# Delays here are per-seizure from detections_by_seizure.csv (window-start timestamps for v02g, window-end for v11).
