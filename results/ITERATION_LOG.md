@@ -358,3 +358,20 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   Paired on seizures both A and C xgb detect (v11, same seed, 119 seizures): C alarms earlier in 52 %, same in 15 %;
   median paired difference −2.0 s [−4.0, 0.0]; lgbm 0.0 s [−2.0, 0.0]. Fusion is earlier by about one 2-s hop at
   most; the evidence is weak.
+
+## 2026-10-22 — notes from the demo videos (no version run)
+
+- **Offline-only vs causal-only detections (C xgb, majority over the 15 repeats):** 26 seizures are detected offline
+  (v02g) but not causally (v11), 16 the other way; net −10 of 702 (−1.4 %), consistent with Δsens −0.009. Concrete
+  example: sub-080 run-19 (focal motor, 43 s) is detected by the v02g fold-4 model (delay 10 s) and missed by the v11
+  fold-4 model (`docs/DEMO_RUNS.txt`).
+- **Heart-rate artefact during convulsions (observed while building the demo, `src/27_demo_video.py`):** in the two FBTC
+  demo seizures the ECG-derived heart rate jumps by up to 96–111 bpm from one second to the next (values 32–181 bpm),
+  i.e. the ECG is dominated by movement artefact. This fits the v11 breakdown (loss only in models with ECG and only in
+  seizures > 60 s). Hypothesis, not tested.
+- **Candidate next step (not run; Allen 2026-10-22):** give the model a heart-rate quality flag (e.g. share of seconds
+  with a jump > 25 bpm in the window) so it can discount heart rate when the ECG is artefact, rather than replacing the
+  R-peak detector. One change, small, mechanism stated in advance.
+- **"27 %" on the website/script:** 0.268 is the offline (v02g) curve point at FA/24h ≤ 1; the causal (v11) value is 0.250;
+  v11's deployable point is 0.258 at 1.34 FA/24h. All are pooled over the 702 seizures of the 96 dev patients
+  (detected seizures / all seizures), not per patient or per recording.
