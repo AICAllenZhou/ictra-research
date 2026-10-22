@@ -20,8 +20,10 @@ import ictra_lib as L
 
 RAW = L.ROOT / "data/raw/ds005873"
 # dark monitor screen; categorical slots 1-5 of the validated palette (dark), status "critical" for the alarm
-BG, INK, INK2, GRID, BAND = "#1a1a19", "#f0efec", "#c3c2b7", "#383835", "#4a4a46"
-C_EEG, C_ECG, C_EMG, C_ACC, C_PROB, C_ALARM = "#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#d03b3b"
+# website / figure colours (Allen 2026-10-22): EEG, ECG, EMG, movement as on the site; background = the site's figure
+# background; all five series pass the palette checks on it (dataviz validator, dark mode, surface #0e1116)
+BG, INK, INK2, GRID, BAND = "#0e1116", "#f0efec", "#c3c2b7", "#383835", "#4a4a46"
+C_EEG, C_ECG, C_EMG, C_ACC, C_PROB, C_ALARM = "#2a78d6", "#d95926", "#199e70", "#6b4fbb", "#d55181", "#d03b3b"
 VIEW_S = 20          # seconds of signal shown in the waveform panels
 
 

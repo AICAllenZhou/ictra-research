@@ -31,6 +31,14 @@ BANDS = [("eeg", "EEG", "behind the ear  ·  2 channels, µV", RP.C_EEG, 2), ("e
 REVEAL = {"eeg": 0.0, "ecg": 3.0, "emg": 4.0, "acc": 5.0, "prob": 6.0}      # video seconds after the opening card
 FADE = 0.5
 INTRO_S, OUTRO_S, HOLD_S = 3.5, 4.0, 1.5
+WRIST_S, WATCH_S, PEOPLE_S = 2.0, 3.0, 4.0        # after the alarm hold: wrist view, watch figure; before the closing card
+SITES_OUT = 6.5                                   # body figure fades out 1 s after the fourth site is fully lit (5.0 + 0.5 + 1)
+# figures made by the website team (assets/web/*.svg, 2x PNG exports); copied to results/demo/figures/. The dot-less body
+# figure is the PNG with only its four site disks replaced by a headless-Chrome render of the SVG without its 8 <circle>
+# elements (no text re-rendered); each site then fades in from the original PNG pixels.
+FIGS = L.ROOT / "results/demo/figures"
+SITE_XY = {"eeg": (250, 130), "ecg": (206, 300), "emg": (292, 268), "acc": (318, 318)}   # SVG circle centres, viewBox 540 x 460
+SITE_R = 14
 INTRO = "One seizure, four signals, and the model's output — replayed from a recording the model never trained on."
 OUTRO = ("One seizure, not a result.|Median alarm delay across development recordings (causal model): 34.7 s.|"
          "Replay of a stored recording, not live acquisition.")
@@ -93,6 +101,9 @@ def main():
     ap.add_argument("--before", type=float, default=150); ap.add_argument("--after", type=float, default=90)
     ap.add_argument("--speed", type=float, default=6.0); ap.add_argument("--fps", type=int, default=10)
     ap.add_argument("--intro", default=INTRO); ap.add_argument("--outro", default=OUTRO, help="lines separated by |")
+    ap.add_argument("--sites", action="store_true", help="body figure with the four sites lighting up with the bands")
+    ap.add_argument("--watch", action="store_true", help="after the alarm hold: wrist view (2 s) and watch figure (3 s)")
+    ap.add_argument("--people", action="store_true", help="the 125-patients figure (4 s) before the closing card")
     ap.add_argument("--out", required=True); ap.add_argument("--preview", type=float, nargs="*",
                     help="write PNG frames at these video seconds instead of the video")
     a = ap.parse_args()
@@ -116,13 +127,18 @@ def main():
     # ---- timeline: list of (kind, recording time, video time since playback start)
     step = a.speed / a.fps
     play = list(np.arange(S.T0, S.T1 + 1e-9, step))
-    frames = [("intro", S.T0, 0.0)] * int(INTRO_S * a.fps)
+    seg = lambda kind, t, tv, sec: [(kind, t, tv, i) for i in range(int(round(sec * a.fps)))]
+    frames = seg("intro", S.T0, 0.0, INTRO_S)
     tv = 0.0
     for t in play:
         if t_alarm is not None and t - step < t_alarm <= t:
-            frames += [("hold", t_alarm, tv)] * int(HOLD_S * a.fps)
-        frames.append(("play", t, tv)); tv += 1 / a.fps
-    frames += [("outro", S.T1, tv)] * int(OUTRO_S * a.fps)
+            frames += seg("hold", t_alarm, tv, HOLD_S)
+            if a.watch:
+                frames += seg("wrist", t_alarm, tv, WRIST_S) + seg("watch", t_alarm, tv, WATCH_S)
+        frames.append(("play", t, tv, 0)); tv += 1 / a.fps
+    if a.people:
+        frames += seg("people", S.T1, tv, PEOPLE_S)
+    frames += seg("outro", S.T1, tv, OUTRO_S)
 
     # ---- figure
     import matplotlib
@@ -230,10 +246,67 @@ def main():
     card_bg = card.add_patch(plt.Rectangle((0, 0), 1, 1, color="#000000", transform=card.transAxes))
     card_txt = card.text(0.5, 0.5, "", ha="center", va="center", fontsize=26, color=INK, wrap=True, linespacing=1.6)
 
+    from PIL import Image
+    def rgb(name, scale=0.5):
+        im = Image.open(FIGS / name).convert("RGB")
+        return np.asarray(im.resize((int(im.width * scale), int(im.height * scale)), Image.LANCZOS)).astype(np.float32) / 255
+    bgc = np.array(matplotlib.colors.to_rgb(BG), np.float32)
+    # body figure inset (top right, about 18 % of the frame width, below the header)
+    if a.sites:
+        s_full, s_off = rgb("sensor-sites@2x.png"), rgb("sensor-sites-nodots@2x.png")
+        hh_, ww_ = s_full.shape[:2]; sc = ww_ / 540
+        yy, xx = np.mgrid[0:hh_, 0:ww_]
+        s_mask = {k: (((xx - cx * sc) ** 2 + (yy - cy * sc) ** 2) <= (SITE_R * sc + 2) ** 2).astype(np.float32)[..., None]
+                  for k, (cx, cy) in SITE_XY.items()}
+        wfrac = 0.18; hfrac = wfrac * 1920 / 1080 * hh_ / ww_
+        ax_s = fig.add_axes([0.985 - wfrac, 0.815 - hfrac, wfrac, hfrac], zorder=30); ax_s.set_axis_off()
+        im_s = ax_s.imshow(s_off, interpolation="antialiased"); im_s.set_alpha(0.0)
+    # full-frame figures (watch comparison; 125 patients)
+    ax_f = fig.add_axes([0, 0, 1, 1], zorder=40); ax_f.set_axis_off(); ax_f.set_facecolor(BG)
+    ax_f.add_patch(plt.Rectangle((0, 0), 1, 1, color=BG, transform=ax_f.transAxes, zorder=0))
+    im_f = ax_f.imshow(np.zeros((10, 10, 3)), zorder=1); ax_f.set_visible(False)
+    def fit(img):
+        """place img centred in the 16:9 frame, keeping its aspect (data coords = frame pixels)"""
+        H, W = 1080, 1920; h, w = img.shape[:2]; k = min(W * 0.9 / w, H * 0.9 / h)
+        ax_f.set_xlim(0, W); ax_f.set_ylim(H, 0)
+        im_f.set_extent([(W - w * k) / 2, (W + w * k) / 2, (H + h * k) / 2, (H - h * k) / 2])
+    if a.watch:
+        watch_img = rgb("watch-compare@2x.png", 1.0)
+    if a.people:
+        pe = rgb("patients-125@2x.png", 1.0)
+        # the 96 blue figures (development patients) light up in reading order; the 29 grey ones never change
+        blue = (pe[..., 2] - pe[..., 0] > 0.25) & (np.arange(pe.shape[0])[:, None] < 0.87 * pe.shape[0])
+        ys, xs = np.nonzero(blue)
+        cols = np.round((xs - xs.min()) / ((xs.max() - xs.min()) / 14)).astype(int)
+        rows = np.round((ys - ys.min()) / ((ys.max() - ys.min()) / 6)).astype(int)
+        order = rows * 15 + cols
+        n_cells = len(np.unique(order))
+        print(f"125-patients figure: {n_cells} blue cells found (expected 96)")
+        rank = {c: i for i, c in enumerate(np.unique(order))}
+        pe_rank = np.full(pe.shape[:2], -1); pe_rank[ys, xs] = [rank[c] for c in order]
+        pe_dim = bgc + (pe - bgc) * 0.12
+    # wrist view: facts on the two bands a watch can see, at the alarm moment
+    if a.watch and t_alarm is not None:
+        hb = S.F.ecg_hr.values; tb = S.F.t0.values + S.win
+        base_hr = np.nanmedian(hb[(tb >= on - 300) & (tb <= on - 60)])
+        hr_now = hb[min(len(hb) - 1, int(max(0, t_alarm - S.win) // S.step))]
+        E = pd.read_csv(L.ROOT / "results/expR/onsets.csv").set_index("seizure_id")
+        sid = f"{S.sub}_r{int(S.run.split('_run-')[1]):02d}_{int(on)}"
+        t_acc = float(E.t_acc[sid]) if sid in E.index and np.isfinite(E.t_acc[sid]) else np.nan
+        acc_txt = (f"movement: first change at {t_acc:+.0f} s (Exp R)" if np.isfinite(t_acc) and on + t_acc <= t_alarm
+                   else "movement: no change yet (Exp R)")
+        wr = [axes["ecg"].text(-0.3, 0.92, f"heart rate {hr_now:.0f} bpm  ·  {base_hr:.0f} before onset", transform=axes["ecg"].get_xaxis_transform(),
+                               ha="right", va="top", fontsize=12, fontweight="bold", color=INK, alpha=0,
+                               bbox=dict(boxstyle="square,pad=0.2", fc=BG, ec="none")),
+              axes["acc"].text(-0.3, 0.92, acc_txt, transform=axes["acc"].get_xaxis_transform(), ha="right", va="top", fontsize=12,
+                               fontweight="bold", color=INK, alpha=0, bbox=dict(boxstyle="square,pad=0.2", fc=BG, ec="none"))]
+        wr_title = fig.text(0.5, 0.75, "what a wrist device sees", ha="center", va="center", fontsize=26, fontweight="bold", color=INK, alpha=0,
+                            bbox=dict(boxstyle="round,pad=0.4", fc=BG, ec="none"), zorder=20)
+
     def alpha_at(tv, start):
         return float(np.clip((tv - start) / FADE, 0, 1))
 
-    def draw(kind, t, tv):
+    def draw(kind, t, tv, k=0):
         # cards
         if kind == "intro":
             fi = draw.counter
@@ -254,45 +327,50 @@ def main():
             a0 = max(0, int((t - VIEW_S - s0) * f)); a1 = max(0, int((t - s0) * f))
             tt = np.arange(a0, a1) / f + s0 - t
             seg = x[..., a0:a1]
+            dim = 0.15 if (kind == "wrist" and key in ("eeg", "emg")) else 1.0
             for i, ln in enumerate(lines[key]):
-                ln.set_data(tt, seg[i] if seg.ndim == 2 else seg); ln.set_alpha(al * (1.0 if i == 0 else 0.6))
+                ln.set_data(tt, seg[i] if seg.ndim == 2 else seg); ln.set_alpha(al * dim * (1.0 if i == 0 else 0.6))
             for lab in labels[key]:
-                lab.set_alpha(al)
+                lab.set_alpha(al * dim)
             axes[key].set_visible(al > 0)
             if key == "acc":
                 for t_ in tick_ax.get_xticklabels(): t_.set_alpha(al)
         # model output (C)
         alp = alpha_at(tv, REVEAL["prob"]) if kind != "intro" else 0.0
         # relationship-study strip (D): Exp R z curves on the same 20-s axis as the waveforms
-        axz.set_visible(alp > 0 and CPS is not None); zleg.set_visible(alp > 0 and CPS is not None)
+        axz.set_visible(alp > 0 and CPS is not None); zleg.set_visible(alp > 0 and CPS is not None and kind != "wrist")
+        alz = alp * (0.15 if kind == "wrist" else 1.0)
         for art in zt + [z_thr_ln, z_thr_tx]:
-            art.set_alpha(alp)
+            art.set_alpha(alz)
         for tl in axz.get_xticklabels() + axz.get_yticklabels():
             tl.set_alpha(alp)
         if CPS is not None:
             w = (zt_eeg <= t) & (zt_eeg >= t - VIEW_S - 1)
             zl_eeg.set_data(zt_eeg[w] - t, np.clip(zz_eeg[w], -2, 12)); zl_hr.set_data(zt_eeg[w] - t, np.clip(zz_hr[w], -2, 12))
-            zl_eeg.set_alpha(alp); zl_hr.set_alpha(alp)
+            zl_eeg.set_alpha(alz); zl_hr.set_alpha(alz)
         sel = tw <= t
         pline.set_data(tw[sel] - on, P[sel])
         rising = t_rise is not None and t >= t_rise
         pline.set_linewidth(3.6 if rising else 2.0)
         pcap.set_alpha(alpha_at(t, t_rise) if rising else 0.0)
         now_p.set_xdata([t - on, t - on])
-        for art in p_art:
-            art.set_alpha(alp if art is not band else alp * 1.0)
+        wdim = 0.25 if kind == "wrist" else 1.0          # wrist view: everything except heart rate and movement recedes
+        for art in p_art + alarm_art:
+            art.set_alpha(alp * wdim)
+        pcap.set_alpha(pcap.get_alpha() * wdim)
         for tl in axp.get_xticklabels() + axp.get_yticklabels():
-            tl.set_alpha(alp)
+            tl.set_alpha(alp * wdim)
         axp.set_visible(alp > 0)
         axp.xaxis.label.set_alpha(alp)
         # change points (D)
         for key, t_c, ln, tx in marks:
             x = t_c - t
             vis = -VIEW_S <= x <= 0 and kind != "intro"
-            ln.set_xdata([x, x]); ln.set_alpha(0.9 if vis else 0); tx.set_alpha(1.0 if vis else 0)
+            wd = 0.15 if kind == "wrist" else 1.0
+            ln.set_xdata([x, x]); ln.set_alpha((0.9 if vis else 0) * wd); tx.set_alpha((1.0 if vis else 0) * wd)
             right = x > -7                              # near "now": write the label to the left of its line
             tx.set_x(x - 0.15 if right else x + 0.15); tx.set_ha("right" if right else "left")
-            if tx.get_bbox_patch(): tx.get_bbox_patch().set_alpha(1.0 if vis else 0)
+            if tx.get_bbox_patch(): tx.get_bbox_patch().set_alpha((1.0 if vis else 0) * wd)
         if cp:
             cp_note.set_alpha(1.0 if t >= on + cp[0] else 0.0)
         if art_note is not None:
@@ -322,6 +400,35 @@ def main():
         hr_txt.set_text(f"heart rate (pipeline): {S.hr[j]:.0f} bpm" if np.isfinite(S.hr[j]) else "heart rate: —")
         hh, mm, ss = int(t // 3600), int(t % 3600 // 60), int(t % 60)
         clock.set_text(f"{hh:02d}:{mm:02d}:{ss:02d}   ({t - on:+.0f} s)")
+        # body figure (sites light up with their bands, then the figure leaves)
+        if a.sites:
+            vis = kind in ("play",) and tv <= SITES_OUT + FADE
+            ax_s.set_visible(vis)
+            if vis:
+                img = s_off.copy()
+                for key in ("eeg", "ecg", "emg", "acc"):
+                    w_ = alpha_at(tv, REVEAL[key]) * s_mask[key]
+                    img = img * (1 - w_) + s_full * w_
+                im_s.set_data(img); im_s.set_alpha(min(alpha_at(tv, 0.0), 1 - alpha_at(tv, SITES_OUT)))
+        # wrist view and watch figure
+        if a.watch and t_alarm is not None:
+            fw = float(np.clip(k / a.fps / FADE, 0, 1)) if kind == "wrist" else 0.0
+            for x in wr: x.set_alpha(fw); x.get_bbox_patch().set_alpha(fw)
+            wr_title.set_alpha(fw); wr_title.get_bbox_patch().set_alpha(fw)
+        if kind in ("watch", "people"):
+            ax_f.set_visible(True)
+            if kind == "watch":
+                fit(watch_img); im_f.set_data(watch_img)
+                fade = min(1.0, k / a.fps / 0.3, (WATCH_S - k / a.fps) / 0.3)
+            else:
+                lit = int(np.clip((k / a.fps - 0.4) / 0.8, 0, 1) * 96)            # 0.4 s still, then 0.8 s sweep
+                img = pe.copy(); m = (pe_rank >= lit)
+                img[m] = pe_dim[m]
+                fit(img); im_f.set_data(img)
+                fade = min(1.0, k / a.fps / 0.3)
+            im_f.set_alpha(float(np.clip(fade, 0, 1)))
+        else:
+            ax_f.set_visible(False)
 
     def _wrap(s, w):
         import textwrap
