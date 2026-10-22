@@ -1,5 +1,6 @@
 data/raw/
 data/features/
+data/features_causal/
 results/dev/*/preds/
 __pycache__/
 *.pyc
@@ -12,3 +13,5 @@ results/lab/data/status.lock
 results/expR/**/curves.parquet
 results/dev/*/preds/
 results/expP/curves.parquet
+results/demo/*.mp4
+results/demo/*.png
