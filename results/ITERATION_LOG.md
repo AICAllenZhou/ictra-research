@@ -308,3 +308,10 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   rule_eeg 24.1 → 9.6, 0.217 → 0.085); their F1 stays 0.024–0.041 and their curves are unchanged. Rule FBTC at the
   deployable point is now below 0.80 (0.36–0.67), a property of single signals at a high threshold.
 - Short seizures (< 15 s) at the deployable point: C xgb 0.055 → 0.035 (fewer alarms); the curve is unchanged.
+
+## 2026-10-21 — how v11 is treated (Allen; logged before v11's results)
+
+v11_causal is a correctness fix, not a §1 candidate: its §1 comparison with v02g is recorded as a descriptive offline−causal
+difference, not as ACCEPT/REJECT (same as v02g; `docs/EVALUATION_PROTOCOL.md` amendment 2026-10-21). v02g stays the
+offline reference (information content, comparison with published work); v11 is the causal reference (real-time alarm,
+delay, deployability; demo and website). Both are frozen and tested in the single locked-set opening.

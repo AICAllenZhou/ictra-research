@@ -164,3 +164,14 @@ itself "offline pipeline".
 - **Earlier decisions stand as made.** v03 and v03b were rejected under the grid they ran with; their log entries keep
   their numbers. Their fixed-FA comparisons (same curve) do not depend on the grid (05_operating_points.py already
   sweeps a log-spaced tail grid).
+
+### 2026-10-21 — v11 is a correctness fix, not a §1 candidate (Allen; before v11's results)
+
+- §1 decides whether a change meant to improve performance is adopted. v11 (causal pipeline) is a correctness fix: it
+  makes the evaluated model one that can run live. Its §1 numbers against v02g are computed and logged as usual but are
+  **descriptive only, not an accept/reject decision** (same treatment as v02g, amendment 2026-10-19).
+- Both models are kept, each for its own claims: **v02g (offline)** for how much information the signals carry and for
+  comparison with published work; **v11 (causal)** for every statement about real-time alarms, delay and deployability.
+  The offline−causal difference is reported as a result.
+- Later versions are compared under §1 within their lineage (offline against v02g, causal against v11).
+- The locked test evaluates both frozen models in one opening (`docs/PREREGISTRATION_DRAFT.md`).

@@ -69,7 +69,22 @@ confirm them.**
     sweep (`operating_points.csv`, `sens_at_fa_le_*`), next to the §1 decision.
   - The §1 rule stays the accept/reject criterion.
 
+## Two frozen models, one opening of the locked set (Allen, 2026-10-21; before the freeze)
+
+- The locked test (sub-097..125) evaluates **two** frozen models, both fixed and hashed before the set is opened:
+  - **offline model** (v02g lineage: zero-phase filters, whole-recording calibration; the evaluated pipeline of the
+    development results), used for claims about how much seizure information the signals carry and for comparison with
+    published work;
+  - **causal model** (v11 lineage: every window uses only samples up to its end; alarms timestamped at the window end),
+    used for every claim about real-time alarms, alarm delay and deployability, including the demo and the website's
+    "wakes a carer" statements.
+- The set is opened **once**; both models are scored in that single opening with the same scoring code, and both are
+  reported together, whatever their results. Running a second model after the opening would be a second look and is
+  not allowed.
+- H1–H4 are tested on each model separately and reported side by side; the offline−causal difference on the locked set is
+  reported as a result (on dev: about −0.016 F1 for C xgb, v11 vs v02g, final number in ITERATION_LOG).
+
 ## Still to fill at Task 10
-- frozen model files and hashes, threshold, post-processing;
+- frozen model files and hashes (both models), threshold, post-processing;
 - metrics and subgroup list;
 - the external sets and which model is tested on each.
