@@ -315,3 +315,46 @@ v11_causal is a correctness fix, not a §1 candidate: its §1 comparison with v0
 difference, not as ACCEPT/REJECT (same as v02g; `docs/EVALUATION_PROTOCOL.md` amendment 2026-10-21). v02g stays the
 offline reference (information content, comparison with published work); v11 is the causal reference (real-time alarm,
 delay, deployability; demo and website). Both are frozen and tested in the single locked-set opening.
+
+## v11_causal (2026-10-21 23:59) v02g + causal pipeline (one change: ictra_lib causal mode, causal features and alarm timestamps)
+
+Dev folds, pooled over patients, patient-bootstrap 95% CI.
+
+| set               | model    |   seizures |   hours |   sensitivity | sens_ci      |   fa_per_24h | fa_ci          |    f1 | f1_ci        |   median_delay_s |
+|:------------------|:---------|-----------:|--------:|--------------:|:-------------|-------------:|:---------------|------:|:-------------|-----------------:|
+| A_eeg             | lgbm     |        702 | 8641.55 |         0.154 | [0.10, 0.29] |        1.134 | [0.84, 1.91]   | 0.177 | [0.11, 0.28] |           37     |
+| A_eeg             | xgb      |        702 | 8641.55 |         0.149 | [0.10, 0.28] |        1.131 | [0.88, 2.09]   | 0.171 | [0.11, 0.26] |           37.333 |
+| B_eeg_ecg         | lgbm     |        702 | 8641.55 |         0.223 | [0.11, 0.35] |        1.032 | [0.47, 0.84]   | 0.258 | [0.15, 0.41] |           33.167 |
+| B_eeg_ecg         | xgb      |        702 | 8641.55 |         0.193 | [0.10, 0.32] |        1.041 | [0.39, 0.80]   | 0.231 | [0.15, 0.39] |           34.167 |
+| C_eeg_ecg_emg_acc | lgbm     |        702 | 8641.55 |         0.213 | [0.09, 0.35] |        0.669 | [0.25, 0.54]   | 0.275 | [0.15, 0.43] |           36.75  |
+| C_eeg_ecg_emg_acc | xgb      |        702 | 8641.55 |         0.258 | [0.12, 0.39] |        1.345 | [0.40, 0.94]   | 0.268 | [0.17, 0.43] |           34.733 |
+| rule              | rule_emg |        702 | 8641.55 |         0.077 | [0.04, 0.12] |        5.891 | [3.95, 7.89]   | 0.038 | [0.02, 0.06] |           38.375 |
+| rule              | rule_eeg |        702 | 8641.55 |         0.09  | [0.05, 0.15] |       10.651 | [7.67, 14.15]  | 0.027 | [0.02, 0.04] |           34.5   |
+| rule              | rule_acc |        702 | 8641.55 |         0.288 | [0.14, 0.45] |       41.098 | [30.23, 52.47] | 0.027 | [0.01, 0.05] |           17.625 |
+| rule              | rule_hr  |        702 | 8641.55 |         0.204 | [0.11, 0.32] |       40.504 | [27.79, 54.85] | 0.019 | [0.01, 0.03] |           14     |
+
+Offline pipeline (EVALUATION_PROTOCOL.md amendment 2026-10-17).
+Peak RSS per job (GB; max over folds and seeds of the worker's peak working set): A_eeg/lgbm 2.10, A_eeg/xgb 2.10, B_eeg_ecg/lgbm 2.76, B_eeg_ecg/xgb 2.60, C_eeg_ecg_emg_acc/lgbm 3.19, C_eeg_ecg_emg_acc/xgb 3.19, rule/rule_acc 3.19, rule/rule_eeg 3.19, rule/rule_emg 3.19, rule/rule_hr 3.19. Overall max 3.19 GB.
+
+**v11_causal outcome (descriptive, not a §1 decision; amendment 2026-10-21). v11 is the causal reference.**
+- Cost of making the pipeline real-time, C xgb vs v02g (paired patient bootstrap, 96 patients): ΔF1 −0.011
+  [−0.027, +0.007], Δsens −0.009 [−0.031, +0.012], ΔFA/24h +0.03 [−0.08, +0.14] (0.276 / 0.268 / 1.31 → 0.265 / 0.258 /
+  1.34). `compare_vs_v02g_grid_fix.csv` prints REJECT because §1 asks for ΔF1 ≥ +0.01; per the amendment this is not a
+  decision. Per fold ΔF1 −0.031 … +0.018. Other cells: A xgb −0.003, A lgbm −0.011, B lgbm +0.004, B xgb −0.023,
+  C lgbm −0.000 (F1, single τ). At fixed FA/24h ≤ 1 / 2 / 5 / 10: C xgb sensitivity −0.018 / −0.013 / −0.016 / −0.010.
+- Where the loss is (`delta_vs_v02g_grid_fix.md`, Δ sensitivity [95% CI], repeat SD 0.008–0.022 overall):
+  - By group, focal non-motor shows no loss in any model with ECG (B lgbm 0.000, B xgb −0.017 [−0.044, +0.017], C xgb
+    −0.001, C lgbm −0.005), so the loss does not concentrate where heart rate is the main signal; Allen's prediction
+    for a heart-rate-detector loss is not supported.
+  - By duration, the only CIs that exclude 0 are in models that use ECG and in seizures > 60 s: B xgb −0.089
+    [−0.132, −0.022], C lgbm −0.053 [−0.083, −0.005] (C xgb −0.029 [−0.058, +0.011]); A (no ECG) > 60 s: −0.001 / +0.006.
+    Long seizures are mostly motor, where the ECG carries movement artefact; a causal R-peak detector that is less
+    robust to artefact than offline neurokit would act there. This is a pattern, not a test; most cells are inside
+    the repeat noise.
+  - Reading: making the pipeline causal costs about 0.01–0.02 F1 overall; between-model differences are mostly within
+    repeat noise, except B xgb.
+- Alarm delay, causal and timestamped at the window end (official metric: median over runs of the per-run median, seed
+  mean): A xgb 37.3 s, B xgb 34.2 s, C xgb 34.7 s, C lgbm 36.8 s (v02g, window-start timestamps: 30.9–33.8 s).
+  Paired on seizures both A and C xgb detect (v11, same seed, 119 seizures): C alarms earlier in 52 %, same in 15 %;
+  median paired difference −2.0 s [−4.0, 0.0]; lgbm 0.0 s [−2.0, 0.0]. Fusion is earlier by about one 2-s hop at
+  most; the evidence is weak.

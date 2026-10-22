@@ -82,7 +82,7 @@ confirm them.**
   reported together, whatever their results. Running a second model after the opening would be a second look and is
   not allowed.
 - H1–H4 are tested on each model separately and reported side by side; the offline−causal difference on the locked set is
-  reported as a result (on dev: about −0.016 F1 for C xgb, v11 vs v02g, final number in ITERATION_LOG).
+  reported as a result (on dev, C xgb v11 vs v02g: ΔF1 −0.011 [−0.027, +0.007], paired patient bootstrap; ITERATION_LOG 2026-10-22).
 
 ## Still to fill at Task 10
 - frozen model files and hashes (both models), threshold, post-processing;

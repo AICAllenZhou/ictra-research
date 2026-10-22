@@ -1,0 +1,7 @@
+{
+ "causal": true,
+ "lib_version": "lib-2026-10-20f",
+ "runs": "all",
+ "thr_mode": "inner_split",
+ "thr_grid": "tail_log"
+}
