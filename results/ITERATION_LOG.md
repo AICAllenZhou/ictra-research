@@ -375,3 +375,15 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
 - **"27 %" on the website/script:** 0.268 is the offline (v02g) curve point at FA/24h ≤ 1; the causal (v11) value is 0.250;
   v11's deployable point is 0.258 at 1.34 FA/24h. All are pooled over the 702 seizures of the 96 dev patients
   (detected seizures / all seizures), not per patient or per recording.
+
+## 2026-10-26 — Task 10: freeze and pre-registration
+
+- Frozen (`src/06_freeze.py`, commit 168dbb9): v02g (offline) and v11 (causal) lineages; A, B, C xgboost as 3-seed
+  averages trained on all 96 dev patients, plus the four rules; τ from one inner split (19 inner-validation patients),
+  corrected grid, max pooled inner F1, 3 of 5. C xgb τ: v02g 0.989742, v11 0.984999.
+- Reproduction check before hashing: τ re-selected for four logged dev jobs (v02g / v11 × A / C xgb, fold 0, seed 0)
+  with the freeze's helpers — identical to the logged τ in all four (`results/freeze/freeze_tau_check.log`).
+- `docs/PREREGISTRATION.md` (commit 571901f), SHA-256 bc5048c88ae3524348215e4c62801ec66fedbe5c4e4ac616bcbb3c3944fedca6:
+  per-patient aggregation (primary), H1–H4 analysis plan for both lineages, τ uncertainty, deviations (xgboost only;
+  external sub-models replaced by frozen rules; §3.1 items not implemented). From here on nothing in `models/` or the
+  listed code changes; the locked set is opened once (Task 11).
