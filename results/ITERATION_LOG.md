@@ -387,3 +387,18 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   per-patient aggregation (primary), H1–H4 analysis plan for both lineages, τ uncertainty, deviations (xgboost only;
   external sub-models replaced by frozen rules; §3.1 items not implemented). From here on nothing in `models/` or the
   listed code changes; the locked set is opened once (Task 11).
+
+## 2026-10-26 12:58 -0700 — opening record: locked internal test (Task 11), written before any sub-097..125 file is downloaded
+
+- Pre-registration: `docs/PREREGISTRATION.md`, SHA-256 bc5048c88ae3524348215e4c62801ec66fedbe5c4e4ac616bcbb3c3944fedca6
+  (commit 571901f).
+- Frozen metadata: `models/ictra_v02g.meta.json` SHA-256 fad9ac800cc178aac3cd7a68982d705a7b6f052b6c4a1f406e1f7fad09ee0909;
+  `models/ictra_v11.meta.json` SHA-256 bf06b3a8c0ec2bb28ac470bd7940cbf28f673a1ea7060b3d7fab79bb2e309a8c (commit 168dbb9).
+- Analysis script: `src/07_locked_test.py`, commit ce62feb, SHA-256 67c0cf8eaeb0fc5721781993d9d0a2e37d3b84e484cd365e590400241c986b82
+  (git blob aa497faf2c144389871a7758a9cae70e639bdf0b). Dry run on the development patients ended DONE (2026-10-26 12:24–12:51
+  local); its numbers are in-sample and are not results.
+- Steps from here, each once: download sub-097..125 (`01_download_seizeit2.py --runs all --split locked_test --go`), check that
+  only these 29 patients were added; `03_features.py --allow-locked` and `03_features.py --allow-locked --causal`; one run of
+  `07_locked_test.py` → `results/locked_test/`. No threshold, feature, code or analysis changes after the opening; an error
+  stops the run, is fixed and logged here, and the script is then run once.
+- Once 07 has run, sub-097..125 are development data and cannot be used for any independent test.
