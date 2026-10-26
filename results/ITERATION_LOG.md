@@ -402,3 +402,8 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   `07_locked_test.py` → `results/locked_test/`. No threshold, feature, code or analysis changes after the opening; an error
   stops the run, is fixed and logged here, and the script is then run once.
 - Once 07 has run, sub-097..125 are development data and cannot be used for any independent test.
+- Correction to the hashes above (2026-10-26): SHA-256 67c0cf8e…986b82 is of the Windows working-tree bytes (CRLF line
+  endings, core.autocrlf=true). The committed LF content (`git show ce62feb:src/07_locked_test.py | sha256sum`) is
+  3d06c256f508435976db7719576d4a101fbd27644d4a0a9c44d28267ffd37fd6. On any other machine, check the git blob
+  aa497faf2c144389871a7758a9cae70e639bdf0b. The same applies to the working-tree SHA-256s in docs/PREREGISTRATION.md; their
+  git blob IDs are listed next to them there.
