@@ -1,0 +1,17 @@
+10-26 09:23 v02g A_eeg/xgb: tau 0.980945, inner F1 0.143, inner FA/24h 1.91, 3 models saved (7.6 min)
+10-26 09:26 v02g B_eeg_ecg/xgb: tau 0.988125, inner F1 0.265, inner FA/24h 0.32, 3 models saved (3.5 min)
+10-26 09:34 v02g C_eeg_ecg_emg_acc/xgb: tau 0.989742, inner F1 0.286, inner FA/24h 0.14, 3 models saved (8.0 min)
+10-26 09:34 v02g rule_hr: feature ecg_hr_rise_pct, tau 129.7596, inner F1 0.028, inner FA/24h 8.26
+10-26 09:35 v02g rule_emg: feature emg_logrms_rel, tau 4.3567, inner F1 0.114, inner FA/24h 2.32
+10-26 09:35 v02g rule_eeg: feature eeg_ll_max_rel, tau 2.3019, inner F1 0.050, inner FA/24h 9.40
+10-26 09:35 v02g rule_acc: feature acc_logsd_rel, tau 9.8147, inner F1 0.026, inner FA/24h 3.65
+10-26 09:35 v02g: wrote models\ictra_v02g.meta.json sha256 fad9ac800cc178aac3cd7a68982d705a7b6f052b6c4a1f406e1f7fad09ee0909
+10-26 09:41 v11 A_eeg/xgb: tau 0.975529, inner F1 0.122, inner FA/24h 3.40, 3 models saved (5.5 min)
+10-26 09:45 v11 B_eeg_ecg/xgb: tau 0.990460, inner F1 0.224, inner FA/24h 0.20, 3 models saved (4.5 min)
+10-26 09:52 v11 C_eeg_ecg_emg_acc/xgb: tau 0.984999, inner F1 0.273, inner FA/24h 0.35, 3 models saved (6.8 min)
+10-26 09:53 v11 rule_hr: feature ecg_hr_rise_pct, tau 225.8671, inner F1 0.038, inner FA/24h 2.84
+10-26 09:53 v11 rule_emg: feature emg_logrms_rel, tau 4.1149, inner F1 0.107, inner FA/24h 4.20
+10-26 09:54 v11 rule_eeg: feature eeg_ll_max_rel, tau 2.4132, inner F1 0.048, inner FA/24h 8.24
+10-26 09:54 v11 rule_acc: feature acc_logsd_rel, tau 10.0429, inner F1 0.030, inner FA/24h 2.91
+10-26 09:54 v11: wrote models\ictra_v11.meta.json sha256 bf06b3a8c0ec2bb28ac470bd7940cbf28f673a1ea7060b3d7fab79bb2e309a8c
+10-26 09:54 FREEZE DONE

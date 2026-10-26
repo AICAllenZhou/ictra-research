@@ -1,0 +1,4 @@
+10-26 09:56 v02g_grid_fix A_eeg/xgb fold 0 seed 0: tau re-selected 0.972702253 vs logged 0.972702253 (IDENTICAL); inner F1 0.328358 vs logged 0.328358
+10-26 09:57 v11_causal A_eeg/xgb fold 0 seed 0: tau re-selected 0.968679650 vs logged 0.968679650 (IDENTICAL); inner F1 0.254777 vs logged 0.254777
+10-26 10:00 v02g_grid_fix C_eeg_ecg_emg_acc/xgb fold 0 seed 0: tau re-selected 0.978864778 vs logged 0.978864778 (IDENTICAL); inner F1 0.375301 vs logged 0.375301
+10-26 10:02 v11_causal C_eeg_ecg_emg_acc/xgb fold 0 seed 0: tau re-selected 0.977149802 vs logged 0.977149802 (IDENTICAL); inner F1 0.344371 vs logged 0.344371
