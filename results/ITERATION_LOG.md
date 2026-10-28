@@ -420,3 +420,13 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   All 778 locked runs have an events.tsv. The annotation files have no catalog reference, so their SHA-256s were written on
   arrival to `results/freeze/locked_events_sha256.txt` (file SHA-256 0b5796006246bbda4ed073bc46018e178d920bb130262906172932dfa162b683)
   and committed before any feature extraction.
+
+## 2026-10-28 — Task 11 step 4: locked-set features extracted (07 not run)
+
+- `03_features.py --allow-locked --workers 6` (09:18–09:46) and `03_features.py --allow-locked --causal --workers 6`
+  (09:46–10:14), each under keep_awake, after the repository was pushed (https://github.com/AICAllenZhou/ictra-research,
+  first push 2026-10-28T04:07:35Z). Both passes: 2,850 runs ready, the 2,072 dev runs skipped unchanged, 778 locked runs ok,
+  0 failed, 0 missing, `_failed.txt` empty. Stamps unchanged: data/features lib-2026-10-17e (offline output identical to
+  lib-2026-10-20f), data/features_causal lib-2026-10-20f.
+- Label check (no metric computed): in both passes the locked runs with seizure windows are exactly the 90 catalogued
+  locked seizure runs; 5,239,743 locked windows in each pass.
