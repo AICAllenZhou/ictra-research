@@ -444,3 +444,13 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   sensitivity 0.348, FA/24h 0.99. Offline − causal (v11 − v02g, C) ΔF1 −0.073 [−0.135, −0.017].
 - No threshold, feature, code or analysis was changed after the run. From now on sub-097..125 are development data.
   The development-set numbers stay as reported, next to these.
+
+## 2026-10-28 — locked test: independent re-computation (`src/28_recompute_locked.py`)
+
+- Re-scored the frozen models at the frozen τ along a different code path (events.tsv labels, xgboost Booster,
+  `ictra_lib.score_recording`, own aggregation). Frozen-τ table (14 rows × 12 metrics), the 406 per-patient rows and the
+  H2 / H3b / H4 / offline − causal point estimates match 07 exactly (largest difference 5.3e-15). H1 and H3a not re-computed.
+- Development numbers in the same per-patient aggregation (`results/locked_test_recompute/dev_same_aggregation.csv`):
+  v02g C xgb sensitivity 0.402, FA/24h 1.47, F1 0.292 (pooled 0.268, 1.31, 0.280). The website's 27% is the pooled number;
+  compare the locked 0.331 / 0.23 / 0.337 with the per-patient 0.402 / 1.47 / 0.292, noting the procedures differ (fold models
+  and per-fold τ vs. one ensemble with one τ).

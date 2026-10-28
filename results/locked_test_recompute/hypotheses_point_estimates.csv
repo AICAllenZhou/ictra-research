@@ -1,0 +1,16 @@
+lineage,hypothesis,estimate,detail
+v02g,H4 (A vs best of rule_eeg),0.16081423610614412,"A 0.215, rule_eeg 0.054"
+v02g,"H4 (B vs best of rule_eeg, rule_hr)",0.26012691282568773,"B 0.314, rule_eeg 0.054"
+v02g,"H4 (C vs best of rule_eeg, rule_hr, rule_emg, rule_acc)",0.28219283257849503,"C 0.337, rule_emg 0.055"
+v02g,"H2 (focal non-motor sensitivity B - A, per-patient average)",0.08333333333333333,"B 0.169, A 0.086"
+v02g,H3b delay (median B - median A over each model's detected non-FBTC focal seizures),-1.5,
+v02g,"H3b sensitivity (B - A, non-FBTC focal, per-patient average)",0.10187545787545789,
+v11,H4 (A vs best of rule_eeg),0.12280541658537333,"A 0.175, rule_eeg 0.052"
+v11,"H4 (B vs best of rule_eeg, rule_hr)",0.23349477767098614,"B 0.286, rule_eeg 0.052"
+v11,"H4 (C vs best of rule_eeg, rule_hr, rule_emg, rule_acc)",0.2054492153308114,"C 0.264, rule_emg 0.059"
+v11,"H2 (focal non-motor sensitivity B - A, per-patient average)",0.08095238095238093,"B 0.169, A 0.088"
+v11,H3b delay (median B - median A over each model's detected non-FBTC focal seizures),8.5,
+v11,"H3b sensitivity (B - A, non-FBTC focal, per-patient average)",0.007050061050061035,
+v11 - v02g,offline-causal delta f1 (C),-0.07297621242854513,
+v11 - v02g,offline-causal delta sensitivity (C),0.017052767052767037,
+v11 - v02g,offline-causal delta fa_per_24h (C),0.7608899589289024,
