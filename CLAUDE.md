@@ -1,6 +1,6 @@
 # ICTRA — working rules for anyone (human or AI) changing this project
 
-ICTRA is Allen's WAICY 2026 project: detect epileptic seizures from EEG + ECG + EMG (+ accelerometer) with an AI model,
+ICTRA is a WAICY 2026 project by four students (Helena, Carina, Tiffany, Constance), coached by Allen: detect epileptic seizures from EEG + ECG + EMG (+ accelerometer) with an AI model,
 following the same procedure as the sibling project `../SlopeAI` (relationship study → single-input baselines →
 A/B/C ablation → self-iteration under a fixed rule → pre-registered locked test → external tests). Read, in this order:
 

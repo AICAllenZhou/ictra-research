@@ -79,7 +79,26 @@ python src/04_train_ablation.py --version v02_full_hours --note "all dev hours" 
 From here on v02 is the reference every later version is compared with.
 
 ### Task 8. Self-iteration (one change per version, ≥ 6 versions)
-Candidates, in suggested order; each is a flag or a small function in `ictra_lib.py` / `04_train_ablation.py`:
+
+**Priority order (Allen, 2026-10-19; supersedes the order below).** Done so far: v01 baseline, v02 full hours (reference),
+v03 REJECT, v03b REJECT. Then:
+1. **Must — τ grid defect correction + baseline re-run** (`v02g_grid_fix`, EVALUATION_PROTOCOL amendment 2026-10-19).
+   Not a version: v02's configuration with the corrected τ candidate grid; becomes the reference for everything after.
+   Report v02 vs v02g side by side (does v02's own deployable point improve without changing any model?) and at fixed
+   FA/24h 1 / 2 / 5 / 10. Running since 2026-10-19 16:35.
+2. **Must — v11 causal pipeline** (description below). Not an improvement: the precondition for the real-time claim
+   ("wakes a carer within seconds") on the website and in the demo. Current features use future samples, so the model
+   as evaluated cannot run live. Same priority as 1.
+3. **If time — v04 relationship features from Exp R** (EEG changes first, HR later: the lag becomes a model input). The
+   only version that builds on our own Exp R finding; supports Originality. Not needed for any other conclusion.
+4. **Cut / after the freeze — v07 (2-s windows), v08 (k-of-n grid).** Expected ΔF1 about 0.01–0.03 each; changes no
+   conclusion. Not run before the freeze.
+Freeze (Task 10) as soon as 1, 2 (and optionally 3) are done, earlier than Nov 14 if possible; the remaining time goes to
+the hardware demo (Nov 10), the 6-minute video and rehearsal. Submission Nov 29.
+Every long run is launched inside `python src/keep_awake.py -- bash src/NN_run_<version>.sh` (blocks idle sleep only;
+not a lid close or power-button press).
+
+Candidates, original list (order superseded above); each is a flag or a small function in `ictra_lib.py` / `04_train_ablation.py`:
 - v03 relationship features from Exp R (e.g. HR rise within 20 s of an EEG line-length jump; EMG burst following EEG change)
 - v04 montage-aware EEG features (left / right / generalized handled by channel ordering or a montage indicator)
 - v05 longer context (rolling 20 s mean/max of key features; previous-window deltas)
@@ -112,7 +131,7 @@ Only the file-format code is written and tested on ONE recording's header per se
 Write `src/06_freeze.py`: train the accepted version on all 96 dev patients (3 seeds, averaged), save models + threshold +
 post-processing to `models/ictra_v<N>_seed{0,1,2}.json` and `models/ictra_v<N>.meta.json`. Then write
 `docs/PREREGISTRATION.md` (template: `../SlopeAI/results/v4_future/PREREGISTRATION.md`): frozen files, hypotheses
-H1–H4 from `EVALUATION_PROTOCOL.md` §3.4 and `PLAN.md` §4 step 5, metrics, subgroup list, external sets and which model is
+H1–H4 exactly as defined in `docs/PREREGISTRATION_DRAFT.md` (the one place they are defined), metrics, subgroup list, external sets and which model is
 tested on each. `sha256sum docs/PREREGISTRATION.md > docs/PREREGISTRATION.sha256`. Commit.
 **Done when:** the hash file exists and nothing in `models/` or the accepted version's code changes afterwards.
 
@@ -188,3 +207,28 @@ the word "signed", his name and the date, after checking this list:
 Then: `python src/99_cleanup_raw.py --keep-demo` (dry run) → `--keep-demo --go`.
 Disk plan without deleting anything: 149 GB free − 95 GB dev − 31 GB locked test ≈ 23 GB spare, so deletion is optional
 if nothing else lands on the drive; an external USB drive for `data/raw/` is the simplest alternative.
+
+---
+
+## Task 15. Results export for the website (`src/95_export_results.py`)
+
+Implements `docs/DELIVERABLES_SPEC.md`. `python src/95_export_results.py --stage dev --version v01_baseline` writes
+`results/export/ictra_results_<YYYYMMDD>_dev_v01/` and zips it; `--stage locked_test` / `--stage external` only work after
+`docs/PREREGISTRATION.sha256` exists (same guard as 03). Every number in `metrics/` must be re-derivable from `predictions*/`
+with `src/09_independent_check.py` (Task 13), which should also run on the zip before it is sent.
+**Done when:** the zip opens, `README.md` lists all deviations from the checklist (spec §Deviations), per-second files have
+no gaps (`t_sec` contiguous per run), and `events_*.csv` counts match `data/catalog/seizeit2_seizures.csv` for the exported split.
+
+## Task 12b. Third-party blind evaluation (added 2026-10-18; after Task 10 freeze + hash, never before)
+
+Two external evaluators can test ICTRA on data we have never seen. Both count as Tier 3; each is submitted ONCE.
+1. **SzCORE / epilepsybenchmarks.com (EPFL)** — continuously open blind benchmark on private 19-channel scalp EEG.
+   Submit Model A (EEG-only) through the T7–P7 / T8–P8 bte proxy as a Docker image in the SzCORE submission format
+   (input: EDF 10-20 scalp; output: TSV events; scoring library = the one `ictra_lib.score_events` follows).
+   Build the image in `src/08_external_test.py --export-szcore` together with Task 15; test it locally on one
+   Siena recording before submitting.
+2. **KU Leuven (SeizeIT2 authors)** — request a one-time run on their non-public SeizeIT2 hold-out (same sensors).
+   Package: Docker image of the frozen Model C (bte-EEG + ECG + EMG + ACC input), `docs/PREREGISTRATION.md` + its
+   SHA-256, locked-test RESULTS.md, and a one-page README. Allen sends the e-mail after Task 11; Claude drafts it.
+**Done when:** the SzCORE result (or submission receipt) and the KU Leuven reply (or no reply by 25 Nov) are recorded in
+`results/external/SUMMARY.md`, with the numbers exactly as returned.

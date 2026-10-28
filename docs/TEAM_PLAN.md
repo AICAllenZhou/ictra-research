@@ -68,3 +68,19 @@ found no other public surface-EMG seizure dataset. The complete open sEMG-seizur
 3. **My Seizure Gauge** (Epilepsy Ecosystem / Seer), Byteflies Sensor Dot EMG + ACC, 5 patients, registration required — the
    EMG+ACC external test.
 Everything else (Brain Sentinel SPEAC, Beniczky/Conradsen, NightWatch, Böttcher RADAR-CNS, Chinese wristband sEMG) was never released.
+
+## Who presents what (added 2026-10-18, after Exp R, Exp P and v01)
+
+Each member owns one branch of the evidence, presents it in 30 s and takes the questions on it. The same split is on
+the website's Team page (`ictra-academic-site/team.html#parts`) and as owner tags on the Evidence exhibits.
+
+| Person | Owns on the evidence page | 30-second part | Questions to be ready for | Next task |
+|---|---|---|---|---|
+| **Helena** | Model A rows of v01 (0.98 FBTC, 0.37 overall); the montage finding (right 0.17 → 0.45 without sub-039/047/035); EEG feature design | Two ear electrodes see rhythmic discharges within seconds; alone they catch nearly every convulsive seizure but a third of focal ones — the floor the other signals must lift | Why line length? Why 1–25 Hz? What does bte-EEG miss? Why did the right montage look worse? | v04 montage-aware features; CHB-MIT/Siena loaders (T7–P7 proxy); website replay demo |
+| **Carina** | Exp R (Exhibit 1); Exp P (null result); the flat-ECG audit; B vs A (+0.043, not robust) | In 695 seizures the heart follows the brain by 4 s in convulsive seizures and moves with it in focal ones — heart rate adds coverage, not speed; and in the two minutes before a seizure there is nothing to see | Why was H3 rewritten? What is the control in Exp P? Why does rule_hr beat the models on seizures < 15 s? | v04 relationship features (HR rise within 20 s of EEG jump); Billeci + szdb adapters |
+| **Tiffany** | C vs A (+11 points at 1 FA/day, F1 +0.064, P 0.998, all 5 folds); EMG/ACC timing in Exp R (z ≈ 30–40 in FBTC; late response in 59 % of non-motor); the Kaggle duplicate decision | Muscle and movement are the most specific signals we have; adding them to EEG and heart catches 11 points more seizures at the same false-alarm rate — the biggest single gain in the project | Why the deltoid? Why not a wrist watch? What does ACC see that EMG does not? | Arbune 2020 study; My Seizure Gauge external test |
+| **Constance** | Three tiers; Dead ends section; the accept rule and iteration log; ethics and limits (40 % invisible non-motor) | First version: 97 % of convulsive seizures at 1 FA/day, fails on short focal ones, and we can show which patients and why; every number is from a patient we never trained on, under a rule written before we looked | Why not accuracy? What is a patient bootstrap? What if the locked test disagrees with dev? | v06 late fusion + modality dropout; PREREGISTRATION.md; independent re-computation script |
+| **Allen** | Pipeline, hardware, demo | — | — | Hardware line: wearable prototype + real-time causal inference video by Nov 10 |
+
+Attribution is by responsibility: the first sprint (17–18 Oct) was built by the coach with an AI coding assistant; each
+member takes over, verifies and extends their branch and presents only what they can explain.
