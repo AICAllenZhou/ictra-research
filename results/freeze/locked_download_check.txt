@@ -1,0 +1,17 @@
+subjects before: 96  now: 125  added: 29  removed: 0
+added == sub-097..125: True   (sub-097 .. sub-125)
+catalog locked files: 2952  subjects: 29  set == sub-097..125: True
+  500/2952 hashed, 15.3 GB, 34 s
+  1000/2952 hashed, 22.6 GB, 53 s
+  1500/2952 hashed, 27.3 GB, 58 s
+  2000/2952 hashed, 28.7 GB, 60 s
+  2500/2952 hashed, 29.9 GB, 62 s
+missing: 0  wrong size: 0  wrong SHA-256: 0  (31.017 GB hashed)
+EDF files on disk in locked dirs: 2952  not in catalog: 0
+non-EDF files in locked dirs: 0  e.g. []
+.part/.lock left anywhere under data/raw: 0 []
+
+Sidecars (2026-10-28): `01_download_seizeit2.py --runs all --split locked_test --sidecars` -> "sidecars: 3730 new files",
+no errors (778 events.tsv + 778 eeg / 756 ecg / 756 emg / 662 mov .json). Every catalogued locked run (778) has its
+events.tsv; none outside the catalog. SHA-256 of each events.tsv: results/freeze/locked_events_sha256.txt
+(778 lines, LF), file SHA-256 0b5796006246bbda4ed073bc46018e178d920bb130262906172932dfa162b683.

@@ -407,3 +407,16 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   3d06c256f508435976db7719576d4a101fbd27644d4a0a9c44d28267ffd37fd6. On any other machine, check the git blob
   aa497faf2c144389871a7758a9cae70e639bdf0b. The same applies to the working-tree SHA-256s in docs/PREREGISTRATION.md; their
   git blob IDs are listed next to them there.
+
+## 2026-10-28 — Task 11 step 3: locked set downloaded and checked (no feature extracted, 07 not run)
+
+- EDFs: `01_download_seizeit2.py --runs all --split locked_test --go`, two passes (the first pass stopped at 2,655/2,952 on
+  2026-10-26 17:21 when the session ended, after 77 DNS / connection failures; the second pass on 2026-10-27:
+  ok 373, skip 2,579, failed 0). Check (`results/freeze/locked_download_check.txt`): 96 → 125 subject folders, added exactly
+  sub-097..125, none removed; all 2,952 catalogued locked EDFs present with catalog size and SHA-256 (31.017 GB re-hashed);
+  no other EDF in those folders; no .part / .lock left.
+- Sidecars: `--go` copies events.tsv / json only from the metadata clone, which is not on this machine (as for the dev set,
+  see the first entry), so `01_download_seizeit2.py --runs all --split locked_test --sidecars` fetched 3,730 files.
+  All 778 locked runs have an events.tsv. The annotation files have no catalog reference, so their SHA-256s were written on
+  arrival to `results/freeze/locked_events_sha256.txt` (file SHA-256 0b5796006246bbda4ed073bc46018e178d920bb130262906172932dfa162b683)
+  and committed before any feature extraction.
