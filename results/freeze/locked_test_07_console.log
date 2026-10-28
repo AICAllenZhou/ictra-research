@@ -1,0 +1,35 @@
+keep_awake: idle sleep blocked (python -u src/07_locked_test.py)
+LOCKED TEST: 29 patients; pre-registration SHA-256 bc5048c88ae3524348215e4c62801ec66fedbe5c4e4ac616bcbb3c3944fedca6 OK; 26 frozen model/metadata/code files match their recorded SHA-256
+  v02g A_eeg/xgb: tau 0.980945, 28/181 seizures hit, 112 false alarms
+  v02g B_eeg_ecg/xgb: tau 0.988125, 32/181 seizures hit, 48 false alarms
+  v02g C_eeg_ecg_emg_acc/xgb: tau 0.989742, 29/181 seizures hit, 18 false alarms
+  v02g rule_hr: tau 129.76, 21/181 seizures hit, 1994 false alarms
+  v02g rule_emg: tau 4.3567, 11/181 seizures hit, 432 false alarms
+  v02g rule_eeg: tau 2.30186, 42/181 seizures hit, 1752 false alarms
+  v02g rule_acc: tau 9.81466, 4/181 seizures hit, 267 false alarms
+  v11 A_eeg/xgb: tau 0.975529, 32/181 seizures hit, 250 false alarms
+  v11 B_eeg_ecg/xgb: tau 0.99046, 27/181 seizures hit, 28 false alarms
+  v11 C_eeg_ecg_emg_acc/xgb: tau 0.984999, 32/181 seizures hit, 73 false alarms
+  v11 rule_hr: tau 225.867, 6/181 seizures hit, 581 false alarms
+  v11 rule_emg: tau 4.11487, 16/181 seizures hit, 621 false alarms
+  v11 rule_eeg: tau 2.41318, 39/181 seizures hit, 1469 false alarms
+  v11 rule_acc: tau 10.0429, 3/181 seizures hit, 256 false alarms
+wrote results\locked_test\RESULTS.md
+  v02g       H1                     held
+  v02g       H2                     not held
+  v02g       H3b                    held
+  v02g       H4 (A vs rule_eeg)     held
+  v02g       H4 (B vs rule_eeg)     held
+  v02g       H4 (C vs rule_emg)     held
+  v11        H1                     held
+  v11        H2                     not held
+  v11        H3b                    held
+  v11        H4 (A vs rule_eeg)     held
+  v11        H4 (B vs rule_eeg)     held
+  v11        H4 (C vs rule_emg)     held
+  v11 − v02g offline−causal Δf1 (C) reported
+  v11 − v02g offline−causal Δsensitivity (C) reported
+  v11 − v02g offline−causal Δfa_per_24h (C) reported
+  v11 − v02g offline−causal Δdelay_s (C) reported
+DONE
+keep_awake: released

@@ -430,3 +430,17 @@ Peak RSS per job (GB; max over folds and seeds of the worker's peak working set)
   lib-2026-10-20f), data/features_causal lib-2026-10-20f.
 - Label check (no metric computed): in both passes the locked runs with seizure windows are exactly the 90 catalogued
   locked seizure runs; 5,239,743 locked windows in each pass.
+
+## 2026-10-28 10:20:56–10:47 -0700 — Task 11 step 5: locked internal test run once (`07_locked_test.py`)
+
+- Started 12 s after commit d417ab8 was pushed (GitHub push 2026-10-28T17:20:44Z). Guards passed: pre-registration SHA-256
+  bc5048…fedca6 OK, 26 frozen files match. Ended DONE, no error; run once, not repeated. Console output:
+  `results/freeze/locked_test_07_console.log`; results: `results/locked_test/RESULTS.md` and CSVs.
+- Data: 29 patients, 2,906 unmasked hours, 181 seizures (FBTC 22, focal_motor 54, focal_nonmotor 75, focal_unknown_motor 30).
+- Decisions (all seizures, per-patient average, as pre-registered): v02g — H1 held, H2 not held, H3b held, H4 held (A, B, C);
+  v11 — H1 held, H2 not held, H3b held, H4 held (A, B, C); H3a (Exp R onset order) not held. Without the seizures lacking
+  ECG/EMG the decisions are the same except v02g H3b (not held: Δdelay −7.0 s).
+- Primary frozen-τ C xgb: v02g F1 0.337 [0.205, 0.477], sensitivity 0.331, FA/24h 0.23; v11 F1 0.264 [0.158, 0.389],
+  sensitivity 0.348, FA/24h 0.99. Offline − causal (v11 − v02g, C) ΔF1 −0.073 [−0.135, −0.017].
+- No threshold, feature, code or analysis was changed after the run. From now on sub-097..125 are development data.
+  The development-set numbers stay as reported, next to these.

@@ -1,0 +1,33 @@
+variant,lineage,hypothesis,decision,estimate,ci,p
+all,v02g,H1,held,ΔFA/24h (C at matched sensitivity − A at frozen τ) = -0.82 (C 0.04 vs A 0.86; target sensitivity 0.381),"[-1.29, -0.36]",P(ΔFA < 0) = 1.000
+all,v02g,H2,not held,"Δsensitivity on focal non-motor (B − A, frozen τ) = +0.083 (B 0.169, A 0.086); secondary at FA/24h ≤ 1: +0.214","[+0.000, +0.200]",P(Δ > 0) = 0.881
+all,v02g,H3b,held,"Δdelay (median B − median A, each model's detected non-FBTC focal seizures) = -1.5 s (over seizures both detect: -6.0 s); Δsensitivity (B − A) = +0.102","Δdelay [-16.0, +30.0] s; Δsens [+0.024, +0.192]",for reference only: P(Δdelay ≥ −2) = 0.680; P(Δsens > 0) = 0.996
+all,v02g,H4 (A vs rule_eeg),held,"ΔF1 = +0.161 (A 0.215, rule_eeg 0.054; best of rule_eeg)","[+0.063, +0.274]",P(ΔF1 > 0) = 1.000
+all,v02g,H4 (B vs rule_eeg),held,"ΔF1 = +0.260 (B 0.314, rule_eeg 0.054; best of rule_eeg, rule_hr)","[+0.147, +0.388]",P(ΔF1 > 0) = 1.000
+all,v02g,H4 (C vs rule_emg),held,"ΔF1 = +0.282 (C 0.337, rule_emg 0.055; best of rule_eeg, rule_hr, rule_emg, rule_acc)","[+0.149, +0.418]",P(ΔF1 > 0) = 1.000
+all,v11,H1,held,ΔFA/24h (C at matched sensitivity − A at frozen τ) = -1.88 (C 0.18 vs A 2.06; target sensitivity 0.452),"[-2.83, +0.71]",P(ΔFA < 0) = 0.946
+all,v11,H2,not held,"Δsensitivity on focal non-motor (B − A, frozen τ) = +0.081 (B 0.169, A 0.088); secondary at FA/24h ≤ 1: +0.083","[-0.005, +0.200]",P(Δ > 0) = 0.881
+all,v11,H3b,held,"Δdelay (median B − median A, each model's detected non-FBTC focal seizures) = +8.5 s (over seizures both detect: -8.5 s); Δsensitivity (B − A) = +0.007","Δdelay [-14.0, +32.0] s; Δsens [-0.069, +0.093]",for reference only: P(Δdelay ≥ −2) = 0.793; P(Δsens > 0) = 0.566
+all,v11,H4 (A vs rule_eeg),held,"ΔF1 = +0.123 (A 0.175, rule_eeg 0.052; best of rule_eeg)","[+0.044, +0.221]",P(ΔF1 > 0) = 1.000
+all,v11,H4 (B vs rule_eeg),held,"ΔF1 = +0.233 (B 0.286, rule_eeg 0.052; best of rule_eeg, rule_hr)","[+0.122, +0.358]",P(ΔF1 > 0) = 1.000
+all,v11,H4 (C vs rule_emg),held,"ΔF1 = +0.205 (C 0.264, rule_emg 0.059; best of rule_eeg, rule_hr, rule_emg, rule_acc)","[+0.095, +0.323]",P(ΔF1 > 0) = 1.000
+all,v11 − v02g,offline−causal Δf1 (C),reported,-0.073,"[-0.135, -0.017]",
+all,v11 − v02g,offline−causal Δsensitivity (C),reported,+0.017,"[-0.008, +0.051]",
+all,v11 − v02g,offline−causal Δfa_per_24h (C),reported,+0.761,"[+0.176, +1.601]",
+all,v11 − v02g,offline−causal Δdelay_s (C),reported,+0.750,"[-18.000, +9.012]",
+ecg_emg,v02g,H1,held,ΔFA/24h (C at matched sensitivity − A at frozen τ) = -0.85 (C 0.01 vs A 0.86; target sensitivity 0.396),"[-1.29, -0.37]",P(ΔFA < 0) = 1.000
+ecg_emg,v02g,H2,not held,"Δsensitivity on focal non-motor (B − A, frozen τ) = +0.091 (B 0.184, A 0.094); secondary at FA/24h ≤ 1: +0.234","[+0.000, +0.219]",P(Δ > 0) = 0.881
+ecg_emg,v02g,H3b,not held,"Δdelay (median B − median A, each model's detected non-FBTC focal seizures) = -7.0 s (over seizures both detect: -6.0 s); Δsensitivity (B − A) = +0.109","Δdelay [-17.0, +27.8] s; Δsens [+0.027, +0.207]",for reference only: P(Δdelay ≥ −2) = 0.529; P(Δsens > 0) = 0.997
+ecg_emg,v02g,H4 (A vs rule_eeg),held,"ΔF1 = +0.163 (A 0.218, rule_eeg 0.055; best of rule_eeg)","[+0.062, +0.278]",P(ΔF1 > 0) = 1.000
+ecg_emg,v02g,H4 (B vs rule_eeg),held,"ΔF1 = +0.271 (B 0.326, rule_eeg 0.055; best of rule_eeg, rule_hr)","[+0.153, +0.399]",P(ΔF1 > 0) = 1.000
+ecg_emg,v02g,H4 (C vs rule_emg),held,"ΔF1 = +0.292 (C 0.349, rule_emg 0.057; best of rule_eeg, rule_hr, rule_emg, rule_acc)","[+0.154, +0.433]",P(ΔF1 > 0) = 1.000
+ecg_emg,v11,H1,held,ΔFA/24h (C at matched sensitivity − A at frozen τ) = -1.88 (C 0.18 vs A 2.06; target sensitivity 0.471),"[-2.86, +0.27]",P(ΔFA < 0) = 0.962
+ecg_emg,v11,H2,not held,"Δsensitivity on focal non-motor (B − A, frozen τ) = +0.088 (B 0.184, A 0.096); secondary at FA/24h ≤ 1: +0.091","[-0.006, +0.215]",P(Δ > 0) = 0.881
+ecg_emg,v11,H3b,held,"Δdelay (median B − median A, each model's detected non-FBTC focal seizures) = +1.0 s (over seizures both detect: -8.5 s); Δsensitivity (B − A) = +0.011","Δdelay [-15.0, +32.0] s; Δsens [-0.068, +0.102]",for reference only: P(Δdelay ≥ −2) = 0.694; P(Δsens > 0) = 0.600
+ecg_emg,v11,H4 (A vs rule_eeg),held,"ΔF1 = +0.123 (A 0.177, rule_eeg 0.054; best of rule_eeg)","[+0.042, +0.225]",P(ΔF1 > 0) = 1.000
+ecg_emg,v11,H4 (B vs rule_eeg),held,"ΔF1 = +0.243 (B 0.298, rule_eeg 0.054; best of rule_eeg, rule_hr)","[+0.129, +0.372]",P(ΔF1 > 0) = 1.000
+ecg_emg,v11,H4 (C vs rule_emg),held,"ΔF1 = +0.213 (C 0.273, rule_emg 0.061; best of rule_eeg, rule_hr, rule_emg, rule_acc)","[+0.098, +0.331]",P(ΔF1 > 0) = 1.000
+ecg_emg,v11 − v02g,offline−causal Δf1 (C),reported,-0.075,"[-0.139, -0.018]",
+ecg_emg,v11 − v02g,offline−causal Δsensitivity (C),reported,+0.018,"[-0.009, +0.053]",
+ecg_emg,v11 − v02g,offline−causal Δfa_per_24h (C),reported,+0.761,"[+0.176, +1.601]",
+ecg_emg,v11 − v02g,offline−causal Δdelay_s (C),reported,+0.750,"[-19.000, +10.012]",
