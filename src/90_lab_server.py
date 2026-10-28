@@ -9,8 +9,8 @@ Endpoints
   /data/<name>.json    status.json, catalog.json, expR.json, dev_<version>.json ... as written by 00/01/02/03/04/05
   /data/index.json     which data files exist right now and their modification times (the page re-fetches a file only
                        when it changed; tabs 3-4 appear as soon as their JSON lands)
-  /api/live.json       progress counters read from disk on request: files and GB downloaded per stage (dev split only;
-                       the locked test is shown as locked and its files are not looked at), .part files in flight with
+  /api/live.json       progress counters read from disk on request: files and GB downloaded per stage (the locked test's
+                       files are looked at only after docs/PREREGISTRATION.sha256 exists), .part files in flight with
                        speed, feature files, disk free. Counting files is progress, not a metric.
 """
 import os
@@ -26,9 +26,10 @@ LAB = ROOT / "results/lab"
 DATA = LAB / "data"
 RAW = ROOT / "data/raw/ds005873"
 FEAT = ROOT / "data/features"
-_files = pd.read_csv(ROOT / "data/catalog/seizeit2_files.csv")
-_files = _files[_files.split == "train"].reset_index(drop=True)          # never stat locked-test paths
-_size = dict(zip(_files.path, _files.bytes))
+_all = pd.read_csv(ROOT / "data/catalog/seizeit2_files.csv")
+_files = _all[_all.split == "train"].reset_index(drop=True)
+_locked = _all[_all.split == "locked_test"].reset_index(drop=True)      # stat only after the pre-registration hash exists
+_size = dict(zip(_all.path, _all.bytes))
 _prev = {}                                                               # .part -> (bytes, time) for speed
 _lock = threading.Lock()
 _cache = {"t": 0, "body": b"{}"}
@@ -45,7 +46,12 @@ def live():
         for k, G in (("seizure", F[F.run_has_seizure]), ("nonseizure", F[~F.run_has_seizure])):
             dl[k] = dict(files_total=int(len(G)), files_done=int(G.have.sum()), gb_total=float(G.bytes.sum() / 1e9),
                          gb_done=float(G.bytes[G.have].sum() / 1e9))
-        dl["locked_test"] = dict(locked=not (ROOT / "docs/PREREGISTRATION.sha256").exists())
+        locked = not (ROOT / "docs/PREREGISTRATION.sha256").exists()
+        dl["locked_test"] = dict(locked=locked)
+        if not locked:
+            ok = [(RAW / p).exists() and (RAW / p).stat().st_size == b for p, b in zip(_locked.path, _locked.bytes)]
+            dl["locked_test"].update(files_total=int(len(ok)), files_done=int(sum(ok)), gb_total=float(_locked.bytes.sum() / 1e9),
+                                     gb_done=float(_locked.bytes[ok].sum() / 1e9))
         now, flight = time.time(), []
         for p in RAW.rglob("*.part"):
             try:

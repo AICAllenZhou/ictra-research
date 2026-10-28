@@ -164,15 +164,22 @@ function bar(label, done, total, unit, locked){
 function tabNow(){
   const L = S.live, st = S.status, dl = L.download || st.download || {}, fe = st.features || {};
   let h = `<div class="grid">`;
-  h += `<div class="card"><h2>Downloads (SeizeIT2 dev split)</h2>`;
+  h += `<div class="card"><h2>Downloads (SeizeIT2)</h2>`;
   for (const [k, lab] of [["seizure","Seizure runs (stage 1)"],["nonseizure","Seizure-free runs (stage 2)"]]) {
     const d = dl[k]; if (!d) continue;
     h += bar(`${lab} · files`, d.files_done, d.files_total, "files") + bar(`${lab} · GB`, d.gb_done, d.gb_total, "GB");
   }
-  h += bar("Locked test sub-097..125", 0, 1, "", true);
-  const fl0 = L.in_flight || [], active = fl0.filter(f => f.idle_s < 60).length;
+  const lt = dl.locked_test || {locked: true};
+  if (lt.locked || lt.files_total == null) h += bar("Locked test sub-097..125", 0, 1, "", true);
+  else h += bar("Locked test sub-097..125 · files", lt.files_done, lt.files_total, "files") + bar("Locked test sub-097..125 · GB", lt.gb_done, lt.gb_total, "GB");
+  // small files finish between two 5-s polls, so "running" = a .part grew recently OR the finished-file count changed
+  const nDone = ["seizure", "nonseizure", "locked_test"].reduce((a, k) => a + ((dl[k] || {}).files_done || 0), 0);
+  if (S.lastDone == null) S.lastDone = nDone;
+  else if (nDone !== S.lastDone) { S.lastDone = nDone; S.lastDoneAt = Date.now(); }
+  const fl0 = L.in_flight || [], active = fl0.filter(f => f.idle_s < 60).length, recent = S.lastDoneAt && Date.now() - S.lastDoneAt < 60000;
   h += active ? `<div class="small" style="color:var(--accent);margin-top:6px">● ${active} file${active > 1 ? "s" : ""} downloading now</div>`
-              : `<div class="small warn" style="margin-top:6px">● no file has grown in the last 60 s: no download is running (restart 01_download_seizeit2.py)</div>`;
+     : recent ? `<div class="small" style="color:var(--accent);margin-top:6px">● downloading: a file finished in the last 60 s</div>`
+              : `<div class="small warn" style="margin-top:6px">● no file has grown or finished in the last 60 s: no download is running (restart 01_download_seizeit2.py)</div>`;
   const fl = L.in_flight || [];
   h += `<h3>In flight (${fl.length})</h3>`;
   if (fl.length) h += `<div class="tablewrap"><table><tr><th>file</th><th class="num">MB</th><th class="num">of</th><th class="num">MB/s</th><th class="num">idle s</th></tr>` +
